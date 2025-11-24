@@ -20,6 +20,10 @@ export class QuestionService {
     return `http://${window.location.hostname}:3000`;
   }
 
+  getAllQuestions(): Observable<Question[]> {
+    return this.http.get<Question[]>(`${this.apiUrl}/questions`);
+  }
+
   getRandomQuestion(): Observable<Question> {
     return this.http.get<Question>(`${this.apiUrl}/questions/random`);
   }

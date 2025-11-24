@@ -1,0 +1,55 @@
+<div class="questions-container">
+  <h2>All Interview Questions</h2>
+  
+  <div class="filters">
+    <select [(ngModel)]="selectedTopic" (change)="applyFilters()" class="filter-select">
+      <option value="">All Topics</option>
+      <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }}</option>
+    </select>
+
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      (input)="applyFilters()"
+      placeholder="Search questions..."
+      class="search-input">
+    
+    <select [(ngModel)]="selectedDifficulty" (change)="applyFilters()" class="filter-select">
+      <option value="">All Difficulties</option>
+      <option value="junior">Junior</option>
+      <option value="medior">Medior</option>
+      <option value="senior">Senior</option>
+    </select>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading questions...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="questions-list" *ngIf="!loading && !error">
+    <div *ngFor="let question of questions; trackBy: trackByQuestionId" class="question-item">
+      <div class="question-header">
+        <div class="topics">
+          <span *ngFor="let topic of question.topics" class="topic">{{ topic }}</span>
+        </div>
+        <span class="difficulty" [class]="question.difficulty">{{ question.difficulty }}</span>
+      </div>
+      <div class="question-text" [innerHTML]="question.question"></div>
+      
+      <button 
+        class="show-answer-btn" 
+        (click)="toggleAnswer(question.id)"
+        [class.active]="visibleAnswers.has(question.id)">
+        {{ visibleAnswers.has(question.id) ? 'Hide Answer' : 'Show Answer' }}
+      </button>
+      
+      <div class="answer-section" *ngIf="visibleAnswers.has(question.id)">
+        <h4>Answer:</h4>
+        <div class="answer-text" [innerHTML]="answers.get(question.id)"></div>
+      </div>
+    </div>
+    
+    <div *ngIf="questions.length === 0" class="no-results">
+      No questions found matching your criteria.
+    </div>
+  </div>
+</div>

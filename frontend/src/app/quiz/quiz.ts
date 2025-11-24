@@ -26,7 +26,6 @@ export class Quiz implements OnInit {
   }
 
   loadRandomQuestion() {
-    console.log('Loading random question...');
     this.loading = true;
     this.error = null;
     this.showAnswer = false;
@@ -34,7 +33,6 @@ export class Quiz implements OnInit {
 
     this.questionService.getRandomQuestion().subscribe({
       next: (question) => {
-        console.log('Received question:', question);
         this.currentQuestion = question;
         this.loading = false;
         this.cdr.detectChanges();
@@ -44,9 +42,6 @@ export class Quiz implements OnInit {
         this.error = 'Failed to load question. Please try again.';
         this.loading = false;
         this.cdr.detectChanges();
-      },
-      complete: () => {
-        console.log('Question request completed');
       }
     });
   }
