@@ -16,11 +16,11 @@
         </span>
       </div>
       
-      <h2 class="question">{{ currentQuestion.question }}</h2>
+      <h2 class="question" [innerHTML]="currentQuestion.question"></h2>
       
       <div *ngIf="showAnswer && answerResult" class="answer-section">
         <h3>Answer:</h3>
-        <p class="answer">{{ answerResult.correctAnswer }}</p>
+        <div class="answer" [innerHTML]="answerResult.correctAnswer"></div>
       </div>
       
       <div class="button-group">
