@@ -6,6 +6,13 @@ export interface Question {
   topics: string[];
 }
 
+export interface QuestionWithoutAnswer {
+  id: number;
+  difficulty: 'junior' | 'medior' | 'senior';
+  question: string;
+  topics: string[];
+}
+
 export interface QuestionFilters {
   search?: string;
   difficulty?: 'junior' | 'medior' | 'senior';

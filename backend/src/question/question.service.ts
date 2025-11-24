@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Question, QuestionFilters } from './interfaces/question.interface';
+import {
+  Question,
+  QuestionWithoutAnswer,
+  QuestionFilters,
+} from './interfaces/question.interface';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -13,7 +17,12 @@ export class QuestionService {
     this.questions = JSON.parse(questionsData);
   }
 
-  findAll(filters?: QuestionFilters): Question[] {
+  private removeAnswer(question: Question): QuestionWithoutAnswer {
+    const { answer, ...rest } = question;
+    return rest;
+  }
+
+  findAll(filters?: QuestionFilters): QuestionWithoutAnswer[] {
     let result = [...this.questions];
 
     if (filters?.search) {
@@ -21,7 +30,6 @@ export class QuestionService {
       result = result.filter(
         (q) =>
           q.question.toLowerCase().includes(searchLower) ||
-          q.answer.toLowerCase().includes(searchLower) ||
           q.topics.some((t) => t.toLowerCase().includes(searchLower)),
       );
     }
@@ -39,15 +47,20 @@ export class QuestionService {
       );
     }
 
-    return result;
+    return result.map((q) => this.removeAnswer(q));
   }
 
   findOne(id: number): Question | undefined {
     return this.questions.find((q) => q.id === id);
   }
 
-  findRandom(): Question {
+  findOneWithoutAnswer(id: number): QuestionWithoutAnswer | undefined {
+    const question = this.findOne(id);
+    return question ? this.removeAnswer(question) : undefined;
+  }
+
+  findRandom(): QuestionWithoutAnswer {
     const randomIndex = Math.floor(Math.random() * this.questions.length);
-    return this.questions[randomIndex];
+    return this.removeAnswer(this.questions[randomIndex]);
   }
 }
