@@ -1,66 +1,73 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   Question,
   QuestionWithoutAnswer,
   QuestionFilters,
 } from './interfaces/question.interface';
-import * as fs from 'fs';
-import * as path from 'path';
+import { QuestionEntity } from './entities/question.entity';
 
 @Injectable()
 export class QuestionService {
-  private questions: Question[];
+  constructor(
+    @InjectRepository(QuestionEntity)
+    private questionRepository: Repository<QuestionEntity>,
+  ) {}
 
-  constructor() {
-    const questionsPath = path.join(__dirname, 'questions.json');
-    const questionsData = fs.readFileSync(questionsPath, 'utf8');
-    this.questions = JSON.parse(questionsData);
-  }
-
-  private removeAnswer(question: Question): QuestionWithoutAnswer {
+  private removeAnswer(question: Question | QuestionEntity): QuestionWithoutAnswer {
     const { answer, ...rest } = question;
-    return rest;
+    return rest as QuestionWithoutAnswer;
   }
 
-  findAll(filters?: QuestionFilters): QuestionWithoutAnswer[] {
-    let result = [...this.questions];
+  async findAll(filters?: QuestionFilters): Promise<QuestionWithoutAnswer[]> {
+    const queryBuilder = this.questionRepository.createQueryBuilder('q');
 
     if (filters?.search) {
-      const searchLower = filters.search.toLowerCase();
-      result = result.filter(
-        (q) =>
-          q.question.toLowerCase().includes(searchLower) ||
-          q.topics.some((t) => t.toLowerCase().includes(searchLower)),
+      const searchLower = `%${filters.search.toLowerCase()}%`;
+      queryBuilder.where(
+        'LOWER(q.question) LIKE :search',
+        { search: searchLower },
       );
     }
 
     if (filters?.difficulty) {
-      result = result.filter((q) => q.difficulty === filters.difficulty);
+      queryBuilder.andWhere('q.difficulty = :difficulty', {
+        difficulty: filters.difficulty,
+      });
     }
 
     if (filters?.topic) {
       const topicsToFilter = Array.isArray(filters.topic)
         ? filters.topic
         : [filters.topic];
-      result = result.filter((q) =>
-        topicsToFilter.some((topic) => q.topics.includes(topic)),
-      );
+      queryBuilder.andWhere('q.topics && ARRAY[:...topics]', {
+        topics: topicsToFilter,
+      });
     }
 
-    return result.map((q) => this.removeAnswer(q));
+    const questions = await queryBuilder.getMany();
+    return questions.map((q) => this.removeAnswer(q));
   }
 
-  findOne(id: number): Question | undefined {
-    return this.questions.find((q) => q.id === id);
+  async findOne(id: number): Promise<QuestionEntity | null> {
+    return await this.questionRepository.findOne({ where: { id } });
   }
 
-  findOneWithoutAnswer(id: number): QuestionWithoutAnswer | undefined {
-    const question = this.findOne(id);
-    return question ? this.removeAnswer(question) : undefined;
+  async findOneWithoutAnswer(
+    id: number,
+  ): Promise<QuestionWithoutAnswer | null> {
+    const question = await this.findOne(id);
+    return question ? this.removeAnswer(question) : null;
   }
 
-  findRandom(): QuestionWithoutAnswer {
-    const randomIndex = Math.floor(Math.random() * this.questions.length);
-    return this.removeAnswer(this.questions[randomIndex]);
+  async findRandom(): Promise<QuestionWithoutAnswer> {
+    const count = await this.questionRepository.count();
+    const randomIndex = Math.floor(Math.random() * count);
+    const [question] = await this.questionRepository.find({
+      skip: randomIndex,
+      take: 1,
+    });
+    return this.removeAnswer(question);
   }
 }

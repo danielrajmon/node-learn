@@ -21,21 +21,21 @@ export class QuestionController {
   @ApiQuery({ name: 'difficulty', required: false, enum: ['junior', 'medior', 'senior'], description: 'Filter by difficulty level' })
   @ApiQuery({ name: 'topic', required: false, description: 'Filter by topic (comma-separated for multiple topics)' })
   @ApiResponse({ status: 200, description: 'List of questions without answers', type: [QuestionWithoutAnswerDto] })
-  findAll(
+  async findAll(
     @Query('search') search?: string,
     @Query('difficulty') difficulty?: 'junior' | 'medior' | 'senior',
     @Query('topic') topicParam?: string,
-  ): QuestionWithoutAnswer[] {
+  ): Promise<QuestionWithoutAnswer[]> {
     const topic = topicParam ? topicParam.split(',').map((t) => t.trim()) : undefined;
     const filters: QuestionFilters = { search, difficulty, topic };
-    return this.questionService.findAll(filters);
+    return await this.questionService.findAll(filters);
   }
 
   @Get('random')
   @ApiOperation({ summary: 'Get a random question', description: 'Retrieve a random question from the collection (answer not included)' })
   @ApiResponse({ status: 200, description: 'A random question without answer', type: QuestionWithoutAnswerDto })
-  findRandom(): QuestionWithoutAnswer {
-    return this.questionService.findRandom();
+  async findRandom(): Promise<QuestionWithoutAnswer> {
+    return await this.questionService.findRandom();
   }
 
   @Get(':id')
@@ -43,8 +43,8 @@ export class QuestionController {
   @ApiParam({ name: 'id', description: 'Question ID', type: Number })
   @ApiResponse({ status: 200, description: 'The question without answer', type: QuestionWithoutAnswerDto })
   @ApiResponse({ status: 404, description: 'Question not found' })
-  findOne(@Param('id') id: string): QuestionWithoutAnswer {
-    const question = this.questionService.findOneWithoutAnswer(+id);
+  async findOne(@Param('id') id: string): Promise<QuestionWithoutAnswer> {
+    const question = await this.questionService.findOneWithoutAnswer(+id);
     if (!question) {
       throw new NotFoundException(`Question with ID ${id} not found`);
     }

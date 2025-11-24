@@ -19,11 +19,11 @@ export class AnswerController {
     description: 'Answer result',
     type: AnswerResultDto,
   })
-  submitAnswer(
+  async submitAnswer(
     @Param('questionId') questionId: string,
     @Body() submitAnswerDto: SubmitAnswerDto,
-  ): AnswerResult {
-    return this.answerService.checkAnswer(
+  ): Promise<AnswerResult> {
+    return await this.answerService.checkAnswer(
       +questionId,
       submitAnswerDto.answer,
     );

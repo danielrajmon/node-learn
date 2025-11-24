@@ -6,8 +6,8 @@ import { AnswerResult } from './interfaces/answer.interface';
 export class AnswerService {
   constructor(private readonly questionService: QuestionService) {}
 
-  checkAnswer(questionId: number, userAnswer: string): AnswerResult {
-    const question = this.questionService.findOne(questionId);
+  async checkAnswer(questionId: number, userAnswer: string): Promise<AnswerResult> {
+    const question = await this.questionService.findOne(questionId);
 
     if (!question) {
       return {
