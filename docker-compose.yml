@@ -1,4 +1,24 @@
 services:
+  postgres:
+    container_name: node-learn-postgresql
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=node-learn-questions
+      - LANG=en_US.utf8
+      - LC_ALL=en_US.utf8
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     container_name: node-learn-backend
     build:
@@ -32,3 +52,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+volumes:
+  postgres_data:
