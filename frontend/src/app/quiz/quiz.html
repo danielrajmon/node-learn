@@ -6,14 +6,14 @@
     
     <div *ngIf="currentQuestion && !loading">
       <div class="question-header">
-        <span class="difficulty" [class]="currentQuestion.difficulty">
-          {{ currentQuestion.difficulty }}
-        </span>
         <div class="topics">
           <span *ngFor="let topic of currentQuestion.topics" class="topic">
             {{ topic }}
           </span>
         </div>
+        <span class="difficulty" [class]="currentQuestion.difficulty">
+          {{ currentQuestion.difficulty }}
+        </span>
       </div>
       
       <h2 class="question">{{ currentQuestion.question }}</h2>
