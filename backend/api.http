@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:3000
+
+### Get all questions
+GET {{baseUrl}}/questions
+
+### Get all questions with multiple filters
+GET {{baseUrl}}/questions?difficulty=senior&topic=Architecture,Microservices
+
+### Get a specific question by ID
+GET {{baseUrl}}/questions/3
+
+### Get a random question
+GET {{baseUrl}}/questions/random
+
+### Swagger API Documentation
+GET {{baseUrl}}/api
