@@ -100,4 +100,12 @@ export class Questions implements OnInit {
   trackByQuestionId(index: number, question: Question): number {
     return question.id;
   }
+
+  getTopicCount(topic: string): number {
+    return this.allQuestions.filter(q => q.topics.includes(topic)).length;
+  }
+
+  getDifficultyCount(difficulty: string): number {
+    return this.allQuestions.filter(q => q.difficulty === difficulty).length;
+  }
 }

@@ -3,8 +3,8 @@
   
   <div class="filters">
     <select [(ngModel)]="selectedTopic" (change)="applyFilters()" class="filter-select">
-      <option value="">All Topics</option>
-      <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }}</option>
+      <option value="">All Topics ({{ allQuestions.length }})</option>
+      <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }} ({{ getTopicCount(topic) }})</option>
     </select>
 
     <input 
@@ -15,10 +15,10 @@
       class="search-input">
     
     <select [(ngModel)]="selectedDifficulty" (change)="applyFilters()" class="filter-select">
-      <option value="">All Difficulties</option>
-      <option value="junior">Junior</option>
-      <option value="medior">Medior</option>
-      <option value="senior">Senior</option>
+      <option value="">All Difficulties ({{ allQuestions.length }})</option>
+      <option value="junior">Junior ({{ getDifficultyCount('junior') }})</option>
+      <option value="medior">Medior ({{ getDifficultyCount('medior') }})</option>
+      <option value="senior">Senior ({{ getDifficultyCount('senior') }})</option>
     </select>
   </div>
 
