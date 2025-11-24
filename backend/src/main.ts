@@ -5,6 +5,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS
+  app.enableCors();
+
   // Configure Swagger
   const config = new DocumentBuilder()
     .setTitle('Node.js Interview Questions API')

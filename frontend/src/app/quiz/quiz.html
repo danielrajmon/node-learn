@@ -1,0 +1,43 @@
+<div class="quiz-container">
+  <div class="card">
+    <div *ngIf="loading" class="loading">Loading...</div>
+    
+    <div *ngIf="error" class="error">{{ error }}</div>
+    
+    <div *ngIf="currentQuestion && !loading">
+      <div class="question-header">
+        <span class="difficulty" [class]="currentQuestion.difficulty">
+          {{ currentQuestion.difficulty }}
+        </span>
+        <div class="topics">
+          <span *ngFor="let topic of currentQuestion.topics" class="topic">
+            {{ topic }}
+          </span>
+        </div>
+      </div>
+      
+      <h2 class="question">{{ currentQuestion.question }}</h2>
+      
+      <div *ngIf="showAnswer && answerResult" class="answer-section">
+        <h3>Answer:</h3>
+        <p class="answer">{{ answerResult.correctAnswer }}</p>
+      </div>
+      
+      <div class="button-group">
+        <button 
+          class="btn btn-primary" 
+          [disabled]="!canShowAnswer"
+          (click)="revealAnswer()">
+          Show Answer
+        </button>
+        
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="!canGoNext"
+          (click)="nextQuestion()">
+          Next Question
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
