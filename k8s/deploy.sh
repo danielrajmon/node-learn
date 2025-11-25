@@ -60,15 +60,15 @@ echo -e "${YELLOW}Step 1: Building Docker images...${NC}"
 read -p "Do you want to build the Docker images? (y/n): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Building backend image..."
-    docker build -t node-learn-backend:latest ./backend
+    echo "Building backend image for amd64..."
+    docker buildx build --platform linux/amd64 -t node-learn-backend:latest ./backend
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to build backend image${NC}"
         exit 1
     fi
 
-    echo "Building frontend image..."
-    docker build -t node-learn-frontend:latest ./frontend
+    echo "Building frontend image for amd64..."
+    docker buildx build --platform linux/amd64 -t node-learn-frontend:latest ./frontend
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to build frontend image${NC}"
         exit 1
