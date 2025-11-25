@@ -1,0 +1,136 @@
+#!/bin/bash
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Configuration
+REGISTRY="danielrajmon"  # Docker Hub username
+BACKEND_IMAGE="${REGISTRY}/node-learn-backend:latest"
+FRONTEND_IMAGE="${REGISTRY}/node-learn-frontend:latest"
+
+echo -e "${GREEN}Node Learn K3s Deployment Script${NC}"
+echo "=================================="
+echo ""
+
+# Function to check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Check required tools
+echo -e "${YELLOW}Checking required tools...${NC}"
+if ! command_exists kubectl; then
+    echo -e "${RED}kubectl is not installed. Please install kubectl.${NC}"
+    exit 1
+fi
+
+if ! command_exists docker; then
+    echo -e "${RED}docker is not installed. Please install Docker.${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ All required tools are installed${NC}"
+echo ""
+
+# Step 1: Build Docker images
+echo -e "${YELLOW}Step 1: Building Docker images...${NC}"
+read -p "Do you want to build the Docker images? (y/n): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "Building backend image..."
+    docker build -t node-learn-backend:latest ./backend
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to build backend image${NC}"
+        exit 1
+    fi
+
+    echo "Building frontend image..."
+    docker build -t node-learn-frontend:latest ./frontend
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to build frontend image${NC}"
+        exit 1
+    fi
+
+    echo -e "${GREEN}✓ Images built successfully${NC}"
+fi
+echo ""
+
+# Step 2: Tag and push images (if using registry)
+echo -e "${YELLOW}Step 2: Pushing images to registry...${NC}"
+read -p "Do you want to push images to a registry? (y/n): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "Tagging and pushing backend image..."
+    docker tag node-learn-backend:latest ${BACKEND_IMAGE}
+    docker push ${BACKEND_IMAGE}
+    
+    echo "Tagging and pushing frontend image..."
+    docker tag node-learn-frontend:latest ${FRONTEND_IMAGE}
+    docker push ${FRONTEND_IMAGE}
+    
+    echo -e "${GREEN}✓ Images pushed successfully${NC}"
+else
+    echo -e "${YELLOW}Skipping registry push. Using local images.${NC}"
+    echo -e "${YELLOW}Note: If deploying to remote K3s, you'll need to import images manually.${NC}"
+fi
+echo ""
+
+# Step 3: Create namespace
+echo -e "${YELLOW}Step 3: Creating namespace...${NC}"
+kubectl apply -f k8s/namespace.yaml
+echo -e "${GREEN}✓ Namespace created${NC}"
+echo ""
+
+# Step 4: Deploy PostgreSQL
+echo -e "${YELLOW}Step 4: Deploying PostgreSQL...${NC}"
+kubectl apply -f k8s/postgres-secret.yaml
+kubectl apply -f k8s/postgres-pvc.yaml
+kubectl apply -f k8s/postgres-deployment.yaml
+echo "Waiting for PostgreSQL to be ready..."
+kubectl wait --for=condition=ready pod -l app=postgres -n node-learn --timeout=120s
+echo -e "${GREEN}✓ PostgreSQL deployed${NC}"
+echo ""
+
+# Step 5: Deploy backend
+echo -e "${YELLOW}Step 5: Deploying backend...${NC}"
+kubectl apply -f k8s/backend-config.yaml
+kubectl apply -f k8s/backend-deployment.yaml
+echo "Waiting for backend to be ready..."
+kubectl wait --for=condition=ready pod -l app=backend -n node-learn --timeout=120s
+echo -e "${GREEN}✓ Backend deployed${NC}"
+echo ""
+
+# Step 6: Deploy frontend
+echo -e "${YELLOW}Step 6: Deploying frontend...${NC}"
+kubectl apply -f k8s/frontend-deployment.yaml
+echo "Waiting for frontend to be ready..."
+kubectl wait --for=condition=ready pod -l app=frontend -n node-learn --timeout=120s
+echo -e "${GREEN}✓ Frontend deployed${NC}"
+echo ""
+
+# Step 7: Deploy ingress
+echo -e "${YELLOW}Step 7: Deploying ingress...${NC}"
+kubectl apply -f k8s/ingress.yaml
+echo -e "${GREEN}✓ Ingress deployed${NC}"
+echo ""
+
+# Show deployment status
+echo -e "${GREEN}Deployment Summary:${NC}"
+echo "===================="
+kubectl get all -n node-learn
+echo ""
+
+echo -e "${GREEN}Ingress Status:${NC}"
+kubectl get ingress -n node-learn
+echo ""
+
+echo -e "${GREEN}Deployment completed successfully!${NC}"
+echo ""
+echo -e "${YELLOW}Next steps:${NC}"
+echo "1. Add 'node-learn.local' to your /etc/hosts or DNS"
+echo "2. Access the application at http://node-learn.local"
+echo "3. Monitor logs: kubectl logs -f <pod-name> -n node-learn"
+echo "4. Check status: kubectl get pods -n node-learn"
