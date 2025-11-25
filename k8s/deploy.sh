@@ -11,6 +11,16 @@ REGISTRY="danielrajmon"  # Docker Hub username
 BACKEND_IMAGE="${REGISTRY}/node-learn-backend:latest"
 FRONTEND_IMAGE="${REGISTRY}/node-learn-frontend:latest"
 
+# Check if KUBECONFIG is set
+if [ -z "$KUBECONFIG" ]; then
+    echo -e "${RED}Error: KUBECONFIG environment variable is not set.${NC}"
+    echo "Please set KUBECONFIG to your kubeconfig file before running this script."
+    echo "Example: export KUBECONFIG=\$HOME/.kube/qnap-k3s-config"
+    exit 1
+else
+    echo -e "${GREEN}✓ Using kubeconfig: $KUBECONFIG${NC}"
+fi
+
 echo -e "${GREEN}Node Learn K3s Deployment Script${NC}"
 echo "=================================="
 echo ""
@@ -33,6 +43,16 @@ if ! command_exists docker; then
 fi
 
 echo -e "${GREEN}✓ All required tools are installed${NC}"
+
+# Verify kubectl connection
+echo -e "${YELLOW}Verifying kubectl connection...${NC}"
+if ! kubectl get nodes &>/dev/null; then
+    echo -e "${RED}Cannot connect to Kubernetes cluster${NC}"
+    echo "Please check your kubeconfig settings"
+    exit 1
+fi
+echo -e "${GREEN}✓ Connected to Kubernetes cluster${NC}"
+kubectl get nodes
 echo ""
 
 # Step 1: Build Docker images
@@ -131,6 +151,7 @@ echo -e "${GREEN}Deployment completed successfully!${NC}"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
 echo "1. Add 'node-learn.local' to your /etc/hosts or DNS"
+echo "   Example: echo '192.168.1.50 node-learn.local' | sudo tee -a /etc/hosts"
 echo "2. Access the application at http://node-learn.local"
 echo "3. Monitor logs: kubectl logs -f <pod-name> -n node-learn"
 echo "4. Check status: kubectl get pods -n node-learn"
