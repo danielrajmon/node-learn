@@ -30,6 +30,8 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+    env_file:
+      - ./.env.docker
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]

@@ -5,3 +5,4 @@ backend/src/seed/questions-export.json
 k8s/postgres-secret.yaml
 
 .env
+.env.docker
