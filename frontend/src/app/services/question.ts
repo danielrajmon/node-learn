@@ -10,14 +10,14 @@ export class QuestionService {
   constructor(private http: HttpClient) {}
 
   getAllQuestions(): Observable<Question[]> {
-    return this.http.get<Question[]>('/questions');
+    return this.http.get<Question[]>('/api/questions');
   }
 
   getRandomQuestion(): Observable<Question> {
-    return this.http.get<Question>('/questions/random');
+    return this.http.get<Question>('/api/questions/random');
   }
 
   submitAnswer(questionId: number, answer: string): Observable<AnswerResult> {
-    return this.http.post<AnswerResult>(`/answers/${questionId}`, { answer });
+    return this.http.post<AnswerResult>(`/api/answers/${questionId}`, { answer });
   }
 }

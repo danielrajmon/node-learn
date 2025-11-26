@@ -6,6 +6,9 @@ import morgan from 'morgan';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Set global API prefix
+  app.setGlobalPrefix('api');
+
   // Enable CORS
   app.enableCors();
 
@@ -17,7 +20,7 @@ async function bootstrap() {
     .addTag('questions')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api/docs', app, document);
 
   app.use(morgan('combined')); // Logs all requests
 

@@ -19,22 +19,8 @@ spec:
             name: backend
             port:
               number: 3000
-      - path: /questions
-        pathType: Prefix
-        backend:
-          service:
-            name: backend
-            port:
-              number: 3000
-      - path: /answers
-        pathType: Prefix
-        backend:
-          service:
-            name: backend
-            port:
-              number: 3000
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: frontend

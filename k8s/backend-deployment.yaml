@@ -52,7 +52,7 @@ spec:
               key: POSTGRES_PASSWORD
         livenessProbe:
           httpGet:
-            path: /
+            path: /api
             port: 3000
           initialDelaySeconds: 40
           periodSeconds: 30
@@ -60,7 +60,7 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /
+            path: /api
             port: 3000
           initialDelaySeconds: 20
           periodSeconds: 10
