@@ -57,45 +57,34 @@ echo ""
 
 # Step 1: Build Docker images
 echo -e "${YELLOW}Step 1: Building Docker images...${NC}"
-read -p "Do you want to build the Docker images? (y/n): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Building backend image for amd64..."
-    docker buildx build --platform linux/amd64 -t node-learn-backend:latest ./backend
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to build backend image${NC}"
-        exit 1
-    fi
-
-    echo "Building frontend image for amd64..."
-    docker buildx build --platform linux/amd64 -t node-learn-frontend:latest ./frontend
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to build frontend image${NC}"
-        exit 1
-    fi
-
-    echo -e "${GREEN}✓ Images built successfully${NC}"
+echo "Building backend image for amd64..."
+docker buildx build --platform linux/amd64 -t node-learn-backend:latest ./backend
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build backend image${NC}"
+    exit 1
 fi
+
+echo "Building frontend image for amd64..."
+docker buildx build --platform linux/amd64 -t node-learn-frontend:latest ./frontend
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build frontend image${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ Images built successfully${NC}"
 echo ""
 
 # Step 2: Tag and push images (if using registry)
 echo -e "${YELLOW}Step 2: Pushing images to registry...${NC}"
-read -p "Do you want to push images to a registry? (y/n): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Tagging and pushing backend image..."
-    docker tag node-learn-backend:latest ${BACKEND_IMAGE}
-    docker push ${BACKEND_IMAGE}
-    
-    echo "Tagging and pushing frontend image..."
-    docker tag node-learn-frontend:latest ${FRONTEND_IMAGE}
-    docker push ${FRONTEND_IMAGE}
-    
-    echo -e "${GREEN}✓ Images pushed successfully${NC}"
-else
-    echo -e "${YELLOW}Skipping registry push. Using local images.${NC}"
-    echo -e "${YELLOW}Note: If deploying to remote K3s, you'll need to import images manually.${NC}"
-fi
+echo "Tagging and pushing backend image..."
+docker tag node-learn-backend:latest ${BACKEND_IMAGE}
+docker push ${BACKEND_IMAGE}
+
+echo "Tagging and pushing frontend image..."
+docker tag node-learn-frontend:latest ${FRONTEND_IMAGE}
+docker push ${FRONTEND_IMAGE}
+
+echo -e "${GREEN}✓ Images pushed successfully${NC}"
 echo ""
 
 # Step 3: Create namespace
@@ -152,6 +141,6 @@ echo ""
 echo -e "${YELLOW}Next steps:${NC}"
 echo "1. Add 'node-learn.local' to your /etc/hosts or DNS"
 echo "   Example: echo '192.168.1.50 node-learn.local' | sudo tee -a /etc/hosts"
-echo "2. Access the application at http://node-learn.local"
+echo "2. Access the application at http://node-learn.local:61583"
 echo "3. Monitor logs: kubectl logs -f <pod-name> -n node-learn"
 echo "4. Check status: kubectl get pods -n node-learn"
