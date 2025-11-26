@@ -7,8 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "export:questions": "ts-node src/seed/export.ts",
+    "export:questions": "ts-node src/seed/export-questions.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "import:questions": "ts-node src/seed/import-questions.ts",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
