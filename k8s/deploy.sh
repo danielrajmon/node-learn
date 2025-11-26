@@ -118,6 +118,8 @@ echo ""
 echo -e "${YELLOW}Step 6: Deploying backend...${NC}"
 kubectl apply -f k8s/backend-config.yaml
 kubectl apply -f k8s/backend-deployment.yaml
+echo "Forcing backend to restart and pull latest image..."
+kubectl rollout restart deployment/backend -n node-learn
 echo "Waiting for backend to be ready..."
 kubectl wait --for=condition=ready pod -l app=backend -n node-learn --timeout=120s
 echo -e "${GREEN}✓ Backend deployed${NC}"
@@ -126,6 +128,8 @@ echo ""
 # Step 7: Deploy frontend
 echo -e "${YELLOW}Step 7: Deploying frontend...${NC}"
 kubectl apply -f k8s/frontend-deployment.yaml
+echo "Forcing frontend to restart and pull latest image..."
+kubectl rollout restart deployment/frontend -n node-learn
 echo "Waiting for frontend to be ready..."
 kubectl wait --for=condition=ready pod -l app=frontend -n node-learn --timeout=120s
 echo -e "${GREEN}✓ Frontend deployed${NC}"
