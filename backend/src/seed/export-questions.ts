@@ -8,20 +8,21 @@ import * as path from 'path';
 
 if (
   !process.env.POSTGRES_HOST ||
+  !process.env.POSTGRES_PORT ||
+  !process.env.POSTGRES_DB ||
   !process.env.POSTGRES_USER ||
-  !process.env.POSTGRES_PASSWORD ||
-  !process.env.POSTGRES_DB
+  !process.env.POSTGRES_PASSWORD
 ) {
   throw new Error('Missing one or more required environment variables for database connection.');
 }
 
 const AppDataSource = new DataSource({
   type: 'postgres',
-  host: process.env.POSTGRES_HOST || 'localhost',
-  port: 5432,
+  host: process.env.POSTGRES_HOST,
+  port: parseInt(process.env.POSTGRES_PORT || '5432'),
+  database: process.env.POSTGRES_DB,
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DB,
   entities: [QuestionEntity],
   synchronize: false,
 });

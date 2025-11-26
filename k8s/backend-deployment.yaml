@@ -4,7 +4,7 @@ metadata:
   name: backend
   namespace: node-learn
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -25,31 +25,31 @@ spec:
             configMapKeyRef:
               name: backend-config
               key: NODE_ENV
-        - name: DB_HOST
+        - name: POSTGRES_HOST
           valueFrom:
             secretKeyRef:
               name: postgres-secret
-              key: DB_HOST
-        - name: DB_PORT
+              key: POSTGRES_HOST
+        - name: POSTGRES_PORT
           valueFrom:
             secretKeyRef:
               name: postgres-secret
-              key: DB_PORT
-        - name: DB_NAME
+              key: POSTGRES_PORT
+        - name: POSTGRES_DB
           valueFrom:
             secretKeyRef:
               name: postgres-secret
-              key: DB_NAME
-        - name: DB_USER
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
               name: postgres-secret
-              key: DB_USER
-        - name: DB_PASSWORD
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: postgres-secret
-              key: DB_PASSWORD
+              key: POSTGRES_PASSWORD
         livenessProbe:
           httpGet:
             path: /
@@ -73,6 +73,14 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+        volumeMounts:
+        - name: questions-seed
+          mountPath: /app/src/seed/questions-export.json
+          subPath: questions-export.json
+      volumes:
+      - name: questions-seed
+        configMap:
+          name: questions-seed
 ---
 apiVersion: v1
 kind: Service

@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: import-questions
+  namespace: node-learn
+spec:
+  template:
+    spec:
+      containers:
+      - name: importer
+        image: danielrajmon/node-learn-backend:latest
+        command: ["npm", "run", "import:questions"]
+        envFrom:
+        - secretRef:
+            name: postgres-secret
+        volumeMounts:
+        - name: questions-seed
+          mountPath: /app/src/seed/questions-export.json
+          subPath: questions-export.json
+      volumes:
+      - name: questions-seed
+        configMap:
+          name: questions-seed
+      restartPolicy: Never
+  backoffLimit: 1
