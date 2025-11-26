@@ -1,10 +1,8 @@
 <div class="quiz-container">
   <div class="card">
-    <div *ngIf="loading" class="loading">Loading...</div>
-    
     <div *ngIf="error" class="error">{{ error }}</div>
     
-    <div *ngIf="currentQuestion && !loading">
+    <div *ngIf="currentQuestion">
       <div class="question-header">
         <div class="topics">
           <span *ngFor="let topic of currentQuestion.topics" class="topic">
