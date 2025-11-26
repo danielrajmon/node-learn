@@ -196,7 +196,7 @@ kubectl logs -f deployment/frontend -n node-learn
    ```
 
 2. Access via browser:
-   - http://node-learn.local (or your configured hostname)
+   - http://node-learn.local:61583 (or your configured hostname)
    - Or directly via LoadBalancer IP if available
 
 ## Troubleshooting
