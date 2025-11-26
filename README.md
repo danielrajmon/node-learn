@@ -25,7 +25,7 @@ Additional phases will expand the system with persistence, authentication, user 
 - [x] Add simple filtering:
   - `?search=`, `?difficulty=`, `?topic=`, `?tag=`
 - [x] Enable Swagger/OpenAPI
-- [ ] (Optional) Simple Angular app:
+- [x] (Optional) Simple Angular app:
   - List questions
   - Show question details
 
@@ -33,16 +33,16 @@ Additional phases will expand the system with persistence, authentication, user 
 
 ### Phase 2 – Database & Persistence (Postgres + TypeORM)
 
-- [ ] Add Docker/Postgres (or local Postgres)
-- [ ] Configure TypeORM in Nest
-- [ ] Create QuestionEntity + migrations
-- [ ] Replace JSON loader with DB-backed repository
-- [ ] Seed DB from questions.json (one-time script or migration)
-- [ ] Ensure all existing endpoints still work:
+- [x] Add Docker/Postgres (or local Postgres)
+- [x] Configure TypeORM in Nest
+- [x] Create QuestionEntity + migrations
+- [x] Replace JSON loader with DB-backed repository
+- [x] Seed DB from questions.json (one-time script or migration)
+- [x] Ensure all existing endpoints still work:
   - `/questions`
   - `/questions/:id`
   - `/questions/random`
-- [ ] Extend filters using real queries (difficulty, tags, topics)
+- [x] Extend filters using real queries (difficulty, tags, topics)
 
 ---
 
