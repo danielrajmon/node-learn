@@ -2,6 +2,7 @@ DROP TRIGGER IF EXISTS trg_questions_set_updated_at ON questions;
 DROP TRIGGER IF EXISTS trg_choices_touch_question ON choices;
 DROP FUNCTION IF EXISTS set_questions_updated_at;
 DROP FUNCTION IF EXISTS touch_question_on_choice_change;
+DROP INDEX IF EXISTS idx_choices_question_id;
 DROP TABLE IF EXISTS choices;
 DROP TABLE IF EXISTS questions;
 DROP TYPE IF EXISTS question_type_enum;
@@ -31,6 +32,10 @@ CREATE TABLE choices (
     choice_text  TEXT NOT NULL,
     is_good      BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+-- Create index
+CREATE INDEX idx_choices_question_id
+    ON choices (question_id);
 
 -- Function: set updated_at on questions when the row changes
 CREATE OR REPLACE FUNCTION set_questions_updated_at()
