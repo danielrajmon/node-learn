@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3000
+@baseUrl = http://localhost:3000/api
 
 ### Get all questions
 GET {{baseUrl}}/questions
@@ -21,4 +21,4 @@ Content-Type: application/json
 }
 
 ### Swagger API Documentation
-GET {{baseUrl}}/api
+GET {{baseUrl}}/docs
