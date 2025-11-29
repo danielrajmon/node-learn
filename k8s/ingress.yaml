@@ -3,14 +3,21 @@ kind: Ingress
 metadata:
   name: node-learn-ingress
   namespace: node-learn
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
 spec:
+  tls:
+  - hosts:
+    - huvinas.myqnapcloud.com
+    secretName: qnap-tls
   defaultBackend:
     service:
       name: frontend
       port:
         number: 80
   rules:
-  - http:
+  - host: huvinas.myqnapcloud.com
+    http:
       paths:
       - path: /api
         pathType: Prefix

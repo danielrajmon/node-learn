@@ -94,8 +94,14 @@ kubectl apply -f k8s/namespace.yaml
 echo -e "${GREEN}✓ Namespace created${NC}"
 echo ""
 
-# Step 4: Create/update questions seed ConfigMap
-echo -e "${YELLOW}Step 4: Creating/updating questions seed ConfigMap...${NC}"
+# Step 4: Configure Traefik for HTTPS-only with static port
+echo -e "${YELLOW}Step 4: Configuring Traefik service...${NC}"
+kubectl apply -f k8s/traefik-service-patch.yaml
+echo -e "${GREEN}✓ Traefik configured for HTTPS on port 61510${NC}"
+echo ""
+
+# Step 5: Create/update questions seed ConfigMap
+echo -e "${YELLOW}Step 5: Creating/updating questions seed ConfigMap...${NC}"
 if [ -f backend/src/seed/questions-export.json ]; then
     kubectl create configmap questions-seed --from-file=questions-export.json=backend/src/seed/questions-export.json -n node-learn --dry-run=client -o yaml | kubectl apply -f -
     echo -e "${GREEN}✓ Questions seed ConfigMap applied${NC}"
@@ -104,8 +110,8 @@ else
 fi
 echo ""
 
-# Step 5: Deploy PostgreSQL
-echo -e "${YELLOW}Step 5: Deploying PostgreSQL...${NC}"
+# Step 6: Deploy PostgreSQL
+echo -e "${YELLOW}Step 6: Deploying PostgreSQL...${NC}"
 kubectl apply -f k8s/postgres-secret.yaml
 kubectl apply -f k8s/postgres-pvc.yaml
 kubectl apply -f k8s/postgres-deployment.yaml
@@ -114,8 +120,8 @@ kubectl wait --for=condition=ready pod -l app=postgres -n node-learn --timeout=1
 echo -e "${GREEN}✓ PostgreSQL deployed${NC}"
 echo ""
 
-# Step 6: Deploy backend
-echo -e "${YELLOW}Step 6: Deploying backend...${NC}"
+# Step 7: Deploy backend
+echo -e "${YELLOW}Step 7: Deploying backend...${NC}"
 kubectl apply -f k8s/backend-config.yaml
 kubectl apply -f k8s/backend-deployment.yaml
 echo "Forcing backend to restart and pull latest image..."
@@ -125,8 +131,8 @@ kubectl wait --for=condition=ready pod -l app=backend -n node-learn --timeout=12
 echo -e "${GREEN}✓ Backend deployed${NC}"
 echo ""
 
-# Step 7: Deploy frontend
-echo -e "${YELLOW}Step 7: Deploying frontend...${NC}"
+# Step 8: Deploy frontend
+echo -e "${YELLOW}Step 8: Deploying frontend...${NC}"
 kubectl apply -f k8s/frontend-deployment.yaml
 echo "Forcing frontend to restart and pull latest image..."
 kubectl rollout restart deployment/frontend -n node-learn
@@ -135,20 +141,20 @@ kubectl wait --for=condition=ready pod -l app=frontend -n node-learn --timeout=1
 echo -e "${GREEN}✓ Frontend deployed${NC}"
 echo ""
 
-# Step 8: Deploy ingress
-echo -e "${YELLOW}Step 8: Deploying ingress...${NC}"
+# Step 9: Deploy ingress
+echo -e "${YELLOW}Step 9: Deploying ingress...${NC}"
 kubectl apply -f k8s/ingress.yaml
 echo -e "${GREEN}✓ Ingress deployed${NC}"
 echo ""
 
-# Step 9: Import questions into the database
+# Step 10: Import questions into the database
 if [ "$IMPORT_QUESTIONS" = true ]; then
-    echo -e "${YELLOW}Step 9: Importing questions into the database...${NC}"
+    echo -e "${YELLOW}Step 10: Importing questions into the database...${NC}"
     kubectl apply -f k8s/import-questions.yaml
     kubectl wait --for=condition=complete job/import-questions -n node-learn --timeout=60s
     echo -e "${GREEN}✓ Questions imported${NC}"
 else
-    echo -e "${YELLOW}Step 9: Skipping questions import.${NC}"
+    echo -e "${YELLOW}Step 10: Skipping questions import.${NC}"
 fi
 
 # Show deployment status
@@ -164,8 +170,4 @@ echo ""
 echo -e "${GREEN}Deployment completed successfully!${NC}"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
-echo "1. Add 'node-learn.local' to your /etc/hosts or DNS"
-echo "   Example: echo '192.168.1.50 node-learn.local' | sudo tee -a /etc/hosts"
-echo "2. Access the application at http://huvinas.myqnapcloud.com:61723"
-echo "3. Monitor logs: kubectl logs -f <pod-name> -n node-learn"
-echo "4. Check status: kubectl get pods -n node-learn"
+echo "Access the application at http://huvinas.myqnapcloud.com:61723"
