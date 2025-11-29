@@ -4,12 +4,12 @@ import { QuestionService } from '../services/question';
 import { Question, AnswerResult } from '../models/question.model';
 
 @Component({
-  selector: 'app-quiz',
+  selector: 'app-learn',
   imports: [CommonModule],
-  templateUrl: './quiz.html',
-  styleUrl: './quiz.css',
+  templateUrl: './learn.html',
+  styleUrl: './learn.css',
 })
-export class Quiz implements OnInit {
+export class Learn implements OnInit {
   currentQuestion: Question | null = null;
   answerResult: AnswerResult | null = null;
   showAnswer = false;
