@@ -5,11 +5,11 @@ export class QuestionDto {
   id: number;
 
   @ApiProperty({
-    example: 'medior',
-    enum: ['junior', 'medior', 'senior'],
+    example: 'medium',
+    enum: ['easy', 'medium', 'hard'],
     description: 'Difficulty level of the question',
   })
-  difficulty: 'junior' | 'medior' | 'senior';
+  difficulty: 'easy' | 'medium' | 'hard';
 
   @ApiProperty({
     example: 'What is a Clean Architecture?',
@@ -36,11 +36,11 @@ export class QuestionWithoutAnswerDto {
   id: number;
 
   @ApiProperty({
-    example: 'medior',
-    enum: ['junior', 'medior', 'senior'],
+    example: 'medium',
+    enum: ['easy', 'medium', 'hard'],
     description: 'Difficulty level of the question',
   })
-  difficulty: 'junior' | 'medior' | 'senior';
+  difficulty: 'easy' | 'medium' | 'hard';
 
   @ApiProperty({
     example: 'What is a Clean Architecture?',

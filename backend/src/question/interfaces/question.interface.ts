@@ -1,6 +1,6 @@
 export interface Question {
   id: number;
-  difficulty: 'junior' | 'medior' | 'senior';
+  difficulty: 'easy' | 'medium' | 'hard';
   question: string;
   answer: string;
   topics: string[];
@@ -8,13 +8,13 @@ export interface Question {
 
 export interface QuestionWithoutAnswer {
   id: number;
-  difficulty: 'junior' | 'medior' | 'senior';
+  difficulty: 'easy' | 'medium' | 'hard';
   question: string;
   topics: string[];
 }
 
 export interface QuestionFilters {
   search?: string;
-  difficulty?: 'junior' | 'medior' | 'senior';
+  difficulty?: 'easy' | 'medium' | 'hard';
   topic?: string | string[];
 }

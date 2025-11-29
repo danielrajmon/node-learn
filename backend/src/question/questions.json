@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is a Clean Architecture?",
     "answer": "Clean Architecture is a way of structuring your code so that:\n1. Business logic is at the center\n2. Frameworks (Express, Nest, Angular), databases, UI, and external systems stay at the outer layers\n3. Dependencies always point inward, toward the business logic\n4. Inner layers never depend on outer layers\n\nThe goal is:\n1. Easy to test\n2. Not tied to any database or framework\n3. Easy to replace parts (REST → GraphQL, Mongo → Postgres, etc.)\n4. Maintainable for years, not months",
     "topics": [
@@ -10,7 +10,7 @@
   },
   {
     "id": 2,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "Clean Architecture vs. Hexagonal Architecture?",
     "answer": "Clean Architecture and Hexagonal Architecture both isolate business logic from external systems. Clean Architecture uses inner and outer layers, while Hexagonal uses ports and adapters, but the goal is the same. Clean Architecture is more layered; Hexagonal is simpler and interaction-focused. In practice, they work almost identically.",
     "topics": [
@@ -19,7 +19,7 @@
   },
   {
     "id": 3,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is a Hexagonal Architecture?",
     "answer": "Hexagonal Architecture separates the application core from external systems using ports and adapters. The core defines ports (interfaces), and the outside world provides adapters that implement them, such as databases, APIs, or UIs. This keeps the business logic independent from frameworks and technology choices. Dependencies always point inward, making the core easy to test and replace adapters without changing the core. The result is a flexible, maintainable, framework-agnostic application structure.",
     "topics": [
@@ -28,7 +28,7 @@
   },
   {
     "id": 4,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is MVC?",
     "answer": "MVC (Model-View-Controller) is a design pattern that separates an application into three parts.\n1. Model holds the data and business logic.\n2. View displays information to the user.\n3. Controller handles user input, updates the model, and selects which view to show.\nThis separation makes apps easier to organize, maintain, and test.",
     "topics": [
@@ -37,7 +37,7 @@
   },
   {
     "id": 5,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is Microservice architecture?",
     "answer": "Microservices architecture is a way of building applications as a collection of small, independent services instead of one large system. Each microservice focuses on a single business capability (like payments, authentication, or inventory) and can be developed, deployed, and scaled separately. Services communicate over lightweight protocols such as HTTP or messaging. Each one can use its own database and even its own programming language. This approach improves flexibility and resilience but adds complexity in communication, monitoring, and deployment.",
     "topics": [
@@ -46,7 +46,7 @@
   },
   {
     "id": 6,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is Event-driven Architecture?",
     "answer": "Event-driven architecture is a design approach where systems communicate by producing and reacting to events. An event is a simple message describing something that happened—like “order placed” or “user registered.” Services don't call each other directly; instead, they publish events to a message broker (e.g., Kafka, RabbitMQ), and other services subscribe to the events they care about. This creates loose coupling, allowing services to evolve independently and scale separately. It's ideal for real-time processing, high scalability, and systems that must react quickly to changing data.",
     "topics": [
@@ -55,7 +55,7 @@
   },
   {
     "id": 7,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is Client-Server Architecture?",
     "answer": "Client-Server Architecture is a model where a client sends requests and a server processes them and returns responses. The client handles the interface, while the server manages data and logic. This setup lets many clients use a centralized server and is the basis of most web applications.",
     "topics": [
@@ -64,7 +64,7 @@
   },
   {
     "id": 8,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is JWT signature for?",
     "answer": "Ensures token has not been tampered with.",
     "topics": [
@@ -73,7 +73,7 @@
   },
   {
     "id": 9,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is JWT? What are its keypoints?",
     "answer": "Compact, self-contained token used to securely transmit information between a client and server.\n1. Three parts - Header, Payload, Signature.\n2. Authentication & Authorization - verifies user identity and access rights.\n3. Self-contained - contains all info (claims) without server-side sessions.\n4. Integrity - signature ensures token hasn't been tampered with.\n5. Stateless - server only needs a secret/public key to verify.",
     "topics": [
@@ -82,7 +82,7 @@
   },
   {
     "id": 10,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "How does OAuth2 work?",
     "answer": "OAuth2 allows a client application to access a user's resources on a server without sharing the user's credentials.\n1. Authorization Request - The client redirects the user to the Authorization Server to request access.\n2. User Grants Permission - The user authenticates and authorizes the client to access specific resources.\n3. Authorization Code / Token Issued - The Authorization Server issues an authorization code (for Authorization Code flow) or directly an access token.\n4. Access Resource - The client sends the access token to the Resource Server to access protected resources.\n5. Token Renewal - Optionally, a refresh token can be used to obtain a new access token without requiring the user to log in again.",
     "topics": [
@@ -91,7 +91,7 @@
   },
   {
     "id": 11,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is the difference between JWT and OAuth2?",
     "answer": "JWT is a token format; OAuth2 is an authorization protocol.\nJWT can be used inside OAuth2 as the access token, but OAuth2 does much more than just issuing tokens.",
     "topics": [
@@ -100,7 +100,7 @@
   },
   {
     "id": 12,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are some clean coding principles?",
     "answer": "1. Early return / Guard clauses - exit a function early to reduce nested conditions.\n2. Don't change input parameters / Immutability - avoid side effects by not modifying arguments.\n3. Single Responsibility - each function or class should do only one thing.\n4. Small functions - keep functions short and focused.\n5. Pure functions - output depends only on inputs; no side effects.\n6. Avoid global state - reduces unpredictable behavior and dependencies.\n7. Fail fast - detect errors or invalid inputs early rather than letting them propagate.\n8. Encapsulate behavior - hide implementation details, expose clear interfaces.",
     "topics": [
@@ -109,7 +109,7 @@
   },
   {
     "id": 13,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are pure functions?",
     "answer": "A function whose output depends only on its inputs and produces no side effects.",
     "topics": [
@@ -118,7 +118,7 @@
   },
   {
     "id": 14,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are immutable functions?",
     "answer": "A function that does not modify its input values and returns new data instead.",
     "topics": [
@@ -127,7 +127,7 @@
   },
   {
     "id": 15,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are the SOLID principles?",
     "answer": "SOLID principles guide writing maintainable and flexible object-oriented code.\n1. Single Responsibility: a class should have one reason to change.\n2. Open/Closed: code should be open for extension but closed for modification.\n3. Liskov Substitution: subclasses must be replaceable for their base class.\n4. Interface Segregation: clients shouldn't depend on interfaces they don't use.\n5. Dependency Inversion: depend on abstractions, not concrete implementations.",
     "topics": [
@@ -136,7 +136,7 @@
   },
   {
     "id": 16,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is Separation of Concerns?",
     "answer": "Divides a system into distinct sections, each handling a specific responsibility to reduce complexity and improve maintainability.",
     "topics": [
@@ -145,7 +145,7 @@
   },
   {
     "id": 17,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is Dependency Injection?",
     "answer": "Provides an object with its dependencies from the outside rather than having the object create them itself.",
     "topics": [
@@ -154,7 +154,7 @@
   },
   {
     "id": 18,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is Inversion of Control?",
     "answer": "Transfers the control of object creation and program flow from the application code to a framework or container.",
     "topics": [
@@ -163,7 +163,7 @@
   },
   {
     "id": 19,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is DRY?",
     "answer": "Don't Repeat Yourself.",
     "topics": [
@@ -172,7 +172,7 @@
   },
   {
     "id": 20,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is KISS?",
     "answer": "Keep It Super Simple.",
     "topics": [
@@ -181,7 +181,7 @@
   },
   {
     "id": 21,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is YAGNI?",
     "answer": "You Ain't Gonna Need It.",
     "topics": [
@@ -190,7 +190,7 @@
   },
   {
     "id": 22,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What creational patterns do you know?",
     "answer": "Creational patterns help control object creation — Singleton (single instance), Factory Method + Abstract Factory (controlled creation), Builder (stepwise construction), Prototype (cloning).",
     "topics": [
@@ -199,7 +199,7 @@
   },
   {
     "id": 23,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What structural patterns do you know?",
     "answer": "Structural patterns help organize object relationships — Adapter (convert interface), Facade (simplify subsystem), Decorator (add behavior dynamically), Proxy (stand-in controlling access), Composite (uniform tree structure), Bridge (separate abstraction & implementation), Flyweight (share objects to save memory).",
     "topics": [
@@ -208,7 +208,7 @@
   },
   {
     "id": 24,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What behavioral patterns do you know?",
     "answer": "Behavioral patterns define how objects communicate — Strategy (swappable algorithms), Observer (event subscription), Command (encapsulate actions), Chain of Responsibility (pass requests along handlers), Mediator (centralizes communication), State (behavior changes by state), Template Method (define algorithm skeleton), Iterator (sequential access), Visitor (add operations without modifying classes), Memento (capture/restore state).",
     "topics": [
@@ -217,7 +217,7 @@
   },
   {
     "id": 25,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "Factory vs. Abstract factory",
     "answer": "Factory Method creates one product via subclassing, while Abstract Factory creates families of related products without exposing their concrete types.\nExample for factory: database connector (Postgre, Mongo, etc.)\nExample for abstract factories: GUI elements for Windows and Mac",
     "topics": [
@@ -226,7 +226,7 @@
   },
   {
     "id": 26,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are the benefits of HTTP?",
     "answer": "1. Stateless application-layer protocol - simplifies client-server communication\n2. Standard methods & status codes - GET, POST, PUT, DELETE with clear responses\n3. Platform-independent & extensible - supports caching, headers, and flexible data formats",
     "topics": [
@@ -235,7 +235,7 @@
   },
   {
     "id": 27,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are the common HTTP methods?",
     "answer": "1. GET - Retrieve a resource\n2. POST - Create a new resource or submit data\n3. PUT - Replace an existing resource entirely\n4. PATCH - Partially update a resource\n5. DELETE - Remove a resource",
     "topics": [
@@ -244,7 +244,7 @@
   },
   {
     "id": 28,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are the HTTP status code categories?",
     "answer": "1xx - Informational\n2xx - Success\n3xx - Redirection\n4xx - Client Errors\n5xx - Server Errors",
     "topics": [
@@ -253,7 +253,7 @@
   },
   {
     "id": 29,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "How does an HTTP request look like?",
     "answer": "1. Request Line - method, URL/path, HTTP version (e.g., GET /index.html HTTP/1.1)\n2. Headers - metadata like Host, Accept, User-Agent\n3. Blank Line - separates headers from body\n4. Body - optional data sent (used in POST, PUT, PATCH)",
     "topics": [
@@ -262,7 +262,7 @@
   },
   {
     "id": 30,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "How does an HTTP response look like?",
     "answer": "1. Status Line - HTTP version, status code, reason phrase (e.g., HTTP/1.1 200 OK)\n2. Headers - metadata like Content-Type, Content-Length\n3. Blank Line - separates headers from body\n4. Body - actual data returned (HTML, JSON, images, etc.)",
     "topics": [
@@ -271,7 +271,7 @@
   },
   {
     "id": 31,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is a Promise?",
     "answer": "A JavaScript Promise represents a value that will be available in the future. It handles asynchronous operations and lets you attach .then() for success and .catch() for errors.",
     "topics": [
@@ -280,7 +280,7 @@
   },
   {
     "id": 32,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is async/await?",
     "answer": "async/await is JavaScript syntax that lets you write asynchronous Promise-based code in a cleaner, more readable way.",
     "topics": [
@@ -289,7 +289,7 @@
   },
   {
     "id": 33,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "Call vs. Apply vs. Bind?",
     "answer": "1. call: Invokes a function immediately with a given this value and arguments listed one by one.\nfn.call(obj, arg1, arg2)\n\n2. apply: Same as call, but arguments are passed as an array.\nfn.apply(obj, [arg1, arg2])\n\n3. bind: Returns a new function with this permanently set, without calling it immediately.\nconst newFn = fn.bind(obj)",
     "topics": [
@@ -298,7 +298,7 @@
   },
   {
     "id": 34,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is Hoisting?",
     "answer": "Hoisting means JavaScript moves declarations to the top of their scope. Functions are hoisted fully, while var becomes undefined and let/const can't be used before initialization.",
     "topics": [
@@ -307,7 +307,7 @@
   },
   {
     "id": 35,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is a Closure?",
     "answer": "A closure is when a function remembers and can access variables from its outer scope, even after that outer function has finished running.",
     "topics": [
@@ -316,7 +316,7 @@
   },
   {
     "id": 36,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "for .. in vs. for .. of",
     "answer": "for…in loops over object keys (property names).\nfor…of loops over values in an iterable (arrays, strings, maps, etc.).",
     "topics": [
@@ -325,7 +325,7 @@
   },
   {
     "id": 37,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is TDD?",
     "answer": "TDD (Test-Driven Development) is a development approach where you write tests first, then write just enough code to make those tests pass, and finally refactor the code while keeping the tests green. TDD leads to cleaner design, fewer bugs, and high confidence in code changes.",
     "topics": [
@@ -334,7 +334,7 @@
   },
   {
     "id": 38,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is BDD?",
     "answer": "BDD (Behavior-Driven Development) is a development approach that focuses on describing software behavior in a human-readable way, usually using scenarios written from the user's perspective. Tests describe behavior, not implementation details, leading to clearer requirements and more understandable tests.",
     "topics": [
@@ -343,7 +343,7 @@
   },
   {
     "id": 39,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is DDD?",
     "answer": "DDD (Domain-Driven Design) is an approach to software design where the core domain and its business logic drive the architecture.\nThe idea is to work closely with domain experts, create a ubiquitous language, and model the system around real business concepts rather than technical structures.\nKey concepts include:\n- Entities (objects with identity)\n- Value Objects (immutable descriptive types)\n- Aggregates (clusters of domain objects with rules)\n- Repositories (persistence abstractions)\n- Domain Events\n- Bounded Contexts (clear boundaries between subdomains)\nDDD helps build complex systems by keeping the software aligned with real-world business behavior and rules.",
     "topics": [
@@ -352,7 +352,7 @@
   },
   {
     "id": 40,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is the connection between DDD and Saga pattern?",
     "answer": "In DDD, a Saga (often called a Process Manager) is a long-running domain process that:\n- Listens to Domain Events from aggregates (e.g. OrderPlaced, PaymentCaptured).\n- Sends Commands to other aggregates/services (e.g. ReserveStock, ShipOrder).\n- If something fails, triggers compensating actions that are also modeled according to domain rules.",
     "topics": [
@@ -361,7 +361,7 @@
   },
   {
     "id": 41,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "Explain the Saga Pattern",
     "answer": "The Saga Pattern is a way to manage long-running, multi-service transactions in a distributed system without using a traditional ACID transaction.\nInstead of a single big transaction, a saga breaks the workflow into a sequence of smaller local transactions.\nEach local transaction updates its own service/database and then triggers the next step.\nIf any step fails, the saga runs compensating actions to undo the already-completed steps.",
     "topics": [
@@ -370,7 +370,7 @@
   },
   {
     "id": 42,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is Event Sourcing?",
     "answer": "Event Sourcing is a design pattern where you store every change to an application state as a sequence of events, rather than storing only the final state.",
     "topics": [
@@ -379,7 +379,7 @@
   },
   {
     "id": 43,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is CQRS?",
     "answer": "CQRS is an architectural pattern that separates write operations (commands) from read operations (queries) so they can be optimized and scaled independently.\nInstead of using the same model/database for both reading and writing, CQRS splits them:\nWrite Model (Commands):\n- Handles state changes\n- Validates business rules\n- Usually updates the domain model\n- Emits events (often used with Event Sourcing)\nRead Model (Queries):\n- Handles fetching data\n- Uses fast, denormalized, query-optimized views\n- Can have multiple read databases",
     "topics": [
@@ -388,7 +388,7 @@
   },
   {
     "id": 44,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is a reverse proxy?",
     "answer": "A reverse proxy is a server that forwards client requests to backend servers and returns their responses.\n1. Load balancing - distributes traffic across servers.\n2. Security - hides backend details and can handle SSL.\n3. Caching & speed - caches responses and compresses data.",
     "topics": [
@@ -397,7 +397,7 @@
   },
   {
     "id": 45,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are TCP and UDP?",
     "answer": "TCP and UDP are transport protocols; TCP is reliable and connection-oriented, UDP is fast and connectionless.\n1. TCP - reliable, ensures data arrives in order. Use cases: web, email.\n2. UDP - fast, no delivery or order guarantee. Use cases: streaming, gaming, DNS.",
     "topics": [
@@ -406,7 +406,7 @@
   },
   {
     "id": 46,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What stages does the event loop have?",
     "answer": "1. Timers: Executes callbacks scheduled by setTimeout() and setInterval() whose time has expired.\n2. Pending Callbacks: Executes I/O callbacks that were deferred to the next loop cycle (e.g., some TCP errors).\n3. Idle / Prepare: Internal phase used by Node.js—no user callbacks here.\n4. Poll: The most important phase:\n- Retrieves new I/O events\n- Executes callbacks for completed I/O\n- Waits for new events if nothing is pending\n5. Check: Executes callbacks scheduled by setImmediate().\n6. Close Callbacks: Runs cleanup callbacks (e.g., 'close' event on sockets).",
     "topics": [
@@ -415,7 +415,7 @@
   },
   {
     "id": 47,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "JS vs. Node event loop.",
     "answer": "1. Browser event loop = simple: tasks → microtasks → render.\n2. Node.js event loop = advanced: 6 libuv phases + nextTick queue + thread pool, no rendering.",
     "topics": [
@@ -424,7 +424,7 @@
   },
   {
     "id": 48,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is process.nextTick?",
     "answer": "process.nextTick() schedules a callback to run immediately after the current call stack, before the event loop continues and before Promises. It is unique to Node.js and has the highest microtask priority.",
     "topics": [
@@ -433,7 +433,7 @@
   },
   {
     "id": 49,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is the microtask and macrotask queue?",
     "answer": "Microtasks (nextTick + Promises) run between every event-loop phase and always finish before any macrotask like timers or I/O.",
     "topics": [
@@ -442,7 +442,7 @@
   },
   {
     "id": 50,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is libUV?",
     "answer": "libuv is the C library that powers Node's event loop, thread pool, and non-blocking I/O, making JavaScript run asynchronously outside the browser.",
     "topics": [
@@ -451,7 +451,7 @@
   },
   {
     "id": 51,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "How does NodeJS caching work?",
     "answer": "Node.js caches modules after the first require/import, returning the same instance everywhere, which makes modules singletons and improves performance.",
     "topics": [
@@ -460,7 +460,7 @@
   },
   {
     "id": 52,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "How does NodeJS garbage collection work?",
     "answer": "Node.js uses V8's garbage collector, which is a generational GC splitting memory into a young and an old generation. New objects start in the young generation, where a fast Minor GC quickly removes short-lived data. Objects that survive several cycles get promoted to the old generation, which is cleaned by a slower Major GC using mark-and-sweep/mark-compact algorithms. V8 runs GC automatically when memory fills or thresholds are reached, freeing objects that are no longer reachable. The system uses incremental and concurrent techniques to reduce pause times so the event loop isn't blocked for long.",
     "topics": [
@@ -469,7 +469,7 @@
   },
   {
     "id": 53,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "How does NodeJS cookie handling work?",
     "answer": "Node.js does not handle cookies automatically — you must read and write them yourself (or use middleware).",
     "topics": [
@@ -478,7 +478,7 @@
   },
   {
     "id": 54,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "Why are the benefits of middlewares?",
     "answer": "1. Reusable logic: You can extract common tasks—like logging, authentication, validation, error handling—into reusable functions that apply across routes.\n2. Cleaner, modular code: Middleware keeps routes small and focused by moving cross-cutting concerns out of individual controllers.\n3. Request/response modification: Middleware can read or modify the request (req) and response (res) objects before they reach the final handler.\n4. Centralized error handling: A single error-handling middleware can catch and respond to errors uniformly across the app.\n5. Composability: Middleware stacks let you chain operations in a predictable order (e.g., parse JSON → authenticate → authorize → handle route).",
     "topics": [
@@ -487,7 +487,7 @@
   },
   {
     "id": 55,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "How does NodeJS clustering work?",
     "answer": "Node.js runs on a single thread, so by default it can use only one CPU core.\nClustering is a built-in mechanism (via the cluster module) that lets you spawn multiple worker processes, each running the same server code, allowing Node.js to use all CPU cores.\nHow it works:\n1. You start a master process.\n2. The master creates multiple worker processes (usually one per CPU core).\n3. Each worker runs its own event loop and handles requests independently.\n4. The master load-balances incoming connections across workers.\nWorkers share the same port, but do not share memory—they communicate using IPC messages.",
     "topics": [
@@ -496,7 +496,7 @@
   },
   {
     "id": 56,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is the Reactor pattern?",
     "answer": "The Reactor Pattern is an architecture where a single thread (the reactor) waits for events (like incoming connections, data, timers, or file I/O) and dispatches them to handlers without blocking.\nInstead of creating a thread per client, the reactor uses:\n- Non-blocking I/O\n- Event demultiplexing (like epoll, kqueue, IOCP)\n- Callbacks / handlers that run when the data is ready\n- This lets one thread efficiently handle thousands of connections.\nHow it works (simple)\n- The Reactor sits in an event loop.\n- It listens for I/O events from many sources.\n- When an event occurs, it uses an OS mechanism to detect it.\n- It dispatches the event to the correct callback/handler.\n- The loop continues, never blocking.\nWhy it exists\n- Traditional server model: One thread per client → Too many threads → slow, expensive, memory-heavy\n- Reactor model: One thread handles many clients → Fast, scalable, non-blocking → Perfect for high-concurrency servers (Node, Nginx, Redis)",
     "topics": [
@@ -505,7 +505,7 @@
   },
   {
     "id": 57,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is a REST API?",
     "answer": "Web service design style where resources are accessed via standard HTTP methods.\n1. Stateless - Each request contains all information; server doesn't store client state.\n2. Resource-based - Everything is a resource with a unique URI.\n3. Standard methods & status codes - Uses HTTP methods (GET, POST, PUT, DELETE) and status codes.\n4. Flexible formats - Responses can be JSON, XML, or other formats.\n5. Scalable & cacheable - Statelessness and caching support easy scaling.",
     "topics": [
@@ -514,7 +514,7 @@
   },
   {
     "id": 58,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is CSRF?",
     "answer": "CSRF (Cross-Site Request Forgery) is an attack where a malicious site tricks a user's browser into performing unwanted actions on a trusted site.\n1. Exploits trust - uses the fact that the user is authenticated on the target site.\n2. Unintended actions - can change data or perform sensitive operations without the user's consent.\n3. Prevention - use CSRF tokens, same-site cookies, and avoid relying only on cookies.",
     "topics": [
@@ -523,7 +523,7 @@
   },
   {
     "id": 59,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is CORS?",
     "answer": "CORS (Cross-Origin Resource Sharing) is a browser security mechanism that controls whether a webpage can make requests to a different domain/origin than the one it was loaded from.\nBy default, browsers block cross-origin AJAX/fetch/XHR requests for security (same-origin policy).\nCORS provides a safe way to lift that restriction.",
     "topics": [
@@ -532,7 +532,7 @@
   },
   {
     "id": 60,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What is the difference between encoding and hashing?",
     "answer": "Encoding transforms data into another format so it can be safely stored, transferred, or processed (e.g., Base64, UTF-8). It is fully reversible, meaning the original data can always be recovered.\nHashing creates a one-way, irreversible fingerprint of data (e.g., SHA-256, bcrypt). It's used for integrity checks and password storage, because even small changes produce completely different hashes.",
     "topics": [
@@ -541,7 +541,7 @@
   },
   {
     "id": 61,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What is XSS?",
     "answer": "XSS (Cross-Site Scripting) is a vulnerability where an attacker injects malicious JavaScript into a webpage so it runs in the victim's browser, allowing them to steal data, hijack sessions, or manipulate the UI. It occurs when user input is inserted into HTML or the DOM without proper escaping or validation.\nPrevention:\n- Escape/encode all untrusted data before putting it in HTML.\n- Use safe DOM methods (textContent, createElement) instead of innerHTML.\n- Enable Content Security Policy (CSP) to block inline scripts.\n- Use HttpOnly cookies to protect sessions.\n- Sanitize input and rely on frameworks (React/Angular/Vue) that auto-escape output.\nPrevention:\n\nEscape/encode all untrusted data before putting it in HTML.\n\nUse safe DOM methods (textContent, createElement) instead of innerHTML.\n\nEnable Content Security Policy (CSP) to block inline scripts.\n\nUse HttpOnly cookies to protect sessions.\n\nSanitize input and rely on frameworks (React/Angular/Vue) that auto-escape output.",
     "topics": [
@@ -550,7 +550,7 @@
   },
   {
     "id": 62,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "Type vs. Interface vs. Abstract class",
     "answer": "1. type - Defines a shape or alias for any kind of type (unions, primitives, objects). Purely compile-time, no runtime output.\n2. interface - Defines the structure of an object and supports extension/implementation. Also compile-time only.\n3. abstract class - A class with shared logic that can't be instantiated and must be extended. Exists at runtime and can contain actual code (methods, fields).",
     "topics": [
@@ -559,7 +559,7 @@
   },
   {
     "id": 63,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "Extends vs. implements",
     "answer": "1. extends - A class inherits from another class or an interface extends another interface. It takes on the parent's structure and behavior.\n2. implements - A class agrees to follow the shape of an interface but does not inherit behavior—only the required structure.",
     "topics": [
@@ -568,7 +568,7 @@
   },
   {
     "id": 64,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "Give examples of some utility types.",
     "answer": "1. Partial<T> - makes all properties optional\n2. Required<T> - makes all properties required\n3. Readonly<T> - makes all properties read-only\n4. Pick<T, K> - selects specific properties\n5. Omit<T, K> - removes specific properties\n6. Record<K, T> - creates an object type with fixed keys and a value type",
     "topics": [
@@ -577,7 +577,7 @@
   },
   {
     "id": 65,
-    "difficulty": "medior",
+    "difficulty": "medium",
     "question": "What are conditional types?",
     "answer": "T extends U ? X : Y\nThis means: if T is assignable to U, use X, otherwise use Y.",
     "topics": [
@@ -586,7 +586,7 @@
   },
   {
     "id": 66,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is the infer keyword used for?",
     "answer": "The infer keyword in TypeScript lets you capture a type inside a conditional type and give it a name so you can use it.\ntype ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;\nHere infer R extracts the return type (R) from a function type. It's basically “type pattern matching” inside conditional types.",
     "topics": [
@@ -595,7 +595,7 @@
   },
   {
     "id": 67,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What does an interface compile to in JavaScript?",
     "answer": "Nothing. Interfaces exist only in TypeScript's type system and are completely removed during compilation, so they produce no JavaScript output.",
     "topics": [
@@ -604,7 +604,7 @@
   },
   {
     "id": 68,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are Generics?",
     "answer": "TypeScript generics let you create reusable, flexible types and functions that work with any type while preserving type safety.\nThey act like placeholders for types.\n\nfunction wrap<T>(value: T): T {\n  return value;\n}",
     "topics": [
@@ -613,7 +613,7 @@
   },
   {
     "id": 69,
-    "difficulty": "junior",
+    "difficulty": "easy",
     "question": "What are Decorators?",
     "answer": "Decorators let you attach extra behavior or metadata to classes, methods, or properties.\nThey're often used in frameworks to define routes, inject services, or modify behavior cleanly.\nThey are great for things like logging, validation, caching, or timing method calls.",
     "topics": [
@@ -622,7 +622,7 @@
   },
   {
     "id": 70,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is Orchestration?",
     "answer": "It's a way of coordinating multiple services or tasks from a central controller.\nThe orchestrator decides which step happens next, who performs it, and how failures are handled.\nIt creates a centralized workflow, often implemented by:\n- a custom “workflow/orchestrator” service,\n- BPM engines (Camunda, Temporal, Step Functions),\n- CI/CD orchestrators,\n- container orchestrators (Kubernetes).",
     "topics": [
@@ -631,7 +631,7 @@
   },
   {
     "id": 71,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is Choreography?",
     "answer": "A way for services to coordinate without a central controller.\nEach service listens for events it cares about and reacts:\n- OrderPlaced → Inventory service reserves stock\n- InventoryReserved → Payment service charges customer\nEach step emits new events, which trigger the next steps.\nThe workflow emerges from the interactions of the participants.",
     "topics": [
@@ -640,7 +640,7 @@
   },
   {
     "id": 72,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is Event driven architecture?",
     "answer": "Event-driven architecture means components communicate by producing and reacting to events. Instead of direct calls, services publish events to a broker and other services subscribe to them. This creates loose coupling, scalability, and asynchronous workflows.",
     "topics": [
@@ -649,7 +649,7 @@
   },
   {
     "id": 73,
-    "difficulty": "senior",
+    "difficulty": "hard",
     "question": "What is a Bounded context?",
     "answer": "A bounded context is a clear boundary in DDD where a particular domain model applies consistently. Inside the context, terms and rules have a precise meaning; outside, they may differ. It helps break large domains into smaller, well-defined parts that can evolve independently.",
     "topics": [

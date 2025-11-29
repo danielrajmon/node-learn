@@ -150,6 +150,8 @@ echo ""
 # Step 10: Import questions into the database
 if [ "$IMPORT_QUESTIONS" = true ]; then
     echo -e "${YELLOW}Step 10: Importing questions into the database...${NC}"
+    # Delete existing job to force re-import
+    kubectl delete job import-questions -n node-learn --ignore-not-found=true
     kubectl apply -f k8s/import-questions.yaml
     kubectl wait --for=condition=complete job/import-questions -n node-learn --timeout=60s
     echo -e "${GREEN}✓ Questions imported${NC}"
@@ -170,4 +172,4 @@ echo ""
 echo -e "${GREEN}Deployment completed successfully!${NC}"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
-echo "Access the application at http://huvinas.myqnapcloud.com:61723"
+echo "Access the application at http://huvinas.myqnapcloud.com:61510"

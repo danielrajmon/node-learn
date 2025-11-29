@@ -16,9 +16,9 @@
     
     <select [(ngModel)]="selectedDifficulty" (change)="applyFilters()" class="filter-select">
       <option value="">All Difficulties ({{ allQuestions.length }})</option>
-      <option value="junior">Junior ({{ getDifficultyCount('junior') }})</option>
-      <option value="medior">Medior ({{ getDifficultyCount('medior') }})</option>
-      <option value="senior">Senior ({{ getDifficultyCount('senior') }})</option>
+      <option value="easy">Easy ({{ getDifficultyCount('easy') }})</option>
+      <option value="medium">Medium ({{ getDifficultyCount('medium') }})</option>
+      <option value="hard">Hard ({{ getDifficultyCount('hard') }})</option>
     </select>
   </div>
 

@@ -1,0 +1,21 @@
+@baseUrl = http://localhost:4200
+
+### Get all questions from API
+GET {{baseUrl}}/api/questions
+
+### Get all questions with multiple filters
+GET {{baseUrl}}/api/questions?difficulty=hard&topic=Architecture,Microservices
+
+### Get a specific question by ID
+GET {{baseUrl}}/api/questions/3
+
+### Get a random question
+GET {{baseUrl}}/api/questions/random
+
+### Submit a correct answer
+POST {{baseUrl}}/api/answers/8
+Content-Type: application/json
+
+{
+  "answer": "Ensures token has not been tampered with."
+}

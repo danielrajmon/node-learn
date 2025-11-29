@@ -18,12 +18,12 @@ export class QuestionController {
   @Get()
   @ApiOperation({ summary: 'Get all questions', description: 'Retrieve all questions with optional filtering (answers not included)' })
   @ApiQuery({ name: 'search', required: false, description: 'Search in question and topics' })
-  @ApiQuery({ name: 'difficulty', required: false, enum: ['junior', 'medior', 'senior'], description: 'Filter by difficulty level' })
+  @ApiQuery({ name: 'difficulty', required: false, enum: ['easy', 'medium', 'hard'], description: 'Filter by difficulty level' })
   @ApiQuery({ name: 'topic', required: false, description: 'Filter by topic (comma-separated for multiple topics)' })
   @ApiResponse({ status: 200, description: 'List of questions without answers', type: [QuestionWithoutAnswerDto] })
   async findAll(
     @Query('search') search?: string,
-    @Query('difficulty') difficulty?: 'junior' | 'medior' | 'senior',
+    @Query('difficulty') difficulty?: 'easy' | 'medium' | 'hard',
     @Query('topic') topicParam?: string,
   ): Promise<QuestionWithoutAnswer[]> {
     const topic = topicParam ? topicParam.split(',').map((t) => t.trim()) : undefined;

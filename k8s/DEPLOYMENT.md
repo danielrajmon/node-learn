@@ -196,7 +196,7 @@ kubectl logs -f deployment/frontend -n node-learn
    ```
 
 2. Access via browser:
-   - http://huvinas.myqnapcloud.com:61723 (or your configured hostname)
+   - http://huvinas.myqnapcloud.com:61510 (or your configured hostname)
    - Or directly via LoadBalancer IP if available
 
 ## Troubleshooting

@@ -1,6 +1,6 @@
 export interface Question {
   id: number;
-  difficulty: 'junior' | 'medior' | 'senior';
+  difficulty: 'easy' | 'medium' | 'hard';
   question: string;
   topics: string[];
 }

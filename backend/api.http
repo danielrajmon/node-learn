@@ -4,7 +4,7 @@
 GET {{baseUrl}}/questions
 
 ### Get all questions with multiple filters
-GET {{baseUrl}}/questions?difficulty=senior&topic=Architecture,Microservices
+GET {{baseUrl}}/questions?difficulty=hard&topic=Architecture,Microservices
 
 ### Get a specific question by ID
 GET {{baseUrl}}/questions/3

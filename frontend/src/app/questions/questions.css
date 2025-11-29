@@ -122,17 +122,17 @@
   text-transform: uppercase;
 }
 
-.difficulty.junior {
+.difficulty.easy {
   background-color: #2ecc71;
   color: white;
 }
 
-.difficulty.medior {
+.difficulty.medium {
   background-color: #f39c12;
   color: white;
 }
 
-.difficulty.senior {
+.difficulty.hard {
   background-color: #e74c3c;
   color: white;
 }
