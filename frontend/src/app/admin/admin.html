@@ -225,7 +225,7 @@
               [class.inactive-question]="!q.isActive"
               class="clickable-row">
             <td data-label="ID">{{ q.id }}</td>
-            <td data-label="Question Text" class="question-text">{{ q.questionText }}</td>
+            <td data-label="Question Text" class="question-text">{{ stripHtml(q.questionText) }}</td>
             <td data-label="Difficulty">
               <span class="badge" [ngClass]="'badge-' + q.difficulty">{{ q.difficulty }}</span>
             </td>

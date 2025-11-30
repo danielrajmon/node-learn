@@ -35,13 +35,11 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   quillModules = {
     toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],
-      ['blockquote', 'code-block'],
+      ['bold', 'italic', 'underline'],
+      ['code-block'],
       [{ 'header': 1 }, { 'header': 2 }],
       [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
-      ['link'],
-      ['clean']
+      ['link']
     ]
     // syntax module is intentionally omitted to disable highlight.js
   };
@@ -294,5 +292,11 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   goToQuestions(): void {
     this.router.navigate(['/questions']);
+  }
+
+  stripHtml(html: string): string {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
   }
 }
