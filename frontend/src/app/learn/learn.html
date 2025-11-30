@@ -5,20 +5,18 @@
     <div *ngIf="currentQuestion">
       <div class="question-header">
         <div class="topics">
-          <span *ngFor="let topic of currentQuestion.topics" class="topic">
-            {{ topic }}
-          </span>
+          <span class="topic">{{ currentQuestion.topic }}</span>
         </div>
         <span class="difficulty" [class]="currentQuestion.difficulty">
           {{ currentQuestion.difficulty }}
         </span>
       </div>
       
-      <h2 class="question" [innerHTML]="currentQuestion.question"></h2>
+      <h2 class="question" [innerHTML]="currentQuestion.questionText"></h2>
       
       <div *ngIf="showAnswer && answerResult" class="answer-section">
         <h3>Answer:</h3>
-        <div class="answer" [innerHTML]="answerResult.correctAnswer"></div>
+        <div class="answer" [innerHTML]="answerResult.answer"></div>
       </div>
       
       <div class="button-group">

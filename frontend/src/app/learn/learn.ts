@@ -1,17 +1,18 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { QuestionService } from '../services/question';
-import { Question, AnswerResult } from '../models/question.model';
+import { Question } from '../models/question.model';
 
 @Component({
   selector: 'app-learn',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './learn.html',
   styleUrl: './learn.css',
 })
 export class Learn implements OnInit {
   currentQuestion: Question | null = null;
-  answerResult: AnswerResult | null = null;
+  answerResult: { answer: string } | null = null;
   showAnswer = false;
   error: string | null = null;
   isLoading = false;
@@ -39,7 +40,11 @@ export class Learn implements OnInit {
       },
       error: (err) => {
         console.error('Error loading question:', err);
-        this.error = 'Failed to load question. Please try again.';
+        if (err.status === 404) {
+          this.error = 'No questions found in database.';
+        } else {
+          this.error = 'Failed to load question. Please try again.';
+        }
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -49,15 +54,17 @@ export class Learn implements OnInit {
   revealAnswer() {
     if (!this.currentQuestion) return;
 
-    // Submit empty answer just to get the correct answer
-    this.questionService.submitAnswer(this.currentQuestion.id, '').subscribe({
+    this.isLoading = true;
+    this.questionService.getAnswer(this.currentQuestion.id).subscribe({
       next: (result) => {
-        this.answerResult = result;
+        this.answerResult = { answer: result.answer };
         this.showAnswer = true;
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = 'Failed to load answer. Please try again.';
+        this.isLoading = false;
         this.cdr.detectChanges();
         console.error('Error loading answer:', err);
       },

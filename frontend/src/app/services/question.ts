@@ -17,7 +17,7 @@ export class QuestionService {
     return this.http.get<Question>('/api/questions/random');
   }
 
-  submitAnswer(questionId: number, answer: string): Observable<AnswerResult> {
-    return this.http.post<AnswerResult>(`/api/answers/${questionId}`, { answer });
+  getAnswer(questionId: number): Observable<{ questionId: number; answer: string }> {
+    return this.http.get<{ questionId: number; answer: string }>(`/api/answers/${questionId}`);
   }
 }

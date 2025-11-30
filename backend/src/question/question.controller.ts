@@ -4,6 +4,8 @@ import {
   Param,
   Query,
   NotFoundException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { QuestionService } from './question.service';
@@ -34,8 +36,13 @@ export class QuestionController {
   @Get('random')
   @ApiOperation({ summary: 'Get a random question', description: 'Retrieve a random question from the collection (answer not included)' })
   @ApiResponse({ status: 200, description: 'A random question without answer', type: QuestionWithoutAnswerDto })
+  @ApiResponse({ status: 404, description: 'No questions found in database' })
   async findRandom(): Promise<QuestionWithoutAnswer> {
-    return await this.questionService.findRandom();
+    const question = await this.questionService.findRandom();
+    if (!question) {
+      throw new NotFoundException('No active questions found in database.');
+    }
+    return question;
   }
 
   @Get(':id')

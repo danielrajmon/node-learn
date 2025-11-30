@@ -29,11 +29,11 @@
     <div *ngFor="let question of questions; trackBy: trackByQuestionId" class="question-item">
       <div class="question-header">
         <div class="topics">
-          <span *ngFor="let topic of question.topics" class="topic">{{ topic }}</span>
+          <span class="topic">{{ question.topic }}</span>
         </div>
         <span class="difficulty" [class]="question.difficulty">{{ question.difficulty }}</span>
       </div>
-      <div class="question-text" [innerHTML]="question.question"></div>
+      <div class="question-text" [innerHTML]="question.questionText"></div>
       
       <button 
         class="show-answer-btn" 

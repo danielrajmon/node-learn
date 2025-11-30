@@ -5,6 +5,26 @@ export class QuestionDto {
   id: number;
 
   @ApiProperty({
+    example: 'What are the three pillars of OOP?',
+    description: 'The interview question text',
+  })
+  questionText: string;
+
+  @ApiProperty({
+    example: 'The three pillars of OOP are Encapsulation, Inheritance, and Polymorphism...',
+    description: 'Long-form answer for text input questions',
+    required: false,
+  })
+  longAnswer?: string | null;
+
+  @ApiProperty({
+    example: ['encapsulation', 'inheritance', 'polymorphism'],
+    description: 'Keywords that must match in text input answers',
+    type: [String],
+  })
+  matchKeywords: string[];
+
+  @ApiProperty({
     example: 'medium',
     enum: ['easy', 'medium', 'hard'],
     description: 'Difficulty level of the question',
@@ -12,23 +32,16 @@ export class QuestionDto {
   difficulty: 'easy' | 'medium' | 'hard';
 
   @ApiProperty({
-    example: 'What is a Clean Architecture?',
-    description: 'The interview question text',
+    example: 'OOP',
+    description: 'Topic covered by the question',
   })
-  question: string;
+  topic: string;
 
   @ApiProperty({
-    example: 'Clean Architecture is a way of structuring your code...',
-    description: 'The answer to the question',
+    example: true,
+    description: 'Whether the question is active',
   })
-  answer: string;
-
-  @ApiProperty({
-    example: ['Architecture', 'Design Patterns'],
-    description: 'Topics covered by the question',
-    type: [String],
-  })
-  topics: string[];
+  isActive: boolean;
 }
 
 export class QuestionWithoutAnswerDto {
@@ -36,6 +49,12 @@ export class QuestionWithoutAnswerDto {
   id: number;
 
   @ApiProperty({
+    example: 'What are the three pillars of OOP?',
+    description: 'The interview question text',
+  })
+  questionText: string;
+
+  @ApiProperty({
     example: 'medium',
     enum: ['easy', 'medium', 'hard'],
     description: 'Difficulty level of the question',
@@ -43,15 +62,14 @@ export class QuestionWithoutAnswerDto {
   difficulty: 'easy' | 'medium' | 'hard';
 
   @ApiProperty({
-    example: 'What is a Clean Architecture?',
-    description: 'The interview question text',
+    example: 'OOP',
+    description: 'Topic covered by the question',
   })
-  question: string;
+  topic: string;
 
   @ApiProperty({
-    example: ['Architecture', 'Design Patterns'],
-    description: 'Topics covered by the question',
-    type: [String],
+    example: true,
+    description: 'Whether the question is active',
   })
-  topics: string[];
+  isActive: boolean;
 }

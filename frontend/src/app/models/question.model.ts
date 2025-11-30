@@ -1,8 +1,9 @@
 export interface Question {
   id: number;
+  questionText: string;
   difficulty: 'easy' | 'medium' | 'hard';
-  question: string;
-  topics: string[];
+  topic: string;
+  isActive: boolean;
 }
 
 export interface AnswerResult {

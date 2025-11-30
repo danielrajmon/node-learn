@@ -137,6 +137,34 @@
   color: white;
 }
 
+.question-type-badge {
+  margin-bottom: 0.5rem;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.type-badge.single_choice {
+  background-color: #3498db;
+  color: white;
+}
+
+.type-badge.multiple_choice {
+  background-color: #9b59b6;
+  color: white;
+}
+
+.type-badge.text_input {
+  background-color: #16a085;
+  color: white;
+}
+
 .question-text {
   color: #2c3e50;
   font-size: 1.1rem;
