@@ -5,6 +5,7 @@ DROP FUNCTION IF EXISTS touch_question_on_choice_change;
 DROP INDEX IF EXISTS idx_choices_question_id;
 DROP TABLE IF EXISTS choices;
 DROP TABLE IF EXISTS questions;
+DROP TYPE IF EXISTS difficulty_enum;
 DROP TYPE IF EXISTS question_type_enum;
 
 CREATE TYPE question_type_enum AS ENUM (
@@ -13,10 +14,18 @@ CREATE TYPE question_type_enum AS ENUM (
     'text_input'
 );
 
+CREATE TYPE difficulty_enum AS ENUM (
+    'easy',
+    'medium',
+    'hard'
+);
+
 -- Create QUESTIONS table
 CREATE TABLE questions (
     id              BIGSERIAL PRIMARY KEY,
     question_type   question_type_enum NOT NULL,
+    difficulty      difficulty_enum NOT NULL,
+	topic           TEXT NOT NULL,
     question_text   TEXT NOT NULL,
     long_answer     TEXT,
     match_keywords  TEXT[],
