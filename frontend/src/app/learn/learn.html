@@ -14,11 +14,6 @@
       
       <h2 class="question" [innerHTML]="currentQuestion.questionText"></h2>
       
-      <div *ngIf="showAnswer && answerResult" class="answer-section">
-        <h3>Answer:</h3>
-        <div class="answer" [innerHTML]="answerResult.answer"></div>
-      </div>
-      
       <div class="button-group">
         <button 
           class="btn btn-primary" 
@@ -33,6 +28,11 @@
           (click)="nextQuestion()">
           Next Question
         </button>
+      </div>
+      
+      <div *ngIf="showAnswer && answerResult" class="answer-section">
+        <h3>Answer:</h3>
+        <div class="answer" [innerHTML]="answerResult.answer"></div>
       </div>
     </div>
   </div>
