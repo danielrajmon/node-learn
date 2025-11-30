@@ -12,89 +12,93 @@
   </div>
 
   <form (ngSubmit)="onSubmit()" #questionForm="ngForm" class="question-form">
+    <div class="form-layout">
+      <div class="form-left">
+        <div class="form-group">
+          <label for="questionText">Question Text</label>
+          <textarea
+            id="questionText"
+            name="questionText"
+            [(ngModel)]="question.questionText"
+            required
+            rows="6"
+            placeholder="Enter your question here..."
+          ></textarea>
+        </div>
 
-    <div class="form-group">
-      <label for="questionText">Question Text</label>
-      <textarea
-        id="questionText"
-        name="questionText"
-        [(ngModel)]="question.questionText"
-        required
-        rows="3"
-        placeholder="Enter your question here..."
-      ></textarea>
-    </div>
+        <div class="form-group">
+          <label for="longAnswer">Answer</label>
+          <textarea
+            id="longAnswer"
+            name="longAnswer"
+            [(ngModel)]="question.longAnswer"
+            required
+            rows="12"
+            placeholder="Enter the detailed answer..."
+          ></textarea>
+        </div>
 
-    <div class="form-group">
-      <label for="longAnswer">Answer</label>
-      <textarea
-        id="longAnswer"
-        name="longAnswer"
-        [(ngModel)]="question.longAnswer"
-        required
-        rows="6"
-        placeholder="Enter the detailed answer..."
-      ></textarea>
-    </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="difficulty">Difficulty</label>
+            <select
+              id="difficulty"
+              name="difficulty"
+              [(ngModel)]="question.difficulty"
+              required
+            >
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="difficulty">Difficulty</label>
-        <select
-          id="difficulty"
-          name="difficulty"
-          [(ngModel)]="question.difficulty"
-          required
-        >
-          <option value="easy">Easy</option>
-          <option value="medium" selected>Medium</option>
-          <option value="hard">Hard</option>
-        </select>
+          <div class="form-group">
+            <label for="topic">Topic</label>
+            <input
+              type="text"
+              id="topic"
+              name="topic"
+              [(ngModel)]="question.topic"
+              list="topicOptions"
+              required
+              maxlength="100"
+              placeholder="Select or type topic"
+            />
+            <datalist id="topicOptions">
+              <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }}</option>
+            </datalist>
+          </div>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              name="isActive"
+              [(ngModel)]="question.isActive"
+            />
+            Active (visible to users)
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="questionType">Question Type</label>
+          <select
+            id="questionType"
+            name="questionType"
+            [(ngModel)]="question.questionType"
+            (ngModelChange)="onQuestionTypeChange()"
+            required
+          >
+            <option value="single_choice" selected>Single Choice</option>
+            <option value="multiple_choice">Multiple Choice</option>
+            <option value="text_input">Text Input</option>
+          </select>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="topic">Topic</label>
-        <input
-          type="text"
-          id="topic"
-          name="topic"
-          [(ngModel)]="question.topic"
-          list="topicOptions"
-          required
-          maxlength="100"
-          placeholder="Select or type topic"
-        />
-        <datalist id="topicOptions">
-          <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }}</option>
-        </datalist>
-      </div>
-    </div>
-
-    <div class="form-group checkbox-group">
-      <label>
-        <input
-          type="checkbox"
-          name="isActive"
-          [(ngModel)]="question.isActive"
-        />
-        Active (visible to users)
-      </label>
-    </div>
-
-    <div class="form-group">
-      <label for="questionType">Question Type</label>
-      <select
-        id="questionType"
-        name="questionType"
-        [(ngModel)]="question.questionType"
-        (ngModelChange)="onQuestionTypeChange()"
-        required
-      >
-        <option value="single_choice" selected>Single Choice</option>
-        <option value="multiple_choice">Multiple Choice</option>
-        <option value="text_input">Text Input</option>
-      </select>
-    </div>
+      <div class="form-right">
 
     <!-- Text Input: Match Keywords -->
     <div class="choices-section" *ngIf="question.questionType === 'text_input'">
@@ -178,6 +182,8 @@
         </div>
       </div>
       <button type="button" class="add-choice-btn" (click)="addChoice()">+ Add Choice</button>
+    </div>
+      </div>
     </div>
 
     <div class="form-actions">
