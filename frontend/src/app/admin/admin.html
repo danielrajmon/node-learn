@@ -11,7 +11,7 @@
     {{ errorMessage }}
   </div>
 
-  <form (ngSubmit)="onSubmit()" class="question-form">
+  <form (ngSubmit)="onSubmit()" #questionForm="ngForm" class="question-form">
 
     <div class="form-group">
       <label for="questionText">Question Text</label>
@@ -31,6 +31,7 @@
         id="longAnswer"
         name="longAnswer"
         [(ngModel)]="question.longAnswer"
+        required
         rows="6"
         placeholder="Enter the detailed answer..."
       ></textarea>
@@ -95,8 +96,8 @@
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="submit-button" *ngIf="!isEditMode">Create Question</button>
-      <button type="submit" class="submit-button" *ngIf="isEditMode">Update Question</button>
+      <button type="submit" class="submit-button" *ngIf="!isEditMode" [disabled]="questionForm.invalid">Create Question</button>
+      <button type="submit" class="submit-button" *ngIf="isEditMode" [disabled]="questionForm.invalid">Update Question</button>
       <button type="button" class="delete-button" *ngIf="isEditMode" (click)="deleteQuestion(editingQuestionId!)">Delete Question</button>
       <button type="button" class="cancel-button" *ngIf="isEditMode" (click)="cancelEdit()">Cancel</button>
     </div>
@@ -120,26 +121,25 @@
             <th>ID</th>
             <th>Question Text</th>
             <th>Difficulty</th>
+            <th>Type</th>
             <th>Topic</th>
-            <th>Active</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let q of allQuestions" 
               (click)="editQuestion(q)"
               [class.selected]="editingQuestionId === q.id"
+              [class.inactive-question]="!q.isActive"
               class="clickable-row">
             <td>{{ q.id }}</td>
             <td class="question-text">{{ q.questionText }}</td>
             <td>
               <span class="badge" [ngClass]="'badge-' + q.difficulty">{{ q.difficulty }}</span>
             </td>
-            <td>{{ q.topic }}</td>
             <td>
-              <span class="status" [ngClass]="q.isActive ? 'active' : 'inactive'">
-                {{ q.isActive ? 'Yes' : 'No' }}
-              </span>
+              <span class="type-badge" [ngClass]="'type-badge-' + q.questionType">{{ q.questionType === 'single_choice' ? 'Single' : q.questionType === 'multiple_choice' ? 'Multiple' : 'Text' }}</span>
             </td>
+            <td>{{ q.topic }}</td>
           </tr>
         </tbody>
       </table>

@@ -141,8 +141,14 @@
   transition: background-color 0.3s;
 }
 
-.submit-button:hover {
+.submit-button:hover:not(:disabled) {
   background: #2980b9;
+}
+
+.submit-button:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .cancel-button {
@@ -208,6 +214,14 @@
   cursor: pointer;
 }
 
+.clickable-row.inactive-question {
+  opacity: 0.5;
+}
+
+.clickable-row.inactive-question:hover {
+  opacity: 0.7;
+}
+
 .clickable-row.selected {
   background: #e3f2fd;
 }
@@ -243,6 +257,30 @@
 
 .badge-hard {
   background-color: #e74c3c;
+  color: white;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.type-badge-single_choice {
+  background-color: #3498db;
+  color: white;
+}
+
+.type-badge-multiple_choice {
+  background-color: #9b59b6;
+  color: white;
+}
+
+.type-badge-text_input {
+  background-color: #16a085;
   color: white;
 }
 
