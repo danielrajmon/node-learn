@@ -5,6 +5,9 @@ export class QuestionEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ name: 'question_type', type: 'varchar' })
+  questionType: 'single_choice' | 'multiple_choice' | 'text_input';
+
   @Column({ name: 'question_text', type: 'text' })
   questionText: string;
 
@@ -15,7 +18,7 @@ export class QuestionEntity {
   matchKeywords: string[];
 
   @Column('varchar', { length: 20 })
-  difficulty: string;
+  difficulty: 'easy' | 'medium' | 'hard';
 
   @Column('varchar', { length: 100 })
   topic: string;
