@@ -331,3 +331,96 @@
   border-radius: 8px;
   color: #6c757d;
 }
+
+/* Choices Section */
+.choices-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.choices-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: #2c3e50;
+  font-size: 1.125rem;
+}
+
+.choice-item {
+  margin-bottom: 1rem;
+}
+
+.choice-header {
+  margin-bottom: 0.5rem;
+}
+
+.choice-header label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.choice-item input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.choice-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.choice-input {
+  flex: 1;
+}
+
+.choice-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.choice-checkbox input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.add-choice-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-choice-btn:hover {
+  background: #2980b9;
+}
+
+.remove-choice-btn {
+  padding: 0.25rem 0.75rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.remove-choice-btn:hover {
+  background: #c82333;
+}
+

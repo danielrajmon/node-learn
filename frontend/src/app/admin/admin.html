@@ -87,12 +87,81 @@
         id="questionType"
         name="questionType"
         [(ngModel)]="question.questionType"
+        (ngModelChange)="onQuestionTypeChange()"
         required
       >
         <option value="single_choice" selected>Single Choice</option>
         <option value="multiple_choice">Multiple Choice</option>
         <option value="text_input">Text Input</option>
       </select>
+    </div>
+
+    <!-- Text Input: Match Keywords -->
+    <div class="choices-section" *ngIf="question.questionType === 'text_input'">
+      <h3>Match Keywords</h3>
+      <small>Keywords that should match in the user's answer</small>
+      <div class="choice-item" *ngFor="let keyword of question.matchKeywords; let i = index">
+        <div class="choice-row">
+          <input
+            type="text"
+            [(ngModel)]="question.matchKeywords![i]"
+            [name]="'keyword_' + i"
+            placeholder="Enter keyword"
+            required
+            class="choice-input"
+          />
+          <button type="button" class="remove-choice-btn" (click)="removeKeyword(i)" *ngIf="question.matchKeywords!.length > 1">
+            ✕
+          </button>
+        </div>
+      </div>
+      <button type="button" class="add-choice-btn" (click)="addKeyword()">+ Add Keyword</button>
+    </div>
+
+    <!-- Single Choice: Fixed 8 choices (1 correct, 7 wrong) -->
+    <div class="choices-section" *ngIf="question.questionType === 'single_choice'">
+      <h3>Answer Choices (1 correct + 7 incorrect)</h3>
+      <div class="choice-item" *ngFor="let choice of question.choices; let i = index">
+        <div class="choice-header">
+          <label>{{ choice.isGood ? 'Correct Answer' : 'Wrong Answer ' + i }}</label>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="choice.choiceText"
+          [name]="'choice_' + i"
+          placeholder="{{ choice.isGood ? 'Enter the correct answer' : 'Enter wrong answer' }}"
+          required
+        />
+      </div>
+    </div>
+
+    <!-- Multiple Choice: Dynamic choices (at least 1 correct) -->
+    <div class="choices-section" *ngIf="question.questionType === 'multiple_choice'">
+      <h3>Answer Choices</h3>
+      <div class="choice-item" *ngFor="let choice of question.choices; let i = index">
+        <div class="choice-row">
+          <input
+            type="text"
+            [(ngModel)]="choice.choiceText"
+            [name]="'choice_' + i"
+            placeholder="Enter answer choice"
+            required
+            class="choice-input"
+          />
+          <label class="choice-checkbox">
+            <input
+              type="checkbox"
+              [(ngModel)]="choice.isGood"
+              [name]="'isGood_' + i"
+            />
+            Correct
+          </label>
+          <button type="button" class="remove-choice-btn" (click)="removeChoice(i)" *ngIf="question.choices!.length > 1">
+            ✕
+          </button>
+        </div>
+      </div>
+      <button type="button" class="add-choice-btn" (click)="addChoice()">+ Add Choice</button>
     </div>
 
     <div class="form-actions">

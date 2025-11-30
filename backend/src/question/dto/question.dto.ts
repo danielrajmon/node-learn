@@ -21,8 +21,9 @@ export class QuestionDto {
     example: ['encapsulation', 'inheritance', 'polymorphism'],
     description: 'Keywords that must match in text input answers',
     type: [String],
+    required: false,
   })
-  matchKeywords: string[];
+  matchKeywords?: string[] | null;
 
   @ApiProperty({
     example: 'medium',

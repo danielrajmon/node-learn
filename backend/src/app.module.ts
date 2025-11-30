@@ -9,6 +9,7 @@ import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { AdminModule } from './admin/admin.module';
 import { QuestionEntity } from './question/entities/question.entity';
+import { ChoiceEntity } from './question/entities/choice.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { QuestionEntity } from './question/entities/question.entity';
       database: process.env.POSTGRES_DB,
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
-      entities: [QuestionEntity],
+      entities: [QuestionEntity, ChoiceEntity],
       synchronize: false, // Don't auto-create tables, we already have them
     }),
     QuestionModule,

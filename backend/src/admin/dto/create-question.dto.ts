@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, IsOptional, IsBoolean, IsArray, MaxLength } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsBoolean, IsArray, MaxLength, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ChoiceDto } from './choice.dto';
 
 export class CreateQuestionDto {
   @ApiProperty({
@@ -27,6 +29,17 @@ export class CreateQuestionDto {
   longAnswer?: string;
 
   @ApiProperty({
+    example: ['encapsulation', 'inheritance', 'polymorphism'],
+    description: 'Keywords for text input validation',
+    type: [String],
+    required: false,
+  })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  matchKeywords?: string[];
+
+  @ApiProperty({
     example: 'medium',
     enum: ['easy', 'medium', 'hard'],
     description: 'Difficulty level of the question',
@@ -52,4 +65,15 @@ export class CreateQuestionDto {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
+
+  @ApiProperty({
+    type: [ChoiceDto],
+    description: 'Answer choices for single/multiple choice questions',
+    required: false,
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ChoiceDto)
+  @IsOptional()
+  choices?: ChoiceDto[];
 }

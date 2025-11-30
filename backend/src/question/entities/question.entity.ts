@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { ChoiceEntity } from './choice.entity';
 
 @Entity('questions')
 export class QuestionEntity {
@@ -14,8 +15,8 @@ export class QuestionEntity {
   @Column({ name: 'long_answer', type: 'text', nullable: true })
   longAnswer: string | null;
 
-  @Column('text', { name: 'match_keywords', array: true, default: [] })
-  matchKeywords: string[];
+  @Column('text', { name: 'match_keywords', array: true, nullable: true, default: () => 'ARRAY[]::text[]' })
+  matchKeywords: string[] | null;
 
   @Column('varchar', { length: 20 })
   difficulty: 'easy' | 'medium' | 'hard';
@@ -25,6 +26,9 @@ export class QuestionEntity {
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
+
+  @OneToMany(() => ChoiceEntity, choice => choice.question, { cascade: true })
+  choices: ChoiceEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
