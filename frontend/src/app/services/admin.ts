@@ -11,7 +11,19 @@ export class AdminService {
 
   constructor(private http: HttpClient) {}
 
+  getAllQuestions(): Observable<Question[]> {
+    return this.http.get<Question[]>(`${this.apiUrl}/questions?_t=${Date.now()}`);
+  }
+
   createQuestion(question: CreateQuestion): Observable<Question> {
     return this.http.post<Question>(`${this.apiUrl}/questions`, question);
+  }
+
+  updateQuestion(id: number, question: Partial<CreateQuestion>): Observable<Question> {
+    return this.http.put<Question>(`${this.apiUrl}/questions/${id}`, question);
+  }
+
+  deleteQuestion(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/questions/${id}`);
   }
 }

@@ -9,11 +9,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  margin-top: 3rem;
 }
 
 .header h1 {
   margin: 0;
-  color: #333;
+  color: #2c3e50;
+  font-size: 1.75rem;
+  font-weight: 600;
 }
 
 .back-button {
@@ -153,4 +156,138 @@
 
 .cancel-button:hover {
   background: #5a6268;
+}
+
+/* Questions List Table */
+.questions-list {
+  margin-bottom: 3rem;
+}
+
+.questions-list h2 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.questions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.questions-table thead {
+  background: #2c3e50;
+}
+
+.questions-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: white;
+  border-bottom: 2px solid #1a252f;
+}
+
+.questions-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.questions-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row.selected {
+  background: #e3f2fd;
+}
+
+.clickable-row.selected:hover {
+  background: #e3f2fd;
+}
+
+.question-text {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badge-easy {
+  background: #d4edda;
+  color: #155724;
+}
+
+.badge-medium {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-hard {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.delete-button {
+  padding: 0.75rem 1.5rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: #c82333;
+}
+
+.loading-message {
+  padding: 2rem;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.no-questions {
+  padding: 2rem;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #6c757d;
 }

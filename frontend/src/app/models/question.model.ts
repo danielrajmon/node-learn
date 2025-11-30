@@ -1,9 +1,14 @@
 export interface Question {
   id: number;
+  questionType: 'single_choice' | 'multiple_choice' | 'text_input';
   questionText: string;
+  longAnswer?: string;
+  matchKeywords?: string[];
   difficulty: 'easy' | 'medium' | 'hard';
   topic: string;
   isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreateQuestion {

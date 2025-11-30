@@ -10,7 +10,8 @@ export class QuestionService {
   constructor(private http: HttpClient) {}
 
   getAllQuestions(): Observable<Question[]> {
-    return this.http.get<Question[]>('/api/questions');
+    // Add timestamp to prevent caching
+    return this.http.get<Question[]>(`/api/questions?_t=${Date.now()}`);
   }
 
   getRandomQuestion(): Observable<Question> {

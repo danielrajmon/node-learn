@@ -1,6 +1,50 @@
 <div class="admin-container">
+  <div class="questions-list">
+    <h2>Existing Questions ({{ allQuestions.length }})</h2>
+    
+    <div class="loading-message" *ngIf="loading">
+      <p>Loading questions...</p>
+    </div>
+    
+    <div class="no-questions" *ngIf="!loading && allQuestions.length === 0">
+      <p>No questions yet. Create your first question below.</p>
+    </div>
+    
+    <div class="table-container" *ngIf="allQuestions.length > 0">
+      <table class="questions-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Question Text</th>
+            <th>Difficulty</th>
+            <th>Topic</th>
+            <th>Active</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let q of allQuestions" 
+              (click)="editQuestion(q)"
+              [class.selected]="editingQuestionId === q.id"
+              class="clickable-row">
+            <td>{{ q.id }}</td>
+            <td class="question-text">{{ q.questionText }}</td>
+            <td>
+              <span class="badge" [ngClass]="'badge-' + q.difficulty">{{ q.difficulty }}</span>
+            </td>
+            <td>{{ q.topic }}</td>
+            <td>
+              <span class="status" [ngClass]="q.isActive ? 'active' : 'inactive'">
+                {{ q.isActive ? 'Yes' : 'No' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="header">
-    <h1>Admin - Create Question</h1>
+    <h1>{{ isEditMode ? 'Edit Question' : 'Create Question' }}</h1>
   </div>
 
   <div class="success-message" *ngIf="successMessage">
@@ -12,19 +56,6 @@
   </div>
 
   <form (ngSubmit)="onSubmit()" class="question-form">
-    <div class="form-group">
-      <label for="questionType">Question Type</label>
-      <select
-        id="questionType"
-        name="questionType"
-        [(ngModel)]="question.questionType"
-        required
-      >
-        <option value="single_choice" selected>Single Choice</option>
-        <option value="multiple_choice">Multiple Choice</option>
-        <option value="text_input">Text Input</option>
-      </select>
-    </div>
 
     <div class="form-group">
       <label for="questionText">Question Text</label>
@@ -93,9 +124,25 @@
       </label>
     </div>
 
+    <div class="form-group">
+      <label for="questionType">Question Type</label>
+      <select
+        id="questionType"
+        name="questionType"
+        [(ngModel)]="question.questionType"
+        required
+      >
+        <option value="single_choice" selected>Single Choice</option>
+        <option value="multiple_choice">Multiple Choice</option>
+        <option value="text_input">Text Input</option>
+      </select>
+    </div>
+
     <div class="form-actions">
-      <button type="submit" class="submit-button">Create Question</button>
-      <button type="button" class="cancel-button" (click)="goToQuestions()">Cancel</button>
+      <button type="submit" class="submit-button" *ngIf="!isEditMode">Create Question</button>
+      <button type="submit" class="submit-button" *ngIf="isEditMode">Update Question</button>
+      <button type="button" class="delete-button" *ngIf="isEditMode" (click)="deleteQuestion(editingQuestionId!)">Delete Question</button>
+      <button type="button" class="cancel-button" *ngIf="isEditMode" (click)="cancelEdit()">Cancel</button>
     </div>
   </form>
 </div>

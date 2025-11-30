@@ -20,13 +20,17 @@ export class QuestionService {
     return rest as QuestionWithoutAnswer;
   }
 
-  async findAll(filters?: QuestionFilters): Promise<QuestionWithoutAnswer[]> {
-    const queryBuilder = this.questionRepository.createQueryBuilder('q')
-      .where('q.isActive = :isActive', { isActive: true });
+  async findAll(filters?: QuestionFilters, includeInactive: boolean = false): Promise<QuestionWithoutAnswer[]> {
+    const queryBuilder = this.questionRepository.createQueryBuilder('q');
+    
+    if (!includeInactive) {
+      queryBuilder.where('q.isActive = :isActive', { isActive: true });
+    }
 
     if (filters?.search) {
       const searchLower = `%${filters.search.toLowerCase()}%`;
-      queryBuilder.andWhere(
+      const condition = includeInactive ? 'where' : 'andWhere';
+      queryBuilder[condition](
         'LOWER(q.questionText) LIKE :search',
         { search: searchLower },
       );
@@ -46,6 +50,37 @@ export class QuestionService {
 
     const questions = await queryBuilder.getMany();
     return questions.map((q) => this.removeAnswer(q));
+  }
+
+  async findAllWithAnswers(filters?: QuestionFilters, includeInactive: boolean = false): Promise<QuestionEntity[]> {
+    const queryBuilder = this.questionRepository.createQueryBuilder('q');
+    
+    if (!includeInactive) {
+      queryBuilder.where('q.isActive = :isActive', { isActive: true });
+    }
+
+    if (filters?.search) {
+      const searchLower = `%${filters.search.toLowerCase()}%`;
+      const condition = includeInactive ? 'where' : 'andWhere';
+      queryBuilder[condition](
+        'LOWER(q.questionText) LIKE :search',
+        { search: searchLower },
+      );
+    }
+
+    if (filters?.difficulty) {
+      queryBuilder.andWhere('q.difficulty = :difficulty', {
+        difficulty: filters.difficulty,
+      });
+    }
+
+    if (filters?.topic) {
+      queryBuilder.andWhere('q.topic = :topic', {
+        topic: filters.topic,
+      });
+    }
+
+    return await queryBuilder.getMany();
   }
 
   async findOne(id: number): Promise<QuestionEntity | null> {
