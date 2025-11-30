@@ -38,4 +38,12 @@ body {
   background: white;
 }
 
+/* Override Quill code block dark background */
+.ql-snow .ql-editor .ql-code-block-container {
+  background-color: #f8f9fa !important;
+  color: #2c3e50 !important;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace !important;
+  font-size: 0.85rem !important;
+}
+
 

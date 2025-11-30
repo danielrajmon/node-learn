@@ -43,6 +43,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
       ['link'],
       ['clean']
     ]
+    // syntax module is intentionally omitted to disable highlight.js
   };
 
   constructor(
