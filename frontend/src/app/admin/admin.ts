@@ -129,7 +129,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
           this.loadQuestions();
         },
         error: (error: any) => {
-          this.errorMessage = `Failed to update question: ${error.message}`;
+          const message = error?.error?.message || error?.message || 'Unknown error';
+          this.errorMessage = message;
+          this.cdr.detectChanges();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 5000);
         }
       });
     } else {
@@ -141,7 +147,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
           this.loadQuestions();
         },
         error: (error: any) => {
-          this.errorMessage = `Failed to create question: ${error.message}`;
+          const message = error?.error?.message || error?.message || 'Unknown error';
+          this.errorMessage = message;
+          this.cdr.detectChanges();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 5000);
         }
       });
     }
@@ -189,12 +201,20 @@ export class AdminComponent implements OnInit, AfterViewInit {
         this.loadQuestions();
       },
       error: (error: any) => {
-        this.errorMessage = `Failed to delete question: ${error.message}`;
+        const message = error?.error?.message || error?.message || 'Unknown error';
+        this.errorMessage = message;
+        this.cdr.detectChanges();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          this.errorMessage = '';
+        }, 5000);
       }
     });
   }
 
   cancelEdit(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
     this.resetForm();
   }
 

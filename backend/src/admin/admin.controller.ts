@@ -1,5 +1,13 @@
-import { Controller, Post, Put, Delete, Body, Param, ParseIntPipe, Get, Query } from '@nestjs/common';
+import { Controller, Post, Put, Delete, Body, Param, ParseIntPipe, Get, Query, UseGuards, Req, UnauthorizedException, Injectable, ExecutionContext } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+
+@Injectable()
+class OptionalAuthGuard extends AuthGuard('jwt') {
+  handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
+    return user;
+  }
+}
 import { AdminService } from './admin.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
@@ -24,29 +32,51 @@ export class AdminController {
   }
 
   @Post('questions')
+  @UseGuards(OptionalAuthGuard)
   @ApiOperation({ summary: 'Create a new question' })
   @ApiResponse({ status: 201, description: 'Question created successfully', type: QuestionDto })
   @ApiResponse({ status: 400, description: 'Invalid input' })
-  async createQuestion(@Body() createQuestionDto: CreateQuestionDto): Promise<QuestionDto> {
+  async createQuestion(@Req() req, @Body() createQuestionDto: CreateQuestionDto): Promise<QuestionDto> {
+    if (!req.user) {
+      throw new UnauthorizedException('User must be logged in to create questions!');
+    }
+    if (!req.user.isAdmin) {
+      throw new UnauthorizedException('User has no admin privileges!');
+    }
     return await this.adminService.createQuestion(createQuestionDto);
   }
 
   @Put('questions/:id')
+  @UseGuards(OptionalAuthGuard)
   @ApiOperation({ summary: 'Update an existing question' })
   @ApiResponse({ status: 200, description: 'Question updated successfully', type: QuestionDto })
   @ApiResponse({ status: 404, description: 'Question not found' })
   async updateQuestion(
+    @Req() req,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateQuestionDto: UpdateQuestionDto
   ): Promise<QuestionDto> {
+    if (!req.user) {
+      throw new UnauthorizedException('User must be logged in to update questions!');
+    }
+    if (!req.user.isAdmin) {
+      throw new UnauthorizedException('User has no admin privileges!');
+    }
     return await this.adminService.updateQuestion(id, updateQuestionDto);
   }
 
   @Delete('questions/:id')
+  @UseGuards(OptionalAuthGuard)
   @ApiOperation({ summary: 'Delete a question' })
   @ApiResponse({ status: 200, description: 'Question deleted successfully' })
   @ApiResponse({ status: 404, description: 'Question not found' })
-  async deleteQuestion(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async deleteQuestion(@Req() req, @Param('id', ParseIntPipe) id: number): Promise<void> {
+    if (!req.user) {
+      throw new UnauthorizedException('User must be logged in to delete questions!');
+    }
+    if (!req.user.isAdmin) {
+      throw new UnauthorizedException('User has no admin privileges!');
+    }
     return await this.adminService.deleteQuestion(id);
   }
 }
