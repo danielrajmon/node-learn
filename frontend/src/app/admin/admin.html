@@ -38,37 +38,35 @@
           ></textarea>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="difficulty">Difficulty</label>
-            <select
-              id="difficulty"
-              name="difficulty"
-              [(ngModel)]="question.difficulty"
-              required
-            >
-              <option value="easy">Easy</option>
-              <option value="medium" selected>Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="difficulty">Difficulty</label>
+          <select
+            id="difficulty"
+            name="difficulty"
+            [(ngModel)]="question.difficulty"
+            required
+          >
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label for="topic">Topic</label>
-            <input
-              type="text"
-              id="topic"
-              name="topic"
-              [(ngModel)]="question.topic"
-              list="topicOptions"
-              required
-              maxlength="100"
-              placeholder="Select or type topic"
-            />
-            <datalist id="topicOptions">
-              <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }}</option>
-            </datalist>
-          </div>
+        <div class="form-group">
+          <label for="topic">Topic</label>
+          <input
+            type="text"
+            id="topic"
+            name="topic"
+            [(ngModel)]="question.topic"
+            list="topicOptions"
+            required
+            maxlength="100"
+            placeholder="Select or type topic"
+          />
+          <datalist id="topicOptions">
+            <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }}</option>
+          </datalist>
         </div>
 
         <div class="form-group checkbox-group">
@@ -222,15 +220,15 @@
               [class.selected]="editingQuestionId === q.id"
               [class.inactive-question]="!q.isActive"
               class="clickable-row">
-            <td>{{ q.id }}</td>
-            <td class="question-text">{{ q.questionText }}</td>
-            <td>
+            <td data-label="ID">{{ q.id }}</td>
+            <td data-label="Question Text" class="question-text">{{ q.questionText }}</td>
+            <td data-label="Difficulty">
               <span class="badge" [ngClass]="'badge-' + q.difficulty">{{ q.difficulty }}</span>
             </td>
-            <td>
+            <td data-label="Type">
               <span class="type-badge" [ngClass]="'type-badge-' + q.questionType">{{ q.questionType === 'single_choice' ? 'Single' : q.questionType === 'multiple_choice' ? 'Multiple' : 'Text' }}</span>
             </td>
-            <td>{{ q.topic }}</td>
+            <td data-label="Topic">{{ q.topic }}</td>
           </tr>
         </tbody>
       </table>

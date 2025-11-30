@@ -128,11 +128,7 @@
   font-size: 0.875rem;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
+
 
 .checkbox-group label {
   display: flex;
@@ -316,6 +312,66 @@
   border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 500;
+}
+
+/* Responsive table - card layout on mobile */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: visible;
+  }
+
+  .questions-table thead {
+    display: none;
+  }
+
+  .questions-table,
+  .questions-table tbody,
+  .questions-table tr,
+  .questions-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .questions-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .questions-table td {
+    text-align: right;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f3f5;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .questions-table td:last-child {
+    border-bottom: none;
+  }
+
+  .questions-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 1rem;
+    font-weight: 600;
+    color: #495057;
+    text-align: left;
+  }
+
+  .questions-table td.question-text {
+    white-space: normal;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
+  }
+
+  .clickable-row.selected {
+    border: 2px solid #3498db;
+  }
 }
 
 .status.active {
