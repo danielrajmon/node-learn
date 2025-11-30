@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -33,7 +33,8 @@ export class AdminComponent implements OnInit {
   constructor(
     private adminService: AdminService,
     private questionService: QuestionService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -55,12 +56,14 @@ export class AdminComponent implements OnInit {
         });
         this.allTopics = Array.from(topicsSet).sort();
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Error loading questions:', err);
         this.allQuestions = [];
         this.allTopics = [];
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
