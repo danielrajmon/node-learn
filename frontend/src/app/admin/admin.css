@@ -515,3 +515,20 @@
   background: #c82333;
 }
 
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .submit-button,
+  .delete-button,
+  .cancel-button {
+    width: 100%;
+  }
+}
+
