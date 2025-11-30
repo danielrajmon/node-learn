@@ -37,20 +37,15 @@ POSTGRES_USER=$(kubectl get secret postgres-secret -n $NAMESPACE -o jsonpath='{.
 POSTGRES_PASSWORD=$(kubectl get secret postgres-secret -n $NAMESPACE -o jsonpath='{.data.POSTGRES_PASSWORD}' | base64 -d)
 POSTGRES_DB=$(kubectl get secret postgres-secret -n $NAMESPACE -o jsonpath='{.data.POSTGRES_DB}' | base64 -d)
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DDL_FILE="$SCRIPT_DIR/../backend/src/migrations/ddl.sql"
+DML_FILE="$SCRIPT_DIR/../backend/src/migrations/dml.sql"
+
 echo "📝 Applying DDL script..."
-if kubectl exec -n $NAMESPACE $POD_NAME -- psql -U $POSTGRES_USER -d $POSTGRES_DB < ../backend/src/migrations/ddl.sql; then
+if kubectl exec -n $NAMESPACE $POD_NAME -i -- psql -U $POSTGRES_USER -d $POSTGRES_DB < "$DDL_FILE"; then
     echo "✅ DDL script applied successfully"
 else
     echo "❌ Failed to apply DDL script"
-    exit 1
-fi
-
-# Apply DML script
-echo "📝 Applying DML script..."
-if kubectl exec -n $NAMESPACE $POD_NAME -- psql -U $POSTGRES_USER -d $POSTGRES_DB < ../backend/src/migrations/dml.sql; then
-    echo "✅ DML script applied successfully"
-else
-    echo "❌ Failed to apply DML script"
     exit 1
 fi
 
