@@ -118,21 +118,37 @@
       <button type="button" class="add-choice-btn" (click)="addKeyword()">+ Add Keyword</button>
     </div>
 
-    <!-- Single Choice: Fixed 8 choices (1 correct, 7 wrong) -->
+    <!-- Single Choice: Dynamic choices (1 correct + multiple wrong) -->
     <div class="choices-section" *ngIf="question.questionType === 'single_choice'">
-      <h3>Answer Choices (1 correct + 7 incorrect)</h3>
+      <h3>Correct Answer</h3>
       <div class="choice-item" *ngFor="let choice of question.choices; let i = index">
-        <div class="choice-header">
-          <label>{{ choice.isGood ? 'Correct Answer' : 'Wrong Answer ' + i }}</label>
-        </div>
         <input
+          *ngIf="choice.isGood"
           type="text"
           [(ngModel)]="choice.choiceText"
           [name]="'choice_' + i"
-          placeholder="{{ choice.isGood ? 'Enter the correct answer' : 'Enter wrong answer' }}"
+          placeholder="Enter the correct answer"
           required
         />
       </div>
+      
+      <h3>Wrong Answers</h3>
+      <div class="choice-item" *ngFor="let choice of question.choices; let i = index">
+        <div class="choice-row" *ngIf="!choice.isGood">
+          <input
+            type="text"
+            [(ngModel)]="choice.choiceText"
+            [name]="'choice_' + i"
+            placeholder="Enter wrong answer"
+            required
+            class="choice-input"
+          />
+          <button type="button" class="remove-choice-btn" (click)="removeChoice(i)" *ngIf="getWrongChoicesCount() > 1">
+            ✕
+          </button>
+        </div>
+      </div>
+      <button type="button" class="add-choice-btn" (click)="addChoice()">+ Add Wrong Answer</button>
     </div>
 
     <!-- Multiple Choice: Dynamic choices (at least 1 correct) -->

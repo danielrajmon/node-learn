@@ -126,7 +126,7 @@ export class AdminComponent implements OnInit {
       difficulty: q.difficulty,
       topic: q.topic,
       isActive: q.isActive,
-      matchKeywords: q.matchKeywords && q.matchKeywords.length > 0 ? [...q.matchKeywords] : (q.questionType === 'text_input' ? ['', '', ''] : []),
+      matchKeywords: q.matchKeywords && q.matchKeywords.length > 0 ? [...q.matchKeywords] : (q.questionType === 'text_input' ? [''] : []),
       choices
     };
     this.successMessage = '';
@@ -190,9 +190,13 @@ export class AdminComponent implements OnInit {
         { choiceText: '', isGood: false }
       ];
     } else if (this.question.questionType === 'multiple_choice') {
-      // Multiple choice: Start with 1 correct + 3 wrong
+      // Multiple choice: Start with 8 choices (1 correct + 7 wrong)
       this.question.choices = [
         { choiceText: '', isGood: true },
+        { choiceText: '', isGood: false },
+        { choiceText: '', isGood: false },
+        { choiceText: '', isGood: false },
+        { choiceText: '', isGood: false },
         { choiceText: '', isGood: false },
         { choiceText: '', isGood: false },
         { choiceText: '', isGood: false }
@@ -205,24 +209,28 @@ export class AdminComponent implements OnInit {
 
   initializeKeywords(): void {
     if (this.question.questionType === 'text_input') {
-      // Start with 3 keyword fields
-      this.question.matchKeywords = ['', '', ''];
+      // Start with 1 keyword field
+      this.question.matchKeywords = [''];
     } else {
       this.question.matchKeywords = [];
     }
   }
 
   addChoice(): void {
-    if (this.question.questionType === 'multiple_choice') {
+    if (this.question.questionType === 'multiple_choice' || this.question.questionType === 'single_choice') {
       this.question.choices = this.question.choices || [];
       this.question.choices.push({ choiceText: '', isGood: false });
     }
   }
 
   removeChoice(index: number): void {
-    if (this.question.questionType === 'multiple_choice' && this.question.choices) {
+    if ((this.question.questionType === 'multiple_choice' || this.question.questionType === 'single_choice') && this.question.choices) {
       this.question.choices.splice(index, 1);
     }
+  }
+
+  getWrongChoicesCount(): number {
+    return this.question.choices?.filter(c => !c.isGood).length || 0;
   }
 
   addKeyword(): void {
