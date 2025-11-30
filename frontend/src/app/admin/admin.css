@@ -96,6 +96,11 @@
   font-size: 1rem;
 }
 
+.form-group quill-editor {
+  display: block;
+  width: 100%;
+}
+
 .form-group input[type="text"],
 .form-group select {
   width: 100%;
@@ -114,9 +119,6 @@
   border-radius: 4px;
   font-size: 1rem;
   font-family: inherit;
-}
-
-.form-group textarea {
   resize: vertical;
   min-height: 80px;
 }

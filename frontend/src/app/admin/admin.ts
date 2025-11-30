@@ -1,18 +1,19 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminService } from '../services/admin';
 import { QuestionService } from '../services/question';
 import { CreateQuestion, Question, Choice } from '../models/question.model';
+import { QuillModule } from 'ngx-quill';
 
 @Component({
   selector: 'app-admin',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, QuillModule],
   templateUrl: './admin.html',
   styleUrl: './admin.css'
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, AfterViewInit {
   question: CreateQuestion = {
     questionType: 'single_choice',
     questionText: '',
@@ -32,6 +33,18 @@ export class AdminComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
+  quillModules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'header': 1 }, { 'header': 2 }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      ['link'],
+      ['clean']
+    ]
+  };
+
   constructor(
     private adminService: AdminService,
     private questionService: QuestionService,
@@ -43,6 +56,38 @@ export class AdminComponent implements OnInit {
     this.loadQuestions();
     this.initializeChoices();
     this.initializeKeywords();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.addTooltipsToQuillToolbar();
+    }, 100);
+  }
+
+  addTooltipsToQuillToolbar(): void {
+    const tooltips: { [key: string]: string } = {
+      '.ql-bold': 'Bold',
+      '.ql-italic': 'Italic',
+      '.ql-underline': 'Underline',
+      '.ql-strike': 'Strikethrough',
+      '.ql-blockquote': 'Blockquote',
+      '.ql-code-block': 'Code Block',
+      '.ql-header[value="1"]': 'Heading 1',
+      '.ql-header[value="2"]': 'Heading 2',
+      '.ql-list[value="ordered"]': 'Numbered List',
+      '.ql-list[value="bullet"]': 'Bullet List',
+      '.ql-indent[value="-1"]': 'Decrease Indent',
+      '.ql-indent[value="+1"]': 'Increase Indent',
+      '.ql-link': 'Insert Link',
+      '.ql-clean': 'Remove Formatting'
+    };
+
+    Object.keys(tooltips).forEach(selector => {
+      const buttons = document.querySelectorAll(selector);
+      buttons.forEach(button => {
+        button.setAttribute('title', tooltips[selector]);
+      });
+    });
   }
 
   loadQuestions(): void {
