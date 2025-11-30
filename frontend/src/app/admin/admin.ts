@@ -299,4 +299,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
 }

@@ -106,7 +106,7 @@
     <div class="choices-section" *ngIf="question.questionType === 'text_input'">
       <h3>Match Keywords</h3>
       <small>Keywords that should match in the user's answer</small>
-      <div class="choice-item" *ngFor="let keyword of question.matchKeywords; let i = index">
+      <div class="choice-item" *ngFor="let keyword of question.matchKeywords; let i = index; trackBy: trackByIndex">
         <div class="choice-row">
           <input
             type="text"
