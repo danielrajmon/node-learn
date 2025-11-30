@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict vlUpbe7kxBYjCVfeH9vRhOQfKrXzTjt9TnuveyYU57j88HznYqSl9hezTJFzo5S
+\restrict 8G8j3XdfzesCNgbALK1dwacbeXciXq7oZiA7Rq5h0oLW2AXc9J74e80VbAQdU9F
 
 -- Dumped from database version 16.11
 -- Dumped by pg_dump version 16.11
@@ -22,7 +22,7 @@ SET row_security = off;
 -- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.questions (id, question_type, difficulty, topic, question_text, long_answer, match_keywords, is_active, created_at, updated_at) VALUES (1, 'single_choice', 'medium', 'Docker', '<p>Docker</p>', '<p>Docker</p>', '{}', false, '2025-11-30 21:30:16.041834+00', '2025-11-30 21:30:16.052445+00');
+INSERT INTO public.questions (id, question_type, difficulty, topic, question_text, long_answer, match_keywords, is_active, created_at, updated_at) VALUES (1, 'single_choice', 'medium', 'Docker', '<p>Docker</p>', '<p>Docker</p>', '{}', true, '2025-11-30 21:30:16.041834+00', '2025-11-30 21:36:16.536085+00');
 
 
 --
@@ -57,5 +57,5 @@ SELECT pg_catalog.setval('public.questions_id_seq', 1, true);
 -- PostgreSQL database dump complete
 --
 
-\unrestrict vlUpbe7kxBYjCVfeH9vRhOQfKrXzTjt9TnuveyYU57j88HznYqSl9hezTJFzo5S
+\unrestrict 8G8j3XdfzesCNgbALK1dwacbeXciXq7oZiA7Rq5h0oLW2AXc9J74e80VbAQdU9F
 

@@ -18,6 +18,18 @@
   font-weight: 600;
 }
 
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: white;
+}
+
 .mobile-menu-toggle {
   display: none;
   background: none;
@@ -87,6 +99,10 @@
 
 .nav a.active {
   background-color: #3498db;
+}
+
+.nav .logout-link {
+  cursor: pointer;
 }
 
 /* Mobile styles */

@@ -1,15 +1,20 @@
 <header class="header">
   <div class="header-content">
     <h1>Learn NodeJS</h1>
-    <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-label="Toggle menu">
-      <span class="hamburger"></span>
-    </button>
+    <div class="user-section">
+      <span *ngIf="user" class="user-name">{{ user.name }}</span>
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-label="Toggle menu">
+        <span class="hamburger"></span>
+      </button>
+    </div>
   </div>
   <nav class="nav" [class.mobile-open]="mobileMenuOpen()">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Home</a>
     <a routerLink="/learn" routerLinkActive="active" (click)="closeMobileMenu()">Learn</a>
     <a routerLink="/questions" routerLinkActive="active" (click)="closeMobileMenu()">Questions</a>
     <a routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Admin</a>
+    <a *ngIf="!user" routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">Login</a>
+    <a *ngIf="user" (click)="logout()" class="logout-link">Logout</a>
   </nav>
 </header>
 
