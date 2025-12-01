@@ -87,6 +87,15 @@
   line-height: 1.4 !important;
 }
 
+.question > pre:not(.hljs) {
+  opacity: 0;
+}
+
+.question > pre.hljs {
+  opacity: 1;
+  transition: opacity 0.1s ease-in;
+}
+
 .answer-section {
   background-color: #f8f9fa;
   padding: 1.5rem;

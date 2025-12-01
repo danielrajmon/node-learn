@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { QuestionService } from '../services/question';
 import { Question } from '../models/question.model';
+import hljs from 'highlight.js/lib/core';
+import typescript from 'highlight.js/lib/languages/typescript';
+
+hljs.registerLanguage('typescript', typescript);
 
 @Component({
   selector: 'app-questions',
@@ -42,6 +46,16 @@ export class Questions implements OnInit {
         this.extractTopics(questions);
         this.loading = false;
         this.cdr.detectChanges();
+        // Apply syntax highlighting to question code blocks
+        setTimeout(() => {
+          document.querySelectorAll('.question-text pre').forEach((block) => {
+            if (!block.classList.contains('hljs')) {
+              block.classList.add('hljs');
+              block.classList.add('language-typescript');
+              hljs.highlightElement(block as HTMLElement);
+            }
+          });
+        }, 0);
       },
       error: (err) => {
         this.error = 'Failed to load questions.';
@@ -76,6 +90,17 @@ export class Questions implements OnInit {
 
       return matchesSearch && matchesDifficulty && matchesTopic;
     });
+    // Reapply syntax highlighting after filtering
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      document.querySelectorAll('.question-text pre').forEach((block) => {
+        if (!block.classList.contains('hljs')) {
+          block.classList.add('hljs');
+          block.classList.add('language-typescript');
+          hljs.highlightElement(block as HTMLElement);
+        }
+      });
+    }, 0);
   }
 
   toggleAnswer(questionId: number) {
@@ -92,6 +117,16 @@ export class Questions implements OnInit {
             const cleanedAnswer = result.answer.replace(/&nbsp;/g, ' ');
             this.answers.set(questionId, cleanedAnswer);
             this.cdr.detectChanges();
+            // Apply syntax highlighting to answer code blocks
+            setTimeout(() => {
+              document.querySelectorAll('.answer-text pre').forEach((block) => {
+                if (!block.classList.contains('hljs')) {
+                  block.classList.add('hljs');
+                  block.classList.add('language-typescript');
+                  hljs.highlightElement(block as HTMLElement);
+                }
+              });
+            }, 0);
           },
           error: (err) => {
             console.error('Error fetching answer:', err);

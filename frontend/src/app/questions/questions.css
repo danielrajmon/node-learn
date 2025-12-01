@@ -214,6 +214,15 @@
   margin-bottom: 1rem;
 }
 
+.question-text pre:not(.hljs) {
+  opacity: 0;
+}
+
+.question-text pre.hljs {
+  opacity: 1;
+  transition: opacity 0.1s ease-in;
+}
+
 .show-answer-btn {
   background-color: #3498db;
   color: white;
@@ -250,6 +259,15 @@
 .answer-text {
   color: #34495e;
   line-height: 1.6;
+}
+
+.answer-text pre:not(.hljs) {
+  opacity: 0;
+}
+
+.answer-text pre.hljs {
+  opacity: 1;
+  transition: opacity 0.1s ease-in;
 }
 
 .no-results {
