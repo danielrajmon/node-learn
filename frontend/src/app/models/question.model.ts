@@ -10,6 +10,7 @@ export interface Question {
   questionText: string;
   longAnswer?: string;
   matchKeywords?: string[];
+  keywordCount?: number;
   difficulty: 'easy' | 'medium' | 'hard';
   topic: string;
   isActive: boolean;

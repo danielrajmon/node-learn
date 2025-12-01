@@ -18,7 +18,7 @@ export class QuestionService {
     return this.http.get<Question>('/api/questions/random');
   }
 
-  getAnswer(questionId: number): Observable<{ questionId: number; answer: string }> {
-    return this.http.get<{ questionId: number; answer: string }>(`/api/answers/${questionId}`);
+  getAnswer(questionId: number): Observable<{ questionId: number; answer: string; choices?: any[]; matchKeywords?: string[] }> {
+    return this.http.get<{ questionId: number; answer: string; choices?: any[] }>(`/api/answers/${questionId}`);
   }
 }

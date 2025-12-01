@@ -1,0 +1,137 @@
+<div class="quiz-container">
+  <div class="card">
+    <div *ngIf="loading" class="loading">Loading quiz...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="!loading && !error && !isQuizComplete && currentQuestion">
+      <div class="quiz-header">
+        <div class="topics">
+          <span class="topic">{{ currentQuestion.topic }}</span>
+        </div>
+        <span class="type-badge" [ngClass]="'type-badge-' + currentQuestion.questionType">
+          {{ currentQuestion.questionType === 'single_choice' ? 'Single Choice' : currentQuestion.questionType === 'multiple_choice' ? 'Multiple Choices' : 'Text Input' }}
+        </span>
+        <span class="difficulty" [class]="currentQuestion.difficulty">
+          {{ currentQuestion.difficulty }}
+        </span>
+      </div>
+
+      <div class="quiz-question" [innerHTML]="currentQuestion.questionText"></div>
+
+      <div class="answer-area">
+        <!-- Text Input -->
+        <div *ngIf="currentQuestion.questionType === 'text_input'" class="text-input-area">
+          <div *ngIf="textAnswers.length > 0; else singleInput">
+            <div *ngFor="let answer of textAnswers; let i = index; trackBy: trackByIndex" class="text-input-group">
+              <div class="text-input-with-icon">
+                <input
+                  type="text"
+                  class="text-answer-input"
+                  [class.correct-answer]="answered && textAnswersCorrect[i]"
+                  [class.wrong-answer]="answered && !textAnswersCorrect[i]"
+                  [(ngModel)]="textAnswers[i]"
+                  [placeholder]="'Answer ' + (i + 1)"
+                  [disabled]="answered"
+                  (keyup.enter)="canSubmit && submitAnswer()"
+                />
+                <span *ngIf="answered && textAnswersCorrect[i]" class="text-input-icon correct-icon">✓</span>
+                <span *ngIf="answered && !textAnswersCorrect[i]" class="text-input-icon wrong-icon">✗</span>
+              </div>
+              <div *ngIf="answered && !textAnswersCorrect[i] && getMissingKeyword(i)" class="text-input-with-icon">
+                <input
+                  type="text"
+                  class="text-answer-input correct-answer-display"
+                  [value]="getMissingKeyword(i)"
+                  readonly
+                />
+                <span class="text-input-icon correct-icon">✓</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #singleInput>
+            <input
+              type="text"
+              class="text-answer-input"
+              [class.correct-answer]="answered && correct"
+              [class.wrong-answer]="answered && !correct"
+              [(ngModel)]="textAnswer"
+              placeholder="Type your answer..."
+              [disabled]="answered"
+              (keyup.enter)="canSubmit && submitAnswer()"
+            />
+          </ng-template>
+        </div>
+
+        <!-- Single/Multiple Choice -->
+        <div *ngIf="currentQuestion.questionType === 'single_choice' || currentQuestion.questionType === 'multiple_choice'" class="choices-area">
+          <div
+            *ngFor="let choice of displayChoices; let i = index"
+            class="choice"
+            [class.selected]="choice.selected"
+            [class.correct-choice]="answered && choice.selected && choice.isGood"
+            [class.wrong-choice]="answered && ((choice.selected && !choice.isGood) || (!choice.selected && choice.isGood))"
+            [class.disabled]="answered"
+            (click)="selectChoice(i)"
+          >
+            <div class="choice-checkbox">
+              <span *ngIf="currentQuestion.questionType === 'single_choice'" class="radio" [class.checked]="choice.selected"></span>
+              <span *ngIf="currentQuestion.questionType === 'multiple_choice'" class="checkbox" [class.checked]="choice.selected">
+                <span class="checkmark" [style.visibility]="choice.selected ? 'visible' : 'hidden'">✓</span>
+              </span>
+            </div>
+            <div class="choice-text">{{ choice.choiceText }}</div>
+            <div class="choice-indicator" [class.visible]="answered">
+              <span *ngIf="answered && choice.isGood !== undefined && choice.isGood" class="correct-icon">✓</span>
+              <span *ngIf="answered && choice.isGood !== undefined && !choice.isGood && choice.selected" class="wrong-icon">✗</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-group" *ngIf="!answered">
+        <button
+          class="btn btn-primary"
+          [disabled]="!canSubmit"
+          (click)="submitAnswer()"
+        >
+          Submit Answer
+        </button>
+      </div>
+
+      <div *ngIf="answered && longAnswer" class="answer-section">
+        <h3>Explanation:</h3>
+        <div class="quiz-answer" [innerHTML]="longAnswer"></div>
+      </div>
+
+      <div class="button-group" *ngIf="answered">
+        <button
+          class="btn btn-secondary"
+          *ngIf="currentQuestionNumber < totalQuestions"
+          (click)="nextQuestion()"
+        >
+          Next Question
+        </button>
+
+        <button
+          class="btn btn-success"
+          *ngIf="currentQuestionNumber === totalQuestions"
+          (click)="nextQuestion()"
+        >
+          Finish Quiz
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="isQuizComplete" class="quiz-complete">
+      <h2>Quiz Complete! 🎉</h2>
+      <p>You've completed all {{ totalQuestions }} questions.</p>
+      <button class="btn btn-primary" (click)="restartQuiz()">
+        Start New Quiz
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && !isQuizComplete" class="progress-counter">
+    {{ currentQuestionNumber }} / {{ totalQuestions }}
+  </div>
+</div>

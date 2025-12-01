@@ -20,7 +20,12 @@ export class AdminService {
   async findAllQuestions(filters?: QuestionFilters): Promise<QuestionEntity[]> {
     const questions = await this.questionRepository.find({
       relations: ['choices'],
-      order: { id: 'DESC' }
+      order: { 
+        id: 'DESC',
+        choices: {
+          id: 'ASC'
+        }
+      }
     });
     return questions;
   }
@@ -64,37 +69,39 @@ export class AdminService {
 
     const { choices, ...questionData } = updateQuestionDto;
     
-    // Delete all existing choices first
-    if (question.choices && question.choices.length > 0) {
-      await this.choiceRepository.delete({ questionId: id });
-    }
-    
-    // Update question fields
-    Object.assign(question, questionData);
-    const savedQuestion = await this.questionRepository.save(question);
-    
-    // Create new choices if provided
-    if (choices && choices.length > 0) {
-      const choiceEntities = choices.map(choice => 
-        this.choiceRepository.create({
-          ...choice,
-          questionId: savedQuestion.id
-        })
-      );
-      await this.choiceRepository.save(choiceEntities);
-    }
-    
-    // Return the updated question with new choices
-    const result = await this.questionRepository.findOne({
-      where: { id: savedQuestion.id },
-      relations: ['choices']
+    // Use transaction to ensure all operations succeed or fail together
+    return await this.questionRepository.manager.transaction(async (transactionalEntityManager) => {
+      // ALWAYS delete all existing choices first - unconditionally
+      await transactionalEntityManager.delete(ChoiceEntity, { questionId: id });
+      
+      // Update question fields (but remove choices to prevent cascade save)
+      Object.assign(question, questionData);
+      question.choices = []; // Empty choices array to prevent cascade duplication
+      const savedQuestion = await transactionalEntityManager.save(QuestionEntity, question);
+      
+      // Create new choices if provided
+      if (choices && choices.length > 0) {
+        const choiceEntities = choices.map(choice => 
+          transactionalEntityManager.create(ChoiceEntity, {
+            ...choice,
+            questionId: savedQuestion.id
+          })
+        );
+        await transactionalEntityManager.save(ChoiceEntity, choiceEntities);
+      }
+      
+      // Return the updated question with new choices
+      const result = await transactionalEntityManager.findOne(QuestionEntity, {
+        where: { id: savedQuestion.id },
+        relations: ['choices']
+      });
+      
+      if (!result) {
+        throw new Error('Failed to update question');
+      }
+      
+      return result;
     });
-    
-    if (!result) {
-      throw new Error('Failed to update question');
-    }
-    
-    return result;
   }
 
   async deleteQuestion(id: number): Promise<void> {

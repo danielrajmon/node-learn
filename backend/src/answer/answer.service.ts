@@ -5,7 +5,7 @@ import { QuestionService } from '../question/question.service';
 export class AnswerService {
   constructor(private readonly questionService: QuestionService) {}
 
-  async getAnswer(questionId: number): Promise<{ questionId: number; answer: string } | null> {
+  async getAnswer(questionId: number): Promise<{ questionId: number; answer: string; choices?: any[]; matchKeywords?: string[] } | null> {
     const question = await this.questionService.findOne(questionId);
 
     if (!question) {
@@ -15,6 +15,8 @@ export class AnswerService {
     return {
       questionId,
       answer: question.longAnswer || '',
+      choices: question.choices || [],
+      matchKeywords: question.matchKeywords || [],
     };
   }
 }

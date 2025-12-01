@@ -294,18 +294,18 @@
 }
 
 .type-badge-single_choice {
-  background-color: #3498db;
-  color: white;
+  background-color: #e0e0e0;
+  color: #666;
 }
 
 .type-badge-multiple_choice {
-  background-color: #9b59b6;
-  color: white;
+  background-color: #e0e0e0;
+  color: #666;
 }
 
 .type-badge-text_input {
-  background-color: #16a085;
-  color: white;
+  background-color: #e0e0e0;
+  color: #666;
 }
 
 .status {

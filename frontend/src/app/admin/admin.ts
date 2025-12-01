@@ -91,10 +91,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   loadQuestions(): void {
     this.loading = true;
-    console.log('Loading questions from admin endpoint...');
     this.adminService.getAllQuestions().subscribe({
       next: (questions: Question[]) => {
-        console.log('Received questions:', questions);
         this.allQuestions = questions;
         const topicsSet = new Set<string>();
         questions.forEach((q: Question) => {

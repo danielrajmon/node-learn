@@ -127,7 +127,7 @@
     <!-- Single Choice: Dynamic choices (1 correct + multiple wrong) -->
     <div class="choices-section" *ngIf="question.questionType === 'single_choice'">
       <h3>Correct Answer</h3>
-      <div class="choice-item" *ngFor="let choice of question.choices; let i = index">
+      <div class="choice-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
         <input
           *ngIf="choice.isGood"
           type="text"
@@ -139,7 +139,7 @@
       </div>
       
       <h3>Wrong Answers</h3>
-      <div class="choice-item" *ngFor="let choice of question.choices; let i = index">
+      <div class="choice-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
         <div class="choice-row" *ngIf="!choice.isGood">
           <input
             type="text"
@@ -160,7 +160,7 @@
     <!-- Multiple Choice: Dynamic choices (at least 1 correct) -->
     <div class="choices-section" *ngIf="question.questionType === 'multiple_choice'">
       <h3>Answer Choices</h3>
-      <div class="choice-item" *ngFor="let choice of question.choices; let i = index">
+      <div class="choice-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
         <div class="choice-row">
           <input
             type="text"
@@ -230,7 +230,7 @@
               <span class="badge" [ngClass]="'badge-' + q.difficulty">{{ q.difficulty }}</span>
             </td>
             <td data-label="Type">
-              <span class="type-badge" [ngClass]="'type-badge-' + q.questionType">{{ q.questionType === 'single_choice' ? 'Single' : q.questionType === 'multiple_choice' ? 'Multiple' : 'Text' }}</span>
+              <span class="type-badge" [ngClass]="'type-badge-' + q.questionType">{{ q.questionType === 'single_choice' ? 'Single Choice' : q.questionType === 'multiple_choice' ? 'Multiple Choices' : 'Text Input' }}</span>
             </td>
             <td data-label="Topic">{{ q.topic }}</td>
           </tr>

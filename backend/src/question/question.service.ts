@@ -17,11 +17,54 @@ export class QuestionService {
 
   private removeAnswer(question: Question | QuestionEntity): QuestionWithoutAnswer {
     const { longAnswer, matchKeywords, ...rest } = question;
-    return rest as QuestionWithoutAnswer;
+    // Remove isGood from choices to prevent exposing correct answers
+    const result: any = { ...rest };
+    if ('choices' in question && question.choices) {
+      const allChoices = question.choices.map(({ isGood, ...choice }: any) => ({ ...choice, isGood }));
+      const correctChoices = allChoices.filter((c: any) => c.isGood);
+      const wrongChoices = allChoices.filter((c: any) => !c.isGood);
+      
+      // For single_choice: 1 correct + 3 wrong
+      // For multiple_choice: all correct (up to 4) + random wrong to make 4 total
+      let selectedChoices: any[] = [];
+      
+      if (question.questionType === 'single_choice') {
+        // ALWAYS include 1 correct answer (randomly selected if multiple exist)
+        const randomCorrect = correctChoices.length > 0 
+          ? [correctChoices[Math.floor(Math.random() * correctChoices.length)]]
+          : [];
+        
+        // Add 3 random wrong answers
+        const randomWrong = wrongChoices.sort(() => Math.random() - 0.5).slice(0, 3);
+        
+        selectedChoices = [...randomCorrect, ...randomWrong];
+        
+        // Shuffle the final 4 choices so correct answer is not always first
+        selectedChoices = selectedChoices.sort(() => Math.random() - 0.5);
+      } else if (question.questionType === 'multiple_choice') {
+        // For multiple choice: completely random mix of correct and wrong choices (up to 4 total)
+        const allAvailableChoices = [...correctChoices, ...wrongChoices];
+        selectedChoices = allAvailableChoices
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 4);
+      } else {
+        // Fallback: just send all choices
+        selectedChoices = allChoices;
+      }
+      
+      // Remove isGood from the selected choices before sending
+      result.choices = selectedChoices.map(({ isGood, ...choice }: any) => choice);
+    }
+    // Add keyword count for text input questions without exposing the actual keywords
+    if (matchKeywords && Array.isArray(matchKeywords) && matchKeywords.length > 0) {
+      result.keywordCount = matchKeywords.length;
+    }
+    return result as QuestionWithoutAnswer;
   }
 
   async findAll(filters?: QuestionFilters, includeInactive: boolean = false): Promise<QuestionWithoutAnswer[]> {
-    const queryBuilder = this.questionRepository.createQueryBuilder('q');
+    const queryBuilder = this.questionRepository.createQueryBuilder('q')
+      .leftJoinAndSelect('q.choices', 'choices');
     
     if (!includeInactive) {
       queryBuilder.where('q.isActive = :isActive', { isActive: true });
@@ -86,6 +129,7 @@ export class QuestionService {
   async findOne(id: number): Promise<QuestionEntity | null> {
     return await this.questionRepository.findOne({
       where: { id },
+      relations: ['choices'],
     });
   }
 

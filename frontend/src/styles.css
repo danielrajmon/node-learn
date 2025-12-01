@@ -63,9 +63,12 @@ body {
   white-space: nowrap;
 }
 
-/* Code blocks in question text */
+/* Code blocks in question text and answers */
 .question-text pre,
-.question pre {
+.question pre,
+.quiz-question pre,
+.quiz-answer pre,
+.answer pre {
   background-color: #f8f9fa;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -78,7 +81,10 @@ body {
 }
 
 .question-text pre code,
-.question pre code {
+.question pre code,
+.quiz-question pre code,
+.quiz-answer pre code,
+.answer pre code {
   background: none;
   border: none;
   padding: 0;
