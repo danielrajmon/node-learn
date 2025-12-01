@@ -54,12 +54,47 @@ export class AdminService {
   }
 
   async updateQuestion(id: number, updateQuestionDto: any): Promise<QuestionEntity> {
-    const question = await this.questionRepository.findOne({ where: { id } });
+    const question = await this.questionRepository.findOne({ 
+      where: { id },
+      relations: ['choices']
+    });
     if (!question) {
       throw new Error('Question not found');
     }
-    Object.assign(question, updateQuestionDto);
-    return await this.questionRepository.save(question);
+
+    const { choices, ...questionData } = updateQuestionDto;
+    
+    // Delete all existing choices first
+    if (question.choices && question.choices.length > 0) {
+      await this.choiceRepository.delete({ questionId: id });
+    }
+    
+    // Update question fields
+    Object.assign(question, questionData);
+    const savedQuestion = await this.questionRepository.save(question);
+    
+    // Create new choices if provided
+    if (choices && choices.length > 0) {
+      const choiceEntities = choices.map(choice => 
+        this.choiceRepository.create({
+          ...choice,
+          questionId: savedQuestion.id
+        })
+      );
+      await this.choiceRepository.save(choiceEntities);
+    }
+    
+    // Return the updated question with new choices
+    const result = await this.questionRepository.findOne({
+      where: { id: savedQuestion.id },
+      relations: ['choices']
+    });
+    
+    if (!result) {
+      throw new Error('Failed to update question');
+    }
+    
+    return result;
   }
 
   async deleteQuestion(id: number): Promise<void> {
