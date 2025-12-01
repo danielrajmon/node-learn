@@ -39,7 +39,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
       ['code-block'],
       [{ 'header': 1 }, { 'header': 2 }],
       [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['link']
+      ['link'],
+      ['clean']
     ]
     // syntax module is intentionally omitted to disable highlight.js
   };
