@@ -3,6 +3,19 @@
     <h1>Learn NodeJS</h1>
     <div class="user-section">
       <span *ngIf="user" class="user-name">{{ user.name }}</span>
+      <a *ngIf="!user" routerLink="/login" class="user-icon" title="Login">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </a>
+      <a *ngIf="user" (click)="logout()" class="user-icon logout-icon" title="Logout">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </a>
       <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-label="Toggle menu">
         <span class="hamburger"></span>
       </button>
@@ -13,7 +26,6 @@
     <a routerLink="/learn" routerLinkActive="active" (click)="closeMobileMenu()">Learn</a>
     <a routerLink="/questions" routerLinkActive="active" (click)="closeMobileMenu()">Questions</a>
     <a routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Admin</a>
-    <a *ngIf="!user" routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">Login</a>
     <a *ngIf="user" (click)="logout()" class="logout-link">Logout</a>
   </nav>
 </header>

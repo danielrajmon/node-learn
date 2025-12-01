@@ -30,6 +30,29 @@
   color: white;
 }
 
+.user-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.user-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-icon svg {
+  display: block;
+}
+
+.logout-icon:hover {
+  background-color: rgba(231, 76, 60, 0.2);
+}
+
 .mobile-menu-toggle {
   display: none;
   background: none;
@@ -103,10 +126,14 @@
 
 .nav .logout-link {
   cursor: pointer;
+  display: none;
 }
 
 /* Mobile styles */
 @media (max-width: 768px) {
+  .nav .logout-link {
+    display: block;
+  }
   .header {
     padding: 1rem;
   }
