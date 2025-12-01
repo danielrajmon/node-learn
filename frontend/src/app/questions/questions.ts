@@ -88,7 +88,9 @@ export class Questions implements OnInit {
       if (!this.answers.has(questionId)) {
         this.questionService.getAnswer(questionId).subscribe({
           next: (result) => {
-            this.answers.set(questionId, result.answer);
+            // Replace &nbsp; with regular spaces to allow proper word wrapping
+            const cleanedAnswer = result.answer.replace(/&nbsp;/g, ' ');
+            this.answers.set(questionId, cleanedAnswer);
             this.cdr.detectChanges();
           },
           error: (err) => {
