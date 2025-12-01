@@ -162,11 +162,7 @@ export class Quiz implements OnInit {
   submitAnswer() {
     if (this.answered || !this.currentQuestion) return;
 
-    this.answered = true;
-
-    if (this.currentQuestion.questionType === 'text_input') {
-      this.checkTextAnswer();
-    }
+    const isTextInput = this.currentQuestion.questionType === 'text_input';
 
     // Load long answer and correct choices
     this.questionService.getAnswer(this.currentQuestion.id).subscribe({
@@ -177,8 +173,8 @@ export class Quiz implements OnInit {
         // Update matchKeywords if provided
         if (result.matchKeywords && this.currentQuestion) {
           this.currentQuestion.matchKeywords = result.matchKeywords;
-          // Re-check text answer now that we have the keywords
-          if (this.currentQuestion.questionType === 'text_input') {
+          // Check text answer now that we have the keywords
+          if (isTextInput) {
             this.checkTextAnswer();
           }
         }
@@ -194,10 +190,13 @@ export class Quiz implements OnInit {
           });
           
           // Now check the choice answer after we have the correct data
-          if (this.currentQuestion && this.currentQuestion.questionType !== 'text_input') {
+          if (this.currentQuestion && !isTextInput) {
             this.checkChoiceAnswer();
           }
         }
+        
+        // Set answered AFTER validation is complete to prevent red blink
+        this.answered = true;
         
         this.cdr.detectChanges();
         
