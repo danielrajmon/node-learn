@@ -185,19 +185,13 @@ export class Quiz implements OnInit {
         
         // Merge correct answer data into display choices
         if (result.choices && this.displayChoices.length > 0) {
-          console.log('Answer choices from backend:', result.choices);
-          console.log('Display choices before merge:', this.displayChoices);
-          
           this.displayChoices = this.displayChoices.map(displayChoice => {
             const correctChoice = result.choices!.find((c: any) => c.id === displayChoice.id);
-            console.log(`Mapping choice ${displayChoice.id}: found match =`, correctChoice, 'isGood =', correctChoice?.isGood);
             return {
               ...displayChoice,
               isGood: correctChoice ? correctChoice.isGood : false
             };
           });
-          
-          console.log('Display choices after merge:', this.displayChoices);
           
           // Now check the choice answer after we have the correct data
           if (this.currentQuestion && this.currentQuestion.questionType !== 'text_input') {
