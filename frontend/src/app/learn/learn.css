@@ -103,9 +103,14 @@
 
 .answer {
   line-height: 1.8;
-  white-space: pre-wrap;
   color: #212529;
   margin: 0;
+}
+
+.answer pre,
+.answer code {
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .button-group {

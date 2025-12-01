@@ -57,7 +57,9 @@ export class Learn implements OnInit {
     this.isLoading = true;
     this.questionService.getAnswer(this.currentQuestion.id).subscribe({
       next: (result) => {
-        this.answerResult = { answer: result.answer };
+        // Replace &nbsp; with regular spaces to allow proper word wrapping
+        const cleanedAnswer = result.answer.replace(/&nbsp;/g, ' ');
+        this.answerResult = { answer: cleanedAnswer };
         this.showAnswer = true;
         this.isLoading = false;
         this.cdr.detectChanges();
