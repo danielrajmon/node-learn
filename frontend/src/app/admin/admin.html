@@ -1,6 +1,6 @@
 <div class="admin-container">
   <div class="header">
-    <h1>{{ isEditMode ? 'Edit Question' : 'Create Questions' }}</h1>
+    <h1>{{ isEditMode ? 'Edit Question' : 'Create a question' }}</h1>
   </div>
 
   <div class="success-message" *ngIf="successMessage">
@@ -197,7 +197,7 @@
   </form>
 
   <div class="questions-list">
-    <h2>Modify or Delete Questions ({{ allQuestions.length }})</h2>
+    <h2>Modify or delete a question ({{ allQuestions.length }})</h2>
     
     <div class="loading-message" *ngIf="loading">
       <p>Loading questions...</p>
