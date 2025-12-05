@@ -148,18 +148,27 @@
       
       <h3>Wrong Answers</h3>
       <div class="choice-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
-        <div class="choice-row" *ngIf="!choice.isGood">
-          <input
-            type="text"
-            [(ngModel)]="choice.choiceText"
-            [name]="'choice_' + i"
-            placeholder="Enter wrong answer"
-            required
-            class="choice-input"
-          />
-          <button type="button" class="remove-choice-btn" (click)="removeChoice(i)" *ngIf="getWrongChoicesCount() > 1">
-            ✕
-          </button>
+        <div class="choice-group" *ngIf="!choice.isGood">
+          <div class="choice-row">
+            <input
+              type="text"
+              [(ngModel)]="choice.choiceText"
+              [name]="'choice_' + i"
+              placeholder="Enter wrong answer"
+              required
+              class="choice-input"
+            />
+            <button type="button" class="remove-choice-btn" (click)="removeChoice(i)" *ngIf="getWrongChoicesCount() > 1">
+              ✕
+            </button>
+          </div>
+          <textarea
+            [(ngModel)]="choice.explanation"
+            [name]="'explanation_' + i"
+            placeholder="Explanation (optional): Why is this answer wrong?"
+            class="choice-explanation"
+            rows="2"
+          ></textarea>
         </div>
       </div>
       <button type="button" class="add-choice-btn" (click)="addChoice()">+ Add Wrong Answer</button>
@@ -169,26 +178,36 @@
     <div class="choices-section" *ngIf="question.questionType === 'multiple_choice'">
       <h3>Answer Choices</h3>
       <div class="choice-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
-        <div class="choice-row">
-          <input
-            type="text"
-            [(ngModel)]="choice.choiceText"
-            [name]="'choice_' + i"
-            placeholder="Enter answer choice"
-            required
-            class="choice-input"
-          />
-          <label class="choice-checkbox">
+        <div class="choice-group">
+          <div class="choice-row">
             <input
-              type="checkbox"
-              [(ngModel)]="choice.isGood"
-              [name]="'isGood_' + i"
+              type="text"
+              [(ngModel)]="choice.choiceText"
+              [name]="'choice_' + i"
+              placeholder="Enter answer choice"
+              required
+              class="choice-input"
             />
-            Correct
-          </label>
-          <button type="button" class="remove-choice-btn" (click)="removeChoice(i)" *ngIf="question.choices!.length > 1">
-            ✕
-          </button>
+            <label class="choice-checkbox">
+              <input
+                type="checkbox"
+                [(ngModel)]="choice.isGood"
+                [name]="'isGood_' + i"
+              />
+              Correct
+            </label>
+            <button type="button" class="remove-choice-btn" (click)="removeChoice(i)" *ngIf="question.choices!.length > 1">
+              ✕
+            </button>
+          </div>
+          <textarea
+            *ngIf="!choice.isGood"
+            [(ngModel)]="choice.explanation"
+            [name]="'explanation_' + i"
+            placeholder="Explanation (optional): Why is this answer wrong?"
+            class="choice-explanation"
+            rows="2"
+          ></textarea>
         </div>
       </div>
       <button type="button" class="add-choice-btn" (click)="addChoice()">+ Add Choice</button>

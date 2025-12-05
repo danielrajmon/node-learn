@@ -470,6 +470,12 @@
   font-size: 1rem;
 }
 
+.choice-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .choice-row {
   display: flex;
   gap: 0.75rem;
@@ -478,6 +484,31 @@
 
 .choice-input {
   flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  height: 3rem;
+  box-sizing: border-box;
+}
+
+.choice-explanation {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: none;
+  line-height: normal;
+  height: 3rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.choice-explanation:focus {
+  outline: none;
+  border-color: #3498db;
 }
 
 .choice-checkbox {
