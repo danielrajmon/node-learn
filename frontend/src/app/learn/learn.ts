@@ -120,6 +120,17 @@ export class Learn implements OnInit, AfterViewChecked {
         this.showAnswer = true;
         this.isLoading = false;
         this.cdr.detectChanges();
+        // Apply syntax highlighting to answer code
+        setTimeout(() => {
+          document.querySelectorAll('.answer-section .answer pre').forEach((block) => {
+            if (!block.classList.contains('hljs')) {
+              block.classList.add('hljs');
+              block.classList.add('language-typescript');
+              hljs.highlightElement(block as HTMLElement);
+            }
+          });
+          this.answerHighlightApplied = true;
+        }, 0);
       },
       error: (err) => {
         this.error = 'Failed to load answer. Please try again.';

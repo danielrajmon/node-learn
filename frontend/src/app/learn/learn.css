@@ -122,10 +122,25 @@
   margin: 0;
 }
 
+.answer code {
+  font-size: 0.85rem !important;
+  font-weight: normal !important;
+  line-height: 1.4 !important;
+}
+
 .answer pre,
 .answer code {
   overflow-x: auto;
   max-width: 100%;
+}
+
+.answer > pre:not(.hljs) {
+  opacity: 0;
+}
+
+.answer > pre.hljs {
+  opacity: 1;
+  transition: opacity 0.1s ease-in;
 }
 
 .button-group {
