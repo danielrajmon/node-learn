@@ -24,4 +24,13 @@ export class ChoiceDto {
   })
   @IsBoolean()
   isGood: boolean;
+
+  @ApiProperty({
+    example: 'This is incorrect because...',
+    description: 'Explanation or rationale for why this choice is correct or incorrect',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  explanation?: string;
 }

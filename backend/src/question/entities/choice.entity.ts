@@ -15,6 +15,9 @@ export class ChoiceEntity {
   @Column({ name: 'is_good', type: 'boolean', default: false })
   isGood: boolean;
 
+  @Column({ name: 'explanation', type: 'text', nullable: true })
+  explanation: string | null;
+
   @ManyToOne(() => QuestionEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'question_id' })
   question: QuestionEntity;

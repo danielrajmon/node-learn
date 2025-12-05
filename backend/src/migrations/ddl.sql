@@ -39,7 +39,8 @@ CREATE TABLE choices (
     id           BIGSERIAL PRIMARY KEY,
     question_id  BIGINT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
     choice_text  TEXT NOT NULL,
-    is_good      BOOLEAN NOT NULL DEFAULT FALSE
+    is_good      BOOLEAN NOT NULL DEFAULT FALSE,
+    explanation  TEXT
 );
 
 -- Create index

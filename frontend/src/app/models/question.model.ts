@@ -2,6 +2,7 @@ export interface Choice {
   id?: number;
   choiceText: string;
   isGood: boolean;
+  explanation?: string | null;
 }
 
 export interface Question {
