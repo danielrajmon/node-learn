@@ -72,7 +72,12 @@ export class Learn implements OnInit, AfterViewChecked {
 
     this.questionService.getRandomQuestion().subscribe({
       next: (question) => {
-        this.currentQuestion = question;
+        // Replace &nbsp; with regular spaces to allow proper word wrapping
+        const cleanedQuestion = {
+          ...question,
+          questionText: question.questionText.replace(/&nbsp;/g, ' ')
+        };
+        this.currentQuestion = cleanedQuestion;
         this.showAnswer = false;
         this.answerResult = null;
         this.isLoading = false;

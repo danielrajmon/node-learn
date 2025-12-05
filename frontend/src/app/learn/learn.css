@@ -81,6 +81,12 @@
   color: #333;
 }
 
+.question pre,
+.question code {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
 .question code {
   font-size: 0.85rem !important;
   font-weight: normal !important;
