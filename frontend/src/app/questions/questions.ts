@@ -46,9 +46,11 @@ export class Questions implements OnInit {
           ...q,
           questionText: q.questionText.replace(/&nbsp;/g, ' ')
         }));
-        this.allQuestions = cleanedQuestions;
-        this.questions = cleanedQuestions;
-        this.extractTopics(cleanedQuestions);
+        // Sort by ID descending to show newest first
+        const sortedQuestions = cleanedQuestions.sort((a, b) => b.id - a.id);
+        this.allQuestions = sortedQuestions;
+        this.questions = sortedQuestions;
+        this.extractTopics(sortedQuestions);
         this.loading = false;
         this.cdr.detectChanges();
         // Apply syntax highlighting to question code blocks
