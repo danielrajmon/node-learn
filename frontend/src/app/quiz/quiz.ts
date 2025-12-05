@@ -271,8 +271,8 @@ export class Quiz implements OnInit {
       return null;
     }
 
-    // Normalize function: trim, lowercase, remove ?, !, .
-    const normalize = (text: string) => text.trim().toLowerCase().replace(/[?!.]/g, '');
+    // Normalize function: trim, lowercase, remove ?, !, ., -, /, '
+    const normalize = (text: string) => text.trim().toLowerCase().replace(/[?!.\-\/']/g, '');
 
     const keywords = this.currentQuestion.matchKeywords.map(normalize);
     const userAnswers = this.textAnswers.map(normalize);
@@ -401,22 +401,60 @@ export class Quiz implements OnInit {
   skipQuestion() {
     if (!this.currentQuestion) return;
     
-    this.answered = true;
+    const isTextInput = this.currentQuestion.questionType === 'text_input';
+    
+    // For text input, mark all answers as incorrect
+    if (isTextInput) {
+      this.textAnswersCorrect = this.textAnswers.map(() => false);
+    }
+    
     this.correct = false;
     this.feedback = 'Skipped';
-    this.longAnswer = this.currentQuestion.longAnswer || '';
-    this.cdr.detectChanges();
 
-    // Apply syntax highlighting to answer code
-    setTimeout(() => {
-      document.querySelectorAll('.quiz-answer pre').forEach((block) => {
-        if (!block.classList.contains('hljs')) {
-          block.classList.add('hljs');
-          block.classList.add('language-typescript');
-          hljs.highlightElement(block as HTMLElement);
+    // Load long answer and correct choices/keywords
+    this.questionService.getAnswer(this.currentQuestion.id).subscribe({
+      next: (result) => {
+        const cleanedAnswer = result.answer.replace(/&nbsp;/g, ' ');
+        this.longAnswer = cleanedAnswer;
+        
+        // Update matchKeywords if provided
+        if (result.matchKeywords && this.currentQuestion) {
+          this.currentQuestion.matchKeywords = result.matchKeywords;
         }
-      });
-      this.answerHighlightApplied = true;
-    }, 0);
+        
+        // Merge correct answer data into display choices
+        if (result.choices && this.displayChoices.length > 0) {
+          this.displayChoices = this.displayChoices.map(displayChoice => {
+            const correctChoice = result.choices!.find((c: any) => c.id === displayChoice.id);
+            return {
+              ...displayChoice,
+              isGood: correctChoice ? correctChoice.isGood : false
+            };
+          });
+        }
+        
+        // Set answered AFTER validation is complete
+        this.answered = true;
+        
+        this.cdr.detectChanges();
+        
+        // Apply syntax highlighting to answer
+        setTimeout(() => {
+          document.querySelectorAll('.quiz-answer pre').forEach((block) => {
+            if (!block.classList.contains('hljs')) {
+              block.classList.add('hljs');
+              block.classList.add('language-typescript');
+              hljs.highlightElement(block as HTMLElement);
+            }
+          });
+          this.answerHighlightApplied = true;
+        }, 0);
+      },
+      error: (err) => {
+        console.error('Error loading answer:', err);
+      }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
