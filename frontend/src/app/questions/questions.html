@@ -43,7 +43,6 @@
       </button>
       
       <div class="answer-section" *ngIf="visibleAnswers.has(question.id)">
-        <h4>Answer:</h4>
         <div class="answer-text" [innerHTML]="answers.get(question.id)"></div>
       </div>
     </div>
