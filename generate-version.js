@@ -2,9 +2,10 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 
 try {
-  const commitCount = execSync('git rev-list --count HEAD').toString().trim();
-  const commitHash = execSync('git rev-parse --short HEAD').toString().trim();
-  const commitDate = execSync('git log -1 --format=%cd --date=short').toString().trim();
+  const gitOptions = { cwd: __dirname };
+  const commitCount = execSync('git rev-list --count HEAD', gitOptions).toString().trim();
+  const commitHash = execSync('git rev-parse --short HEAD', gitOptions).toString().trim();
+  const commitDate = execSync('git log -1 --format=%cd --date=short', gitOptions).toString().trim();
 
   const version = {
     commitCount,
@@ -14,7 +15,7 @@ try {
     fullVersion: `Version ${commitCount} (${commitHash}) - ${commitDate}`
   };
 
-  const outputPath = './src/version.json';
+  const outputPath = './frontend/src/version.json';
   fs.writeFileSync(outputPath, JSON.stringify(version, null, 2));
   console.log('Version file generated:', version.fullVersion);
 } catch (error) {
@@ -27,5 +28,5 @@ try {
     version: 'v0-unknown',
     fullVersion: 'Version unknown'
   };
-  fs.writeFileSync('./src/version.json', JSON.stringify(fallbackVersion, null, 2));
+  fs.writeFileSync('./frontend/src/version.json', JSON.stringify(fallbackVersion, null, 2));
 }
