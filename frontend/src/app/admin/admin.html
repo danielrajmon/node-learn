@@ -43,7 +43,7 @@
             name="longAnswer"
             [(ngModel)]="question.longAnswer"
             [modules]="quillModules"
-            [styles]="{ height: '300px' }"
+            [styles]="{ height: '400px' }"
             placeholder="Enter the detailed answer..."
             [required]="true"
             format="html"
@@ -81,17 +81,6 @@
           </datalist>
         </div>
 
-        <div class="form-group checkbox-group">
-          <label>
-            <input
-              type="checkbox"
-              name="isActive"
-              [(ngModel)]="question.isActive"
-            />
-            Active (visible to users)
-          </label>
-        </div>
-
         <div class="form-group">
           <label for="questionType">Question Type</label>
           <select
@@ -105,6 +94,17 @@
             <option value="multiple_choice">Multiple Choice</option>
             <option value="text_input">Text Input</option>
           </select>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              name="isActive"
+              [(ngModel)]="question.isActive"
+            />
+            Active (visible to users)
+          </label>
         </div>
       </div>
 
@@ -135,7 +135,7 @@
     <!-- Single Choice: Dynamic choices (1 correct + multiple wrong) -->
     <div class="choices-section" *ngIf="question.questionType === 'single_choice'">
       <h3>Correct Answer</h3>
-      <div class="choice-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
+      <div class="correct-answer-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
         <input
           *ngIf="choice.isGood"
           type="text"
@@ -143,32 +143,35 @@
           [name]="'choice_' + i"
           placeholder="Enter the correct answer"
           required
+          class="choice-input"
         />
       </div>
       
       <h3>Wrong Answers</h3>
-      <div class="choice-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
-        <div class="choice-group" *ngIf="!choice.isGood">
-          <div class="choice-row">
+      <div class="wrong-answers-container">
+        <div class="choice-item" *ngFor="let choice of question.choices; let i = index; trackBy: trackByIndex">
+          <div class="choice-group" *ngIf="!choice.isGood">
+            <div class="choice-row">
+              <input
+                type="text"
+                [(ngModel)]="choice.choiceText"
+                [name]="'choice_' + i"
+                placeholder="Enter wrong answer"
+                required
+                class="choice-input"
+              />
+              <button type="button" class="remove-choice-btn" (click)="removeChoice(i)" *ngIf="getWrongChoicesCount() > 1">
+                ✕
+              </button>
+            </div>
             <input
               type="text"
-              [(ngModel)]="choice.choiceText"
-              [name]="'choice_' + i"
-              placeholder="Enter wrong answer"
-              required
-              class="choice-input"
+              [(ngModel)]="choice.explanation"
+              [name]="'explanation_' + i"
+              placeholder="Explanation (optional): Why is this answer wrong?"
+              class="choice-explanation"
             />
-            <button type="button" class="remove-choice-btn" (click)="removeChoice(i)" *ngIf="getWrongChoicesCount() > 1">
-              ✕
-            </button>
           </div>
-          <input
-            type="text"
-            [(ngModel)]="choice.explanation"
-            [name]="'explanation_' + i"
-            placeholder="Explanation (optional): Why is this answer wrong?"
-            class="choice-explanation"
-          />
         </div>
       </div>
       <button type="button" class="add-choice-btn" (click)="addChoice()">+ Add Wrong Answer</button>
