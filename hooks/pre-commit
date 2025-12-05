@@ -5,7 +5,7 @@
 echo "Generating version.json..."
 node generate-version.js
 
-# Add the generated file to the commit
+# Add the generated file to the current commit
 git add frontend/src/version.json
 
-echo "Version file updated and staged"
+echo "Version file updated and included in commit"
