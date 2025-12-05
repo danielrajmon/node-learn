@@ -228,8 +228,8 @@ export class Quiz implements OnInit {
   checkTextAnswer() {
     if (!this.currentQuestion || !this.currentQuestion.matchKeywords) return;
 
-    // Normalize function: trim, lowercase, remove ?, !, .
-    const normalize = (text: string) => text.trim().toLowerCase().replace(/[?!.]/g, '');
+    // Normalize function: trim, lowercase, remove ?, !, ., -, /, '
+    const normalize = (text: string) => text.trim().toLowerCase().replace(/[?!.\-\/']/g, '');
 
     const keywords = this.currentQuestion.matchKeywords.map(normalize);
     const userAnswers = this.textAnswers.map(normalize);
