@@ -253,11 +253,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
         { choiceText: '', isGood: false }
       ];
     } else if (this.question.questionType === 'multiple_choice') {
-      // Multiple choice: Start with 8 choices (1 correct + 7 wrong)
+      // Multiple choice: 5 correct + 5 wrong = 10 total
       this.question.choices = [
         { choiceText: '', isGood: true },
-        { choiceText: '', isGood: false },
-        { choiceText: '', isGood: false },
+        { choiceText: '', isGood: true },
+        { choiceText: '', isGood: true },
+        { choiceText: '', isGood: true },
+        { choiceText: '', isGood: true },
         { choiceText: '', isGood: false },
         { choiceText: '', isGood: false },
         { choiceText: '', isGood: false },
