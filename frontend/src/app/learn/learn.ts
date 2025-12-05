@@ -22,6 +22,8 @@ export class Learn implements OnInit, AfterViewChecked {
   isLoading = false;
   private questionHighlightApplied = false;
   private answerHighlightApplied = false;
+  private recentQuestionIds: number[] = [];
+  private maxRetries = 5;
 
   constructor(
     private questionService: QuestionService,
@@ -64,7 +66,7 @@ export class Learn implements OnInit, AfterViewChecked {
     }
   }
 
-  loadRandomQuestion() {
+  loadRandomQuestion(retryCount = 0) {
     this.error = null;
     this.isLoading = true;
     this.questionHighlightApplied = false;
@@ -72,12 +74,26 @@ export class Learn implements OnInit, AfterViewChecked {
 
     this.questionService.getRandomQuestion().subscribe({
       next: (question) => {
+        // Check if question is in recent history
+        if (this.recentQuestionIds.includes(question.id) && retryCount < this.maxRetries) {
+          // Question is a repeat, try again
+          this.loadRandomQuestion(retryCount + 1);
+          return;
+        }
+
         // Replace &nbsp; with regular spaces to allow proper word wrapping
         const cleanedQuestion = {
           ...question,
           questionText: question.questionText.replace(/&nbsp;/g, ' ')
         };
         this.currentQuestion = cleanedQuestion;
+        
+        // Add to recent questions and keep only last 10
+        this.recentQuestionIds.push(question.id);
+        if (this.recentQuestionIds.length > 10) {
+          this.recentQuestionIds.shift();
+        }
+        
         this.showAnswer = false;
         this.answerResult = null;
         this.isLoading = false;
