@@ -77,7 +77,12 @@ export class Quiz implements OnInit {
   }
 
   loadCurrentQuestion() {
-    this.currentQuestion = this.questions[this.currentQuestionIndex];
+    // Replace &nbsp; with regular spaces to allow proper word wrapping
+    const question = this.questions[this.currentQuestionIndex];
+    this.currentQuestion = {
+      ...question,
+      questionText: question.questionText.replace(/&nbsp;/g, ' ')
+    };
     this.answered = false;
     this.correct = false;
     this.feedback = '';
