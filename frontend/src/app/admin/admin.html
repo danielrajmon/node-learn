@@ -1,4 +1,12 @@
 <div class="admin-container">
+  <div class="warning-message" *ngIf="!isAuthenticated">
+    ⚠️ Warning: You are not signed in. You won't be able to create or modify questions without authentication.
+  </div>
+
+  <div class="warning-message" *ngIf="isAuthenticated && !isAdmin">
+    ⚠️ Warning: You do not have admin privileges. You won't be able to create or modify questions.
+  </div>
+
   <div class="header">
     <h1>{{ isEditMode ? 'Edit Question' : 'Create a question' }}</h1>
   </div>

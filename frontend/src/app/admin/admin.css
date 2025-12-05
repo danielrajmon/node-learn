@@ -42,6 +42,15 @@
   border-radius: 4px;
 }
 
+.warning-message {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+}
+
 .error-message {
   padding: 1rem;
   margin-bottom: 1rem;

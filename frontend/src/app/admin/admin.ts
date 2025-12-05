@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminService } from '../services/admin';
 import { QuestionService } from '../services/question';
+import { AuthService, User } from '../services/auth.service';
 import { CreateQuestion, Question, Choice } from '../models/question.model';
 import { QuillModule } from 'ngx-quill';
 
@@ -32,6 +33,9 @@ export class AdminComponent implements OnInit, AfterViewInit {
   loading = false;
   successMessage = '';
   errorMessage = '';
+  currentUser: User | null = null;
+  isAuthenticated = false;
+  isAdmin = false;
 
   quillModules = {
     toolbar: [
@@ -48,11 +52,20 @@ export class AdminComponent implements OnInit, AfterViewInit {
   constructor(
     private adminService: AdminService,
     private questionService: QuestionService,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    // Check authentication status
+    this.authService.user$.subscribe(user => {
+      this.currentUser = user;
+      this.isAuthenticated = !!user;
+      this.isAdmin = user?.isAdmin || false;
+      this.cdr.detectChanges();
+    });
+
     this.loadQuestions();
     this.initializeChoices();
     this.initializeKeywords();
