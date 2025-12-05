@@ -124,7 +124,7 @@
   gap: 1.5rem;
   max-height: calc(100vh - 400px);
   overflow-y: auto;
-  padding-right: 0.5rem;
+  padding-right: 1rem;
   margin-bottom: 2rem;
 }
 
@@ -214,6 +214,12 @@
   margin-bottom: 1rem;
 }
 
+.question-text pre,
+.question-text code {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
 .question-text pre:not(.hljs) {
   opacity: 0;
 }
@@ -259,6 +265,12 @@
 .answer-text {
   color: #34495e;
   line-height: 1.6;
+}
+
+.answer-text pre,
+.answer-text code {
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .answer-text pre:not(.hljs) {

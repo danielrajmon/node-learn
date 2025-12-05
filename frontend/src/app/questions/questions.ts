@@ -41,9 +41,14 @@ export class Questions implements OnInit {
 
     this.questionService.getAllQuestions().subscribe({
       next: (questions) => {
-        this.allQuestions = questions;
-        this.questions = questions;
-        this.extractTopics(questions);
+        // Replace &nbsp; with regular spaces to allow proper word wrapping
+        const cleanedQuestions = questions.map(q => ({
+          ...q,
+          questionText: q.questionText.replace(/&nbsp;/g, ' ')
+        }));
+        this.allQuestions = cleanedQuestions;
+        this.questions = cleanedQuestions;
+        this.extractTopics(cleanedQuestions);
         this.loading = false;
         this.cdr.detectChanges();
         // Apply syntax highlighting to question code blocks
