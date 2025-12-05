@@ -9,11 +9,14 @@ export class QuestionEntity {
   @Column({ name: 'question_type', type: 'varchar' })
   questionType: 'single_choice' | 'multiple_choice' | 'text_input';
 
-  @Column({ name: 'question_text', type: 'text' })
-  questionText: string;
+  @Column({ name: 'question', type: 'text' })
+  question: string;
 
-  @Column({ name: 'long_answer', type: 'text', nullable: true })
-  longAnswer: string | null;
+  @Column({ name: 'answer', type: 'text', nullable: true })
+  answer: string | null;
+
+  @Column({ name: 'quiz', type: 'text', nullable: true })
+  quiz: string | null;
 
   @Column('text', { name: 'match_keywords', array: true, nullable: true, default: () => 'ARRAY[]::text[]' })
   matchKeywords: string[] | null;

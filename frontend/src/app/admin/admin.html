@@ -23,11 +23,11 @@
     <div class="form-layout">
       <div class="form-left">
         <div class="form-group">
-          <label for="questionText">Question Text</label>
+          <label for="question">Question Text</label>
           <quill-editor
-            id="questionText"
-            name="questionText"
-            [(ngModel)]="question.questionText"
+            id="question"
+            name="question"
+            [(ngModel)]="question.question"
             [modules]="quillModules"
             [styles]="{ height: '150px' }"
             placeholder="Enter your question here..."
@@ -37,17 +37,31 @@
         </div>
 
         <div class="form-group">
-          <label for="longAnswer">Answer</label>
+          <label for="answer">Answer</label>
           <quill-editor
-            id="longAnswer"
-            name="longAnswer"
-            [(ngModel)]="question.longAnswer"
+            id="answer"
+            name="answer"
+            [(ngModel)]="question.answer"
             [modules]="quillModules"
             [styles]="{ height: '400px' }"
             placeholder="Enter the detailed answer..."
             [required]="true"
             format="html"
           ></quill-editor>
+        </div>
+
+        <div class="form-group">
+          <label for="quiz">Quiz Question (optional)</label>
+          <quill-editor
+            id="quiz"
+            name="quiz"
+            [(ngModel)]="question.quiz"
+            [modules]="quillModules"
+            [styles]="{ height: '150px' }"
+            placeholder="Enter quiz question text (displayed in quiz mode)..."
+            format="html"
+          ></quill-editor>
+          <small>If provided, this text will be shown in quiz mode instead of the question text</small>
         </div>
 
         <div class="form-group">
@@ -255,7 +269,7 @@
               [class.inactive-question]="!q.isActive"
               class="clickable-row">
             <td data-label="ID">{{ q.id }}</td>
-            <td data-label="Question Text" class="question-text">{{ stripHtml(q.questionText) }}</td>
+            <td data-label="Question Text" class="question-text">{{ stripHtml(q.question) }}</td>
             <td data-label="Difficulty">
               <span class="badge" [ngClass]="'badge-' + q.difficulty">{{ q.difficulty }}</span>
             </td>

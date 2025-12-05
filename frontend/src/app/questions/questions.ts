@@ -44,7 +44,7 @@ export class Questions implements OnInit {
         // Replace &nbsp; with regular spaces to allow proper word wrapping
         const cleanedQuestions = questions.map(q => ({
           ...q,
-          questionText: q.questionText.replace(/&nbsp;/g, ' ')
+          question: q.question.replace(/&nbsp;/g, ' ')
         }));
         // Sort by ID descending to show newest first
         const sortedQuestions = cleanedQuestions.sort((a, b) => b.id - a.id);
@@ -86,7 +86,7 @@ export class Questions implements OnInit {
   applyFilters() {
     this.questions = this.allQuestions.filter(q => {
       const matchesSearch = !this.searchTerm || 
-        q.questionText.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        q.question.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         (q.topic && q.topic.toLowerCase().includes(this.searchTerm.toLowerCase()));
       
       const matchesDifficulty = !this.selectedDifficulty || 

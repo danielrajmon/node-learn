@@ -1,7 +1,8 @@
 export interface Question {
   id: number;
-  questionText: string;
-  longAnswer?: string | null;
+  question: string;
+  answer?: string | null;
+  quiz?: string | null;
   matchKeywords: string[];
   difficulty: 'easy' | 'medium' | 'hard';
   topic: string;
@@ -10,7 +11,8 @@ export interface Question {
 
 export interface QuestionWithoutAnswer {
   id: number;
-  questionText: string;
+  question: string;
+  quiz?: string | null;
   difficulty: 'easy' | 'medium' | 'hard';
   topic: string;
   isActive: boolean;

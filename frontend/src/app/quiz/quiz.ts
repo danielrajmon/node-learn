@@ -82,7 +82,7 @@ export class Quiz implements OnInit {
     const question = this.questions[this.currentQuestionIndex];
     this.currentQuestion = {
       ...question,
-      questionText: question.questionText.replace(/&nbsp;/g, ' ')
+      question: (question.quiz || question.question).replace(/&nbsp;/g, ' ')
     };
     this.answered = false;
     this.correct = false;

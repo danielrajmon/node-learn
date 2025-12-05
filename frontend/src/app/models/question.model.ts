@@ -8,8 +8,9 @@ export interface Choice {
 export interface Question {
   id: number;
   questionType: 'single_choice' | 'multiple_choice' | 'text_input';
-  questionText: string;
-  longAnswer?: string;
+  question: string;
+  answer?: string;
+  quiz?: string;
   matchKeywords?: string[];
   keywordCount?: number;
   difficulty: 'easy' | 'medium' | 'hard';
@@ -22,8 +23,9 @@ export interface Question {
 
 export interface CreateQuestion {
   questionType: 'single_choice' | 'multiple_choice' | 'text_input';
-  questionText: string;
-  longAnswer?: string;
+  question: string;
+  answer?: string;
+  quiz?: string;
   matchKeywords?: string[];
   difficulty: 'easy' | 'medium' | 'hard';
   topic: string;

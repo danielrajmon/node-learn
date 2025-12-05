@@ -84,7 +84,7 @@ export class Learn implements OnInit, AfterViewChecked {
         // Replace &nbsp; with regular spaces to allow proper word wrapping
         const cleanedQuestion = {
           ...question,
-          questionText: question.questionText.replace(/&nbsp;/g, ' ')
+          question: question.question.replace(/&nbsp;/g, ' ')
         };
         this.currentQuestion = cleanedQuestion;
         

@@ -14,7 +14,7 @@ export class AnswerService {
 
     return {
       questionId,
-      answer: question.longAnswer || '',
+      answer: question.answer || '',
       choices: question.choices || [],
       matchKeywords: question.matchKeywords || [],
     };

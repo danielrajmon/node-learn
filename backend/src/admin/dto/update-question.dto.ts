@@ -19,7 +19,7 @@ export class UpdateQuestionDto {
   })
   @IsString()
   @IsOptional()
-  questionText?: string;
+  question?: string;
 
   @ApiProperty({
     example: 'The three pillars of OOP are Encapsulation, Inheritance, and Polymorphism...',
@@ -28,7 +28,16 @@ export class UpdateQuestionDto {
   })
   @IsString()
   @IsOptional()
-  longAnswer?: string;
+  answer?: string;
+
+  @ApiProperty({
+    example: 'Which of the following are pillars of OOP?',
+    description: 'Quiz question text (displayed in quiz mode)',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  quiz?: string;
 
   @ApiProperty({
     example: 'medium',

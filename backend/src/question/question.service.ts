@@ -16,7 +16,7 @@ export class QuestionService {
   ) {}
 
   private removeAnswer(question: Question | QuestionEntity): QuestionWithoutAnswer {
-    const { longAnswer, matchKeywords, ...rest } = question;
+    const { answer, matchKeywords, ...rest } = question;
     // Remove isGood from choices to prevent exposing correct answers
     const result: any = { ...rest };
     if ('choices' in question && question.choices) {

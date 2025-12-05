@@ -8,14 +8,21 @@ export class QuestionDto {
     example: 'What are the three pillars of OOP?',
     description: 'The interview question text',
   })
-  questionText: string;
+  question: string;
 
   @ApiProperty({
     example: 'The three pillars of OOP are Encapsulation, Inheritance, and Polymorphism...',
-    description: 'Long-form answer for text input questions',
+    description: 'Long-form answer',
     required: false,
   })
-  longAnswer?: string | null;
+  answer?: string | null;
+
+  @ApiProperty({
+    example: 'Which of the following are pillars of OOP?',
+    description: 'Quiz question text (used in quiz mode)',
+    required: false,
+  })
+  quiz?: string | null;
 
   @ApiProperty({
     example: ['encapsulation', 'inheritance', 'polymorphism'],
@@ -53,7 +60,7 @@ export class QuestionWithoutAnswerDto {
     example: 'What are the three pillars of OOP?',
     description: 'The interview question text',
   })
-  questionText: string;
+  question: string;
 
   @ApiProperty({
     example: 'medium',
