@@ -162,13 +162,13 @@
               ✕
             </button>
           </div>
-          <textarea
+          <input
+            type="text"
             [(ngModel)]="choice.explanation"
             [name]="'explanation_' + i"
             placeholder="Explanation (optional): Why is this answer wrong?"
             class="choice-explanation"
-            rows="2"
-          ></textarea>
+          />
         </div>
       </div>
       <button type="button" class="add-choice-btn" (click)="addChoice()">+ Add Wrong Answer</button>
@@ -200,14 +200,14 @@
               ✕
             </button>
           </div>
-          <textarea
+          <input
             *ngIf="!choice.isGood"
+            type="text"
             [(ngModel)]="choice.explanation"
             [name]="'explanation_' + i"
             placeholder="Explanation (optional): Why is this answer wrong?"
             class="choice-explanation"
-            rows="2"
-          ></textarea>
+          />
         </div>
       </div>
       <button type="button" class="add-choice-btn" (click)="addChoice()">+ Add Choice</button>
