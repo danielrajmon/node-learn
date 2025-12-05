@@ -90,11 +90,18 @@
 
       <div class="button-group" *ngIf="!answered">
         <button
+          *ngIf="canSubmit"
           class="btn btn-primary"
-          [disabled]="!canSubmit"
           (click)="submitAnswer()"
         >
           Submit Answer
+        </button>
+        <button
+          *ngIf="!canSubmit && canSkip"
+          class="btn btn-secondary"
+          (click)="skipQuestion()"
+        >
+          Skip Question
         </button>
       </div>
 

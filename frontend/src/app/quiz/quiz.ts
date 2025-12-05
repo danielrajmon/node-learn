@@ -32,6 +32,7 @@ export class Quiz implements OnInit {
   longAnswer = '';
   loading = false;
   error: string | null = null;
+  answerHighlightApplied = false;
 
   constructor(
     private questionService: QuestionService,
@@ -383,8 +384,39 @@ export class Quiz implements OnInit {
       } else {
         return this.textAnswer.trim().length > 0;
       }
+    } else if (this.currentQuestion.questionType === 'single_choice') {
+      // For single choice, check if any choice is selected
+      return this.displayChoices.some(choice => choice.selected);
     } else {
-      return true; // Always allow submission for choice questions
+      return true; // Always allow submission for multiple choice questions
     }
+  }
+
+  get canSkip(): boolean {
+    if (this.answered || !this.currentQuestion) return false;
+    return this.currentQuestion.questionType === 'text_input' || 
+           this.currentQuestion.questionType === 'single_choice';
+  }
+
+  skipQuestion() {
+    if (!this.currentQuestion) return;
+    
+    this.answered = true;
+    this.correct = false;
+    this.feedback = 'Skipped';
+    this.longAnswer = this.currentQuestion.longAnswer || '';
+    this.cdr.detectChanges();
+
+    // Apply syntax highlighting to answer code
+    setTimeout(() => {
+      document.querySelectorAll('.quiz-answer pre').forEach((block) => {
+        if (!block.classList.contains('hljs')) {
+          block.classList.add('hljs');
+          block.classList.add('language-typescript');
+          hljs.highlightElement(block as HTMLElement);
+        }
+      });
+      this.answerHighlightApplied = true;
+    }, 0);
   }
 }
