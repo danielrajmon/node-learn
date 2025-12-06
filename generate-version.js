@@ -5,7 +5,7 @@ try {
   const gitOptions = { cwd: __dirname };
   const commitCount = execSync('git rev-list --count HEAD', gitOptions).toString().trim();
   const commitHash = execSync('git rev-parse --short HEAD', gitOptions).toString().trim();
-  const commitDate = execSync('git log -1 --format=%cd --date=short', gitOptions).toString().trim();
+  const commitDate = new Date().toISOString().split('T')[0]; // Use current date
 
   const version = {
     commitCount,
