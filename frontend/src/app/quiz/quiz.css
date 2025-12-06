@@ -371,6 +371,12 @@
   margin-top: 0.25rem;
 }
 
+.choice-explanation-text.not-selected {
+  background-color: white;
+  color: #666;
+  border-left-color: #999;
+}
+
 .choice-indicator {
   flex-shrink: 0;
   font-size: 1.1rem;

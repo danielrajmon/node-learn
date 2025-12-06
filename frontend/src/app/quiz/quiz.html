@@ -81,7 +81,7 @@
             </div>
             <div class="choice-content">
               <div class="choice-text">{{ choice.choiceText }}</div>
-              <div *ngIf="answered && choice.selected && !choice.isGood && choice.explanation" class="choice-explanation-text">
+              <div *ngIf="answered && !choice.isGood && choice.explanation" class="choice-explanation-text" [class.not-selected]="!choice.selected">
                 {{ choice.explanation }}
               </div>
             </div>
