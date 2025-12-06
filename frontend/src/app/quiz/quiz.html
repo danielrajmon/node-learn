@@ -79,7 +79,12 @@
                 <span class="checkmark" [style.visibility]="choice.selected ? 'visible' : 'hidden'">✓</span>
               </span>
             </div>
-            <div class="choice-text">{{ choice.choiceText }}</div>
+            <div class="choice-content">
+              <div class="choice-text">{{ choice.choiceText }}</div>
+              <div *ngIf="answered && choice.selected && !choice.isGood && choice.explanation" class="choice-explanation-text">
+                {{ choice.explanation }}
+              </div>
+            </div>
             <div class="choice-indicator" [class.visible]="answered">
               <span *ngIf="answered && choice.isGood !== undefined && choice.isGood" class="correct-icon">✓</span>
               <span *ngIf="answered && choice.isGood !== undefined && !choice.isGood && choice.selected" class="wrong-icon">✗</span>
