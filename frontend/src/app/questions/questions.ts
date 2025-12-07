@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { QuestionService } from '../services/question';
 import { Question } from '../models/question.model';
 import hljs from 'highlight.js/lib/core';
@@ -10,7 +11,7 @@ hljs.registerLanguage('typescript', typescript);
 
 @Component({
   selector: 'app-questions',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './questions.html',
   styleUrl: './questions.css'
 })
@@ -25,19 +26,66 @@ export class Questions implements OnInit {
   selectedTopic = '';
   visibleAnswers = new Set<number>();
   answers = new Map<number, string>();
+  singleQuestionMode = false;
 
   constructor(
     private questionService: QuestionService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.loadQuestions();
+    // Check if a specific question ID is provided in route params
+    this.route.paramMap.subscribe(params => {
+      const questionId = params.get('id');
+      if (questionId) {
+        this.loadSpecificQuestion(+questionId);
+      } else {
+        this.loadQuestions();
+      }
+    });
+  }
+
+  loadSpecificQuestion(questionId: number) {
+    this.loading = true;
+    this.error = null;
+    this.singleQuestionMode = true;
+
+    this.questionService.getQuestionById(questionId).subscribe({
+      next: (question: Question) => {
+        const cleanedQuestion = {
+          ...question,
+          question: question.question.replace(/&nbsp;/g, ' ')
+        };
+        this.allQuestions = [cleanedQuestion];
+        this.questions = [cleanedQuestion];
+        this.loading = false;
+        this.cdr.detectChanges();
+        // Apply syntax highlighting
+        setTimeout(() => {
+          document.querySelectorAll('.question-text pre').forEach((block) => {
+            if (!block.classList.contains('hljs')) {
+              block.classList.add('hljs');
+              block.classList.add('language-typescript');
+              hljs.highlightElement(block as HTMLElement);
+            }
+          });
+        }, 0);
+      },
+      error: (err: any) => {
+        this.error = 'Failed to load question.';
+        this.loading = false;
+        this.cdr.detectChanges();
+        console.error('Error loading question:', err);
+      }
+    });
   }
 
   loadQuestions() {
     this.loading = true;
     this.error = null;
+    this.singleQuestionMode = false;
 
     this.questionService.getAllQuestions().subscribe({
       next: (questions) => {
@@ -153,5 +201,17 @@ export class Questions implements OnInit {
 
   getDifficultyCount(difficulty: string): number {
     return this.allQuestions.filter(q => q.difficulty === difficulty).length;
+  }
+
+  backToAllQuestions() {
+    this.router.navigate(['/questions']);
+  }
+
+  openInQuiz(questionId: number) {
+    this.router.navigate(['/quiz'], { queryParams: { id: questionId } });
+  }
+
+  viewQuestion(questionId: number) {
+    this.router.navigate(['/questions', questionId]);
   }
 }

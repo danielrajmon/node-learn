@@ -1,7 +1,7 @@
 <div class="questions-container">
-  <h2>All NodeJS Questions</h2>
+  <h2>{{ singleQuestionMode ? 'Question' : 'All NodeJS Questions' }}</h2>
   
-  <div class="filters">
+  <div class="filters" *ngIf="!singleQuestionMode">
     <select [(ngModel)]="selectedTopic" (change)="applyFilters()" class="filter-select">
       <option value="">All Topics ({{ allQuestions.length }})</option>
       <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }} ({{ getTopicCount(topic) }})</option>
@@ -33,7 +33,9 @@
         </div>
         <span class="difficulty" [class]="question.difficulty">{{ question.difficulty }}</span>
       </div>
-      <div class="question-text" [innerHTML]="question.question"></div>
+      <a [routerLink]="['/questions', question.id]" class="question-link">
+        <div class="question-text" [innerHTML]="question.question"></div>
+      </a>
       
       <button 
         class="show-answer-btn" 
@@ -46,6 +48,10 @@
         <div class="answer-text" [innerHTML]="answers.get(question.id)"></div>
       </div>
     </div>
+    
+    <button *ngIf="singleQuestionMode" class="back-btn" (click)="backToAllQuestions()">
+      ← Back to All Questions
+    </button>
     
     <div *ngIf="questions.length === 0" class="no-results">
       No questions found matching your criteria.

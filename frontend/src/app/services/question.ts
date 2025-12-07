@@ -18,6 +18,10 @@ export class QuestionService {
     return this.http.get<Question>('/api/questions/random');
   }
 
+  getQuestionById(id: number): Observable<Question> {
+    return this.http.get<Question>(`/api/questions/${id}`);
+  }
+
   getAnswer(questionId: number): Observable<{ questionId: number; answer: string; choices?: any[]; matchKeywords?: string[] }> {
     return this.http.get<{ questionId: number; answer: string; choices?: any[] }>(`/api/answers/${questionId}`);
   }

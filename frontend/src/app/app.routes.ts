@@ -11,6 +11,7 @@ export const routes: Routes = [
   { path: '', component: Home },
   { path: 'learn', component: Learn },
   { path: 'questions', component: Questions },
+  { path: 'questions/:id', component: Questions },
   { path: 'quiz', component: Quiz },
   { path: 'admin', component: AdminComponent },
   { path: 'login', component: LoginComponent },
