@@ -302,6 +302,20 @@
   background-color: #f8d7da;
 }
 
+.choice.skipped-choice {
+  border: 2px solid #999;
+  background-color: #f5f5f5;
+  opacity: 0.8;
+}
+
+.choice.skipped-choice .choice-text {
+  color: #666;
+}
+
+.choice.skipped-choice .choice-indicator {
+  color: #999;
+}
+
 .choice-checkbox {
   flex-shrink: 0;
 }
@@ -433,6 +447,36 @@
 
 .quiz-answer pre:not(.hljs) {
   opacity: 0;
+}
+
+.skipped-answers-section {
+  background-color: #f5f5f5;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  border-left: 4px solid #999;
+}
+
+.skipped-answers-section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.skipped-answers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skipped-answer-item {
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #666;
 }
 
 .quiz-answer pre.hljs {

@@ -10,6 +10,7 @@ hljs.registerLanguage('typescript', typescript);
 
 interface QuizChoice extends Choice {
   selected?: boolean;
+  skipped?: boolean; // For correct answers that weren't displayed initially
 }
 
 @Component({
@@ -23,6 +24,7 @@ export class Quiz implements OnInit {
   currentQuestionIndex = 0;
   currentQuestion: Question | null = null;
   displayChoices: QuizChoice[] = [];
+  skippedCorrectChoices: QuizChoice[] = [];
   textAnswer = '';
   textAnswers: string[] = [];
   textAnswersCorrect: boolean[] = [];
@@ -90,6 +92,7 @@ export class Quiz implements OnInit {
     this.longAnswer = '';
     this.textAnswer = '';
     this.displayChoices = [];
+    this.skippedCorrectChoices = [];
     
     // Initialize text answers array based on keyword count
     if (this.currentQuestion.questionType === 'text_input' && this.currentQuestion.keywordCount) {
@@ -194,6 +197,18 @@ export class Quiz implements OnInit {
               isGood: correctChoice ? correctChoice.isGood : false
             };
           });
+          
+          // For multiple choice, store skipped correct answers separately
+          if (this.currentQuestion?.questionType === 'multiple_choice') {
+            const displayedIds = this.displayChoices.map(c => c.id);
+            this.skippedCorrectChoices = result.choices!
+              .filter((c: any) => c.isGood && !displayedIds.includes(c.id))
+              .map((c: any) => ({
+                ...c,
+                selected: false,
+                skipped: true
+              }));
+          }
           
           // Now check the choice answer after we have the correct data
           if (this.currentQuestion && !isTextInput) {

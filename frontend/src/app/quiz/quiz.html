@@ -114,6 +114,16 @@
         <div class="quiz-answer" [innerHTML]="longAnswer"></div>
       </div>
 
+      <!-- Show skipped correct answers after the answer section -->
+      <div *ngIf="answered && currentQuestion.questionType === 'multiple_choice' && skippedCorrectChoices.length > 0" class="skipped-answers-section">
+        <h3>Other Correct Answers:</h3>
+        <div class="skipped-answers-list">
+          <div *ngFor="let choice of skippedCorrectChoices" class="skipped-answer-item">
+            {{ choice.choiceText }}
+          </div>
+        </div>
+      </div>
+
       <div class="button-group" *ngIf="answered">
         <button
           class="btn btn-secondary"
