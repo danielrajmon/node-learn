@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict FedcyFFy4SomoDna0PaxTI5tCKGxhk1CaKaFtYcsLszcAKcsw99HqLXXhWasekL
+\restrict kVBwYbAw2Uus9YbCqhRqT9TQdo87ULNIDblJ2pIgjDFr07j6lDj13yHsF3f3g2D
 
 -- Dumped from database version 16.11
 -- Dumped by pg_dump version 16.11
@@ -49,46 +49,6 @@ INSERT INTO public.questions (id, question_type, difficulty, topic, question, an
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (59, 'single_choice', 'medium', 'Development Methodologies', '<p>What&nbsp;is&nbsp;Behavioural&nbsp;Driven&nbsp;Development&nbsp;(<strong>BDD</strong>)?</p>', '<p>A&nbsp;development&nbsp;approach&nbsp;that&nbsp;expresses&nbsp;software&nbsp;behavior&nbsp;in&nbsp;human-readable&nbsp;scenarios&nbsp;from&nbsp;the&nbsp;user’s&nbsp;perspective,&nbsp;ensuring&nbsp;tests&nbsp;describe&nbsp;expected&nbsp;behavior&nbsp;rather&nbsp;than&nbsp;implementation&nbsp;details.</p>', NULL, '{}', true, '2025-12-05 11:33:04.736373+00', '2025-12-05 11:39:39.490276+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (1, 'text_input', 'medium', 'TypeScript', '<p><span style="background-color: rgb(255, 255, 255);">What&nbsp;does&nbsp;an&nbsp;</span><strong style="background-color: rgb(255, 255, 255);">interface&nbsp;compile</strong><span style="background-color: rgb(255, 255, 255);">&nbsp;to&nbsp;in&nbsp;JavaScript?</span></p>', '<p><strong>Nothing</strong>.&nbsp;Interfaces&nbsp;exist&nbsp;only&nbsp;in&nbsp;TypeScript’s&nbsp;type&nbsp;system&nbsp;and&nbsp;are&nbsp;completely&nbsp;removed&nbsp;during&nbsp;compilation,&nbsp;so&nbsp;they&nbsp;produce&nbsp;no&nbsp;JavaScript&nbsp;output.</p>', '', '{nothing}', true, '2025-12-01 11:55:35.526087+00', '2025-12-06 10:47:38.12324+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (61, 'single_choice', 'medium', 'Development Methodologies', '<p>What&nbsp;is&nbsp;Domain&nbsp;Driven&nbsp;Development&nbsp;(<strong>DDD</strong>)?</p>', '<p>DDD&nbsp;(Domain-Driven&nbsp;Design)&nbsp;is&nbsp;an&nbsp;approach&nbsp;to&nbsp;software&nbsp;design&nbsp;where&nbsp;the&nbsp;core&nbsp;domain&nbsp;and&nbsp;its&nbsp;business&nbsp;logic&nbsp;drive&nbsp;the&nbsp;architecture.</p><p>The&nbsp;idea&nbsp;is&nbsp;to&nbsp;work&nbsp;closely&nbsp;with&nbsp;domain&nbsp;experts,&nbsp;create&nbsp;a&nbsp;ubiquitous&nbsp;language,&nbsp;and&nbsp;model&nbsp;the&nbsp;system&nbsp;around&nbsp;real&nbsp;business&nbsp;concepts&nbsp;rather&nbsp;than&nbsp;technical&nbsp;structures.</p><p>DDD&nbsp;helps&nbsp;build&nbsp;complex&nbsp;systems&nbsp;by&nbsp;keeping&nbsp;the&nbsp;software&nbsp;aligned&nbsp;with&nbsp;real-world&nbsp;business&nbsp;behavior&nbsp;and&nbsp;rules.</p><p></p><p><strong>Key&nbsp;concepts</strong>:</p><ul><li>Entities&nbsp;(objects&nbsp;with&nbsp;identity)</li><li>Value&nbsp;Objects&nbsp;(immutable&nbsp;descriptive&nbsp;types)</li><li>Aggregates&nbsp;(clusters&nbsp;of&nbsp;domain&nbsp;objects&nbsp;with&nbsp;rules)</li><li>Repositories&nbsp;(persistence&nbsp;abstractions)</li><li>Domain&nbsp;Events</li><li>Bounded&nbsp;Contexts&nbsp;(clear&nbsp;boundaries&nbsp;between&nbsp;subdomains)</li></ul>', NULL, '{}', true, '2025-12-05 11:37:08.055835+00', '2025-12-05 11:40:03.019609+00');
-INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (4, 'single_choice', 'hard', 'NodeJS Event Loop', '<p>In&nbsp;a&nbsp;Node.js&nbsp;environment,&nbsp;what&nbsp;is&nbsp;the&nbsp;order&nbsp;of&nbsp;the&nbsp;console&nbsp;logs?</p><pre data-language="plain">
-const fs = require(&#39;fs&#39;);
-
-console.log(&#39;A&#39;);
-
-setTimeout(() =&gt; {
-  console.log(&#39;B&#39;);
-}, 0);
-
-fs.readFile(__filename, () =&gt; {
-  console.log(&#39;C&#39;);
-
-  setImmediate(() =&gt; {
-    console.log(&#39;D&#39;);
-  });
-
-  setTimeout(() =&gt; {
-    console.log(&#39;E&#39;);
-  }, 0);
-
-  Promise.resolve().then(() =&gt; {
-    console.log(&#39;F&#39;);
-  });
-
-  process.nextTick(() =&gt; {
-    console.log(&#39;G&#39;);
-  });
-});
-
-Promise.resolve().then(() =&gt; {
-  console.log(&#39;H&#39;);
-});
-
-process.nextTick(() =&gt; {
-  console.log(&#39;I&#39;);
-});
-
-console.log(&#39;J&#39;);
-</pre>', '<ol><li>Synchronous<ul><li><strong>A</strong></li><li>schedule&nbsp;setTimeout(B)</li><li>schedule&nbsp;fs.readFile(...,&nbsp;callback)</li><li>schedule&nbsp;Promise.then(H)</li><li>schedule&nbsp;process.nextTick(I)</li><li><strong>J</strong></li></ul></li><li>After&nbsp;main&nbsp;finishes<ul><li>process.nextTick&nbsp;queue&nbsp;→&nbsp;<strong>I</strong></li><li>then&nbsp;Promise&nbsp;microtasks&nbsp;→&nbsp;<strong>H</strong></li></ul></li><li>Timers&nbsp;phase<ul><li>setTimeout(B,&nbsp;0)&nbsp;→&nbsp;<strong>B</strong></li></ul></li><li>Poll&nbsp;phase:&nbsp;I/O&nbsp;callbacks<ul><li>fs.readFile&nbsp;callback&nbsp;runs:</li><li><strong>C</strong></li><li>schedule&nbsp;setImmediate(D)</li><li>schedule&nbsp;setTimeout(E)</li><li>schedule&nbsp;Promise.then(F)</li><li>schedule&nbsp;process.nextTick(G)</li><li>At&nbsp;the&nbsp;end&nbsp;of&nbsp;this&nbsp;callback:</li><li>process.nextTick&nbsp;queue&nbsp;→&nbsp;<strong>G</strong></li><li>then&nbsp;Promise&nbsp;microtasks&nbsp;→&nbsp;<strong>F</strong></li></ul></li><li>Check&nbsp;phase&nbsp;(setImmediate)<ul><li><strong>D</strong></li></ul></li><li>Next&nbsp;timers&nbsp;phase<ul><li><strong>E</strong></li></ul></li></ol><p></p>', NULL, '{}', true, '2025-12-01 12:30:30.103891+00', '2025-12-03 11:25:25.412003+00');
-INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (73, 'multiple_choice', 'hard', 'NodeJS Event Loop', '<p>What&nbsp;is&nbsp;the&nbsp;<strong>Reactor&nbsp;Pattern</strong>?</p>', '<p>The&nbsp;Reactor&nbsp;Pattern&nbsp;is&nbsp;an&nbsp;architecture&nbsp;where&nbsp;a&nbsp;single&nbsp;thread&nbsp;(the&nbsp;reactor)&nbsp;waits&nbsp;for&nbsp;events&nbsp;(like&nbsp;incoming&nbsp;connections,&nbsp;data,&nbsp;timers,&nbsp;or&nbsp;file&nbsp;I/O)&nbsp;and&nbsp;dispatches&nbsp;them&nbsp;to&nbsp;handlers&nbsp;without&nbsp;blocking.</p><p>Instead&nbsp;of&nbsp;creating&nbsp;a&nbsp;thread&nbsp;per&nbsp;client,&nbsp;the&nbsp;reactor&nbsp;uses:</p><p>-&nbsp;Non-blocking&nbsp;I/O</p><p>-&nbsp;Event&nbsp;demultiplexing&nbsp;(like&nbsp;epoll,&nbsp;kqueue,&nbsp;IOCP)</p><p>-&nbsp;Callbacks&nbsp;/&nbsp;handlers&nbsp;that&nbsp;run&nbsp;when&nbsp;the&nbsp;data&nbsp;is&nbsp;ready</p><p>-&nbsp;This&nbsp;lets&nbsp;one&nbsp;thread&nbsp;efficiently&nbsp;handle&nbsp;thousands&nbsp;of&nbsp;connections.</p><p></p><p><strong>How&nbsp;it&nbsp;works</strong>:</p><p>-&nbsp;The&nbsp;Reactor&nbsp;sits&nbsp;in&nbsp;an&nbsp;event&nbsp;loop.</p><p>-&nbsp;It&nbsp;listens&nbsp;for&nbsp;I/O&nbsp;events&nbsp;from&nbsp;many&nbsp;sources.</p><p>-&nbsp;When&nbsp;an&nbsp;event&nbsp;occurs,&nbsp;it&nbsp;uses&nbsp;an&nbsp;OS&nbsp;mechanism&nbsp;to&nbsp;detect&nbsp;it.</p><p>-&nbsp;It&nbsp;dispatches&nbsp;the&nbsp;event&nbsp;to&nbsp;the&nbsp;correct&nbsp;callback/handler.</p><p>-&nbsp;The&nbsp;loop&nbsp;continues,&nbsp;never&nbsp;blocking.</p><p></p><p><strong>Why&nbsp;it&nbsp;exists</strong>:</p><p>-&nbsp;Traditional&nbsp;server&nbsp;model:&nbsp;One&nbsp;thread&nbsp;per&nbsp;client&nbsp;→&nbsp;Too&nbsp;many&nbsp;threads&nbsp;→&nbsp;slow,&nbsp;expensive,&nbsp;memory-heavy</p><p>-&nbsp;Reactor&nbsp;model:&nbsp;One&nbsp;thread&nbsp;handles&nbsp;many&nbsp;clients&nbsp;→&nbsp;Fast,&nbsp;scalable,&nbsp;non-blocking&nbsp;→&nbsp;Perfect&nbsp;for&nbsp;high-concurrency&nbsp;servers&nbsp;(Node,&nbsp;Nginx,&nbsp;Redis)</p>', '<p>Which&nbsp;of&nbsp;the&nbsp;following&nbsp;are&nbsp;true&nbsp;about&nbsp;<strong>Reactor&nbsp;Pattern</strong>?</p>', '{}', true, '2025-12-05 12:43:41.730863+00', '2025-12-07 20:05:10.216945+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (38, 'text_input', 'medium', 'TypeScript', '<p>How&nbsp;do&nbsp;we&nbsp;call&nbsp;the&nbsp;utility&nbsp;type&nbsp;that&nbsp;makes&nbsp;all&nbsp;properties&nbsp;of&nbsp;a&nbsp;type&nbsp;mandatory,&nbsp;<strong>removing&nbsp;any&nbsp;optional&nbsp;modifiers</strong>?</p>', '<p>Required.</p><p></p><pre data-language="plain">
 interface User {
   id: number;
@@ -125,9 +85,9 @@ const userPreview: Pick&lt;User, &quot;id&quot; | &quot;name&quot;&gt; = {
 };
 </pre>', '', '{Pick}', true, '2025-12-03 18:56:11.026071+00', '2025-12-07 20:23:53.91369+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (32, 'text_input', 'medium', 'Frontend', '<p>How&nbsp;do&nbsp;you&nbsp;call&nbsp;the&nbsp;attack&nbsp;where&nbsp;an&nbsp;attacker&nbsp;<strong>injects&nbsp;malicious&nbsp;scripts</strong>&nbsp;into&nbsp;a&nbsp;website,&nbsp;causing&nbsp;other&nbsp;users’&nbsp;browsers&nbsp;to&nbsp;execute&nbsp;the&nbsp;attacker’s&nbsp;code?</p>', '<p><strong>XSS</strong>&nbsp;(Cross-Site&nbsp;Scripting)&nbsp;is&nbsp;a&nbsp;vulnerability&nbsp;where&nbsp;an&nbsp;attacker&nbsp;injects&nbsp;malicious&nbsp;JavaScript&nbsp;into&nbsp;a&nbsp;web&nbsp;page&nbsp;viewed&nbsp;by&nbsp;other&nbsp;users.&nbsp;When&nbsp;executed&nbsp;in&nbsp;the&nbsp;victim’s&nbsp;browser,&nbsp;the&nbsp;script&nbsp;can&nbsp;steal&nbsp;cookies,&nbsp;hijack&nbsp;sessions,&nbsp;modify&nbsp;page&nbsp;content,&nbsp;or&nbsp;perform&nbsp;actions&nbsp;as&nbsp;the&nbsp;user.&nbsp;XSS&nbsp;happens&nbsp;when&nbsp;user&nbsp;input&nbsp;is&nbsp;not&nbsp;properly&nbsp;sanitized&nbsp;or&nbsp;escaped.&nbsp;It&nbsp;is&nbsp;commonly&nbsp;exploited&nbsp;through&nbsp;forms,&nbsp;comments,&nbsp;URLs,&nbsp;or&nbsp;vulnerable&nbsp;templates.&nbsp;Defenses&nbsp;include&nbsp;output&nbsp;encoding,&nbsp;Content&nbsp;Security&nbsp;Policy,&nbsp;input&nbsp;validation,&nbsp;and&nbsp;avoiding&nbsp;unsafe&nbsp;HTML&nbsp;rendering.</p>', '', '{XSS}', true, '2025-12-03 14:05:31.576427+00', '2025-12-07 20:26:09.774571+00');
-INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (33, 'text_input', 'medium', 'Frontend', '<p>How&nbsp;do&nbsp;you&nbsp;call&nbsp;the&nbsp;browser&nbsp;mechanism&nbsp;that&nbsp;controls&nbsp;<strong>which&nbsp;external&nbsp;origins</strong>&nbsp;are&nbsp;allowed&nbsp;to&nbsp;access&nbsp;a&nbsp;website’s&nbsp;resources?</p>', '<p><strong>CORS</strong>&nbsp;(Cross-Origin&nbsp;Resource&nbsp;Sharing)&nbsp;is&nbsp;a&nbsp;security&nbsp;mechanism&nbsp;in&nbsp;browsers&nbsp;that&nbsp;determines&nbsp;whether&nbsp;one&nbsp;site&nbsp;is&nbsp;allowed&nbsp;to&nbsp;make&nbsp;requests&nbsp;to&nbsp;another&nbsp;origin.&nbsp;It&nbsp;prevents&nbsp;malicious&nbsp;websites&nbsp;from&nbsp;reading&nbsp;cross-origin&nbsp;responses&nbsp;unless&nbsp;explicitly&nbsp;permitted&nbsp;by&nbsp;the&nbsp;server.&nbsp;CORS&nbsp;uses&nbsp;HTTP&nbsp;headers&nbsp;like&nbsp;<code>Access-Control-Allow-Origin</code>&nbsp;to&nbsp;enforce&nbsp;these&nbsp;rules.&nbsp;It&nbsp;does&nbsp;not&nbsp;protect&nbsp;against&nbsp;CSRF&nbsp;or&nbsp;XSS&nbsp;directly;&nbsp;it&nbsp;only&nbsp;governs&nbsp;cross-origin&nbsp;reads.&nbsp;Proper&nbsp;configuration&nbsp;is&nbsp;essential&nbsp;to&nbsp;avoid&nbsp;accidentally&nbsp;exposing&nbsp;sensitive&nbsp;APIs.</p>', '', '{CORS}', true, '2025-12-03 14:06:14.155415+00', '2025-12-07 20:26:30.176214+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (51, 'multiple_choice', 'easy', 'Architectural pattern', '<p>What&nbsp;is&nbsp;<strong>Microservices&nbsp;architecture</strong>?</p>', '<p>Microservices&nbsp;architecture&nbsp;is&nbsp;a&nbsp;way&nbsp;of&nbsp;building&nbsp;applications&nbsp;as&nbsp;a&nbsp;collection&nbsp;of&nbsp;small,&nbsp;independent&nbsp;services&nbsp;instead&nbsp;of&nbsp;one&nbsp;large&nbsp;system.&nbsp;Each&nbsp;microservice&nbsp;focuses&nbsp;on&nbsp;a&nbsp;single&nbsp;business&nbsp;capability&nbsp;(like&nbsp;payments,&nbsp;authentication,&nbsp;or&nbsp;inventory)&nbsp;and&nbsp;can&nbsp;be&nbsp;developed,&nbsp;deployed,&nbsp;and&nbsp;scaled&nbsp;separately.&nbsp;Services&nbsp;communicate&nbsp;over&nbsp;lightweight&nbsp;protocols&nbsp;such&nbsp;as&nbsp;HTTP&nbsp;or&nbsp;messaging.&nbsp;Each&nbsp;one&nbsp;can&nbsp;use&nbsp;its&nbsp;own&nbsp;database&nbsp;and&nbsp;even&nbsp;its&nbsp;own&nbsp;programming&nbsp;language.&nbsp;This&nbsp;approach&nbsp;improves&nbsp;flexibility&nbsp;and&nbsp;resilience&nbsp;but&nbsp;adds&nbsp;complexity&nbsp;in&nbsp;communication,&nbsp;monitoring,&nbsp;and&nbsp;deployment.</p>', '<p>Which&nbsp;of&nbsp;the&nbsp;following&nbsp;are&nbsp;true&nbsp;about&nbsp;<strong>Microservices&nbsp;Architecture</strong>?</p>', '{}', true, '2025-12-03 19:46:10.829371+00', '2025-12-07 19:38:31.638522+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (11, 'text_input', 'easy', 'Clean code', '<p>What&nbsp;are&nbsp;the&nbsp;<strong>SOLID</strong>&nbsp;principles?</p>', '<p>SOLID&nbsp;principles&nbsp;guide&nbsp;writing&nbsp;maintainable&nbsp;and&nbsp;flexible&nbsp;object-oriented&nbsp;code.</p><ol><li><strong>Single&nbsp;Responsibility</strong>:&nbsp;a&nbsp;class&nbsp;should&nbsp;have&nbsp;one&nbsp;reason&nbsp;to&nbsp;change.</li><li><strong>Open/Closed</strong>:&nbsp;code&nbsp;should&nbsp;be&nbsp;open&nbsp;for&nbsp;extension&nbsp;but&nbsp;closed&nbsp;for&nbsp;modification.</li><li><strong>Liskov&nbsp;Substitution</strong>:&nbsp;subclasses&nbsp;must&nbsp;be&nbsp;replaceable&nbsp;for&nbsp;their&nbsp;base&nbsp;class.</li><li><strong>Interface&nbsp;Segregation</strong>:&nbsp;clients&nbsp;shouldn’t&nbsp;depend&nbsp;on&nbsp;interfaces&nbsp;they&nbsp;don’t&nbsp;use.</li><li><strong>Dependency&nbsp;Inversion</strong>:&nbsp;depend&nbsp;on&nbsp;abstractions,&nbsp;not&nbsp;concrete&nbsp;implementations.</li></ol>', NULL, '{"Single responsibility",Open/closed,"Liskov substitution","Interface segregation","Dependency inversion"}', true, '2025-12-03 10:32:26.368055+00', '2025-12-03 11:26:14.939682+00');
+INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (33, 'text_input', 'medium', 'Frontend', '<p>How&nbsp;do&nbsp;you&nbsp;call&nbsp;the&nbsp;browser&nbsp;mechanism&nbsp;that&nbsp;controls&nbsp;<strong>which&nbsp;external&nbsp;origins</strong>&nbsp;are&nbsp;allowed&nbsp;to&nbsp;access&nbsp;a&nbsp;website’s&nbsp;resources?</p>', '<p><strong>CORS</strong>&nbsp;(Cross-Origin&nbsp;Resource&nbsp;Sharing)&nbsp;is&nbsp;a&nbsp;security&nbsp;mechanism&nbsp;in&nbsp;browsers&nbsp;that&nbsp;determines&nbsp;whether&nbsp;one&nbsp;site&nbsp;is&nbsp;allowed&nbsp;to&nbsp;make&nbsp;requests&nbsp;to&nbsp;another&nbsp;origin.&nbsp;It&nbsp;prevents&nbsp;malicious&nbsp;websites&nbsp;from&nbsp;reading&nbsp;cross-origin&nbsp;responses&nbsp;unless&nbsp;explicitly&nbsp;permitted&nbsp;by&nbsp;the&nbsp;server.&nbsp;CORS&nbsp;uses&nbsp;HTTP&nbsp;headers&nbsp;like&nbsp;Access-Control-Allow-Origin&nbsp;to&nbsp;enforce&nbsp;these&nbsp;rules.&nbsp;It&nbsp;does&nbsp;not&nbsp;protect&nbsp;against&nbsp;CSRF&nbsp;or&nbsp;XSS&nbsp;directly;&nbsp;it&nbsp;only&nbsp;governs&nbsp;cross-origin&nbsp;reads.&nbsp;Proper&nbsp;configuration&nbsp;is&nbsp;essential&nbsp;to&nbsp;avoid&nbsp;accidentally&nbsp;exposing&nbsp;sensitive&nbsp;APIs.</p>', '', '{CORS}', true, '2025-12-03 14:06:14.155415+00', '2025-12-07 22:59:12.118132+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (8, 'single_choice', 'medium', 'JavaScript', '<p>What&nbsp;is&nbsp;the&nbsp;difference&nbsp;between&nbsp;<strong>call</strong>,&nbsp;<strong>apply&nbsp;</strong>and&nbsp;<strong>bind</strong>?</p>', '<p>Call&nbsp;invokes&nbsp;a&nbsp;function&nbsp;immediately&nbsp;with&nbsp;a&nbsp;specific&nbsp;this&nbsp;value&nbsp;and&nbsp;individual&nbsp;arguments,&nbsp;apply&nbsp;invokes&nbsp;it&nbsp;immediately&nbsp;with&nbsp;a&nbsp;specific&nbsp;this&nbsp;value&nbsp;and&nbsp;an&nbsp;array&nbsp;of&nbsp;arguments,&nbsp;and&nbsp;bind&nbsp;returns&nbsp;a&nbsp;new&nbsp;function&nbsp;with&nbsp;this&nbsp;fixed&nbsp;without&nbsp;invoking&nbsp;it.</p><p></p><pre data-language="plain">
 function introduce(greeting, punctuation) {
   console.log(`${greeting}, my name is ${this.name}${punctuation}`);
@@ -236,6 +196,96 @@ const userRoles: Record&lt;&quot;admin&quot; | &quot;guest&quot;, boolean&gt; = 
 </pre>', '', '{Record}', true, '2025-12-03 18:59:11.714347+00', '2025-12-07 20:24:41.379283+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (31, 'text_input', 'medium', 'Frontend', '<p>How&nbsp;do&nbsp;you&nbsp;call&nbsp;the&nbsp;attack&nbsp;where&nbsp;a&nbsp;malicious&nbsp;site&nbsp;tricks&nbsp;a&nbsp;user’s&nbsp;browser&nbsp;into&nbsp;sending&nbsp;<strong>unwanted&nbsp;requests</strong>&nbsp;to&nbsp;a&nbsp;site&nbsp;where&nbsp;the&nbsp;user&nbsp;is&nbsp;authenticated?</p>', '<p><strong>CSRF</strong>&nbsp;(Cross-Site&nbsp;Request&nbsp;Forgery)&nbsp;is&nbsp;an&nbsp;attack&nbsp;where&nbsp;a&nbsp;malicious&nbsp;website&nbsp;tricks&nbsp;a&nbsp;user’s&nbsp;browser&nbsp;into&nbsp;sending&nbsp;unintended&nbsp;requests&nbsp;to&nbsp;a&nbsp;trusted&nbsp;site&nbsp;where&nbsp;the&nbsp;user&nbsp;is&nbsp;already&nbsp;authenticated.&nbsp;Because&nbsp;browsers&nbsp;automatically&nbsp;include&nbsp;cookies,&nbsp;tokens,&nbsp;or&nbsp;session&nbsp;data,&nbsp;the&nbsp;request&nbsp;appears&nbsp;legitimate&nbsp;to&nbsp;the&nbsp;target&nbsp;server.&nbsp;This&nbsp;allows&nbsp;attackers&nbsp;to&nbsp;perform&nbsp;actions&nbsp;such&nbsp;as&nbsp;changing&nbsp;account&nbsp;details,&nbsp;making&nbsp;purchases,&nbsp;or&nbsp;transferring&nbsp;funds&nbsp;without&nbsp;the&nbsp;user’s&nbsp;consent.&nbsp;CSRF&nbsp;targets&nbsp;state-changing&nbsp;operations,&nbsp;not&nbsp;data&nbsp;theft.&nbsp;Proper&nbsp;defenses&nbsp;include&nbsp;same-site&nbsp;cookies,&nbsp;CSRF&nbsp;tokens,&nbsp;and&nbsp;requiring&nbsp;explicit&nbsp;user&nbsp;interaction.</p>', '', '{CSRF}', true, '2025-12-03 14:02:33.741426+00', '2025-12-07 20:27:12.03655+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (34, 'single_choice', 'easy', 'Security', '<p>What&nbsp;is&nbsp;the&nbsp;difference&nbsp;between&nbsp;<strong>encoding</strong>&nbsp;vs.&nbsp;<strong>hashing</strong>?</p>', '<p>Hashing&nbsp;transforms&nbsp;data&nbsp;into&nbsp;a&nbsp;fixed-size,&nbsp;irreversible&nbsp;value&nbsp;for&nbsp;integrity&nbsp;or&nbsp;verification,&nbsp;while&nbsp;encoding&nbsp;transforms&nbsp;data&nbsp;into&nbsp;a&nbsp;reversible&nbsp;format&nbsp;for&nbsp;safe&nbsp;storage&nbsp;or&nbsp;transmission.</p>', '', '{}', true, '2025-12-03 14:13:40.017483+00', '2025-12-07 20:27:24.270582+00');
+INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (73, 'multiple_choice', 'hard', 'NodeJS Event Loop', '<p>What&nbsp;is&nbsp;the&nbsp;<strong>Reactor&nbsp;Pattern</strong>?</p>', '<p>The&nbsp;Reactor&nbsp;Pattern&nbsp;is&nbsp;an&nbsp;architecture&nbsp;where&nbsp;a&nbsp;single&nbsp;thread&nbsp;(the&nbsp;reactor)&nbsp;waits&nbsp;for&nbsp;events&nbsp;(like&nbsp;incoming&nbsp;connections,&nbsp;data,&nbsp;timers,&nbsp;or&nbsp;file&nbsp;I/O)&nbsp;and&nbsp;dispatches&nbsp;them&nbsp;to&nbsp;handlers&nbsp;without&nbsp;blocking.</p><p>Instead&nbsp;of&nbsp;creating&nbsp;a&nbsp;thread&nbsp;per&nbsp;client,&nbsp;the&nbsp;reactor&nbsp;uses:</p><ul><li>Non-blocking&nbsp;I/O</li><li>Event&nbsp;demultiplexing&nbsp;(like&nbsp;epoll,&nbsp;kqueue,&nbsp;IOCP)</li><li>Callbacks&nbsp;/&nbsp;handlers&nbsp;that&nbsp;run&nbsp;when&nbsp;the&nbsp;data&nbsp;is&nbsp;ready</li><li>This&nbsp;lets&nbsp;one&nbsp;thread&nbsp;efficiently&nbsp;handle&nbsp;thousands&nbsp;of&nbsp;connections.</li></ul><p></p><p><strong>How&nbsp;it&nbsp;works</strong>:</p><ul><li>The&nbsp;Reactor&nbsp;sits&nbsp;in&nbsp;an&nbsp;event&nbsp;loop.</li><li>It&nbsp;listens&nbsp;for&nbsp;I/O&nbsp;events&nbsp;from&nbsp;many&nbsp;sources.</li><li>When&nbsp;an&nbsp;event&nbsp;occurs,&nbsp;it&nbsp;uses&nbsp;an&nbsp;OS&nbsp;mechanism&nbsp;to&nbsp;detect&nbsp;it.</li><li>It&nbsp;dispatches&nbsp;the&nbsp;event&nbsp;to&nbsp;the&nbsp;correct&nbsp;callback/handler.</li><li>The&nbsp;loop&nbsp;continues,&nbsp;never&nbsp;blocking.</li></ul><p></p><p><strong>Why&nbsp;it&nbsp;exists</strong>:</p><ul><li>Traditional&nbsp;server&nbsp;model:&nbsp;One&nbsp;thread&nbsp;per&nbsp;client&nbsp;→&nbsp;Too&nbsp;many&nbsp;threads&nbsp;→&nbsp;slow,&nbsp;expensive,&nbsp;memory-heavy</li><li>Reactor&nbsp;model:&nbsp;One&nbsp;thread&nbsp;handles&nbsp;many&nbsp;clients&nbsp;→&nbsp;Fast,&nbsp;scalable,&nbsp;non-blocking&nbsp;→&nbsp;Perfect&nbsp;for&nbsp;high-concurrency&nbsp;servers&nbsp;(Node,&nbsp;Nginx,&nbsp;Redis)</li></ul>', '<p>Which&nbsp;of&nbsp;the&nbsp;following&nbsp;are&nbsp;true&nbsp;about&nbsp;<strong>Reactor&nbsp;Pattern</strong>?</p>', '{}', true, '2025-12-05 12:43:41.730863+00', '2025-12-07 22:15:43.626349+00');
+INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (4, 'single_choice', 'medium', 'NodeJS Event Loop', '<p>In&nbsp;a&nbsp;Node.js&nbsp;environment,&nbsp;what&nbsp;is&nbsp;the&nbsp;order&nbsp;of&nbsp;the&nbsp;console&nbsp;logs?</p><pre data-language="plain">
+const fs = require(&#39;fs&#39;);
+
+console.log(&#39;A&#39;);
+
+setTimeout(() =&gt; {
+  console.log(&#39;B&#39;);
+}, 0);
+
+fs.readFile(__filename, () =&gt; {
+  console.log(&#39;C&#39;);
+
+  setImmediate(() =&gt; {
+    console.log(&#39;D&#39;);
+  });
+
+  setTimeout(() =&gt; {
+    console.log(&#39;E&#39;);
+  }, 0);
+
+  Promise.resolve().then(() =&gt; {
+    console.log(&#39;F&#39;);
+  });
+
+  process.nextTick(() =&gt; {
+    console.log(&#39;G&#39;);
+  });
+});
+
+Promise.resolve().then(() =&gt; {
+  console.log(&#39;H&#39;);
+});
+
+process.nextTick(() =&gt; {
+  console.log(&#39;I&#39;);
+});
+
+console.log(&#39;J&#39;);
+</pre>', '<ol><li>Synchronous<ul><li><strong>A</strong></li><li>schedule&nbsp;setTimeout(B)</li><li>schedule&nbsp;fs.readFile(...,&nbsp;callback)</li><li>schedule&nbsp;Promise.then(H)</li><li>schedule&nbsp;process.nextTick(I)</li><li><strong>J</strong></li></ul></li><li>After&nbsp;main&nbsp;finishes<ul><li>process.nextTick&nbsp;queue&nbsp;→&nbsp;<strong>I</strong></li><li>then&nbsp;Promise&nbsp;microtasks&nbsp;→&nbsp;<strong>H</strong></li></ul></li><li>Timers&nbsp;phase<ul><li>setTimeout(B,&nbsp;0)&nbsp;→&nbsp;<strong>B</strong></li></ul></li><li>Poll&nbsp;phase:&nbsp;I/O&nbsp;callbacks<ul><li>fs.readFile&nbsp;callback&nbsp;runs:</li><li><strong>C</strong></li><li>schedule&nbsp;setImmediate(D)</li><li>schedule&nbsp;setTimeout(E)</li><li>schedule&nbsp;Promise.then(F)</li><li>schedule&nbsp;process.nextTick(G)</li><li>At&nbsp;the&nbsp;end&nbsp;of&nbsp;this&nbsp;callback:</li><li>process.nextTick&nbsp;queue&nbsp;→&nbsp;<strong>G</strong></li><li>then&nbsp;Promise&nbsp;microtasks&nbsp;→&nbsp;<strong>F</strong></li></ul></li><li>Check&nbsp;phase&nbsp;(setImmediate)<ul><li><strong>D</strong></li></ul></li><li>Next&nbsp;timers&nbsp;phase<ul><li><strong>E</strong></li></ul></li></ol><p></p>', '', '{}', true, '2025-12-01 12:30:30.103891+00', '2025-12-07 22:22:58.054628+00');
+INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (78, 'single_choice', 'hard', 'NodeJS Event Loop', '<p>What&nbsp;is&nbsp;the&nbsp;<strong>order&nbsp;of&nbsp;execution</strong>&nbsp;in&nbsp;NodeJS?</p><pre data-language="plain">
+const fs = require(&#39;fs&#39;);
+
+console.log(&#39;A&#39;);
+
+setTimeout(() =&gt; {
+  console.log(&#39;B&#39;);
+
+  process.nextTick(() =&gt; console.log(&#39;C&#39;));
+
+  Promise.resolve().then(() =&gt; console.log(&#39;D&#39;));
+
+  setTimeout(() =&gt; console.log(&#39;E&#39;), 0);
+
+  setImmediate(() =&gt; console.log(&#39;F&#39;));
+}, 0);
+
+setImmediate(() =&gt; {
+  console.log(&#39;G&#39;);
+
+  process.nextTick(() =&gt; console.log(&#39;H&#39;));
+  Promise.resolve().then(() =&gt; console.log(&#39;I&#39;));
+});
+
+Promise.resolve().then(() =&gt; {
+  console.log(&#39;J&#39;);
+
+  setTimeout(() =&gt; console.log(&#39;K&#39;), 0);
+
+  process.nextTick(() =&gt; console.log(&#39;L&#39;));
+});
+
+process.nextTick(() =&gt; {
+  console.log(&#39;M&#39;);
+
+  setImmediate(() =&gt; console.log(&#39;N&#39;));
+});
+
+fs.readFile(__filename, () =&gt; {
+  console.log(&#39;O&#39;);
+
+  setImmediate(() =&gt; console.log(&#39;P&#39;));
+  setTimeout(() =&gt; console.log(&#39;Q&#39;), 0);
+
+  process.nextTick(() =&gt; console.log(&#39;R&#39;));
+  Promise.resolve().then(() =&gt; console.log(&#39;S&#39;));
+});
+
+console.log(&#39;T&#39;);
+</pre>', '<ol><li><strong>Sync&nbsp;phase</strong>:<ol><li><strong>A</strong>,&nbsp;<strong>T</strong></li></ol></li><li><strong>Microtasks&nbsp;after&nbsp;script</strong>:<ol><li>process.nextTick:&nbsp;<strong>M</strong></li><li>Promises:&nbsp;<strong>J</strong>&nbsp;→&nbsp;inside&nbsp;it&nbsp;schedule&nbsp;K&nbsp;(timer)&nbsp;+&nbsp;L&nbsp;(nextTick)</li><li>Then&nbsp;nextTick&nbsp;again:&nbsp;<strong>L</strong></li></ol></li><li><strong>Timers&nbsp;phase&nbsp;(first&nbsp;round)</strong>:<ol><li>First&nbsp;timer:&nbsp;callback&nbsp;with&nbsp;<strong>B</strong>&nbsp;(top-level&nbsp;setTimeout)<ol><li>Inside&nbsp;it&nbsp;schedule&nbsp;C&nbsp;(nextTick),&nbsp;D&nbsp;(Promise),&nbsp;E&nbsp;(later&nbsp;timer),&nbsp;F&nbsp;(setImmediate)</li><li>Microtasks&nbsp;after&nbsp;B:&nbsp;<strong>C</strong>,&nbsp;then&nbsp;<strong>D</strong></li></ol></li><li>Second&nbsp;timer:&nbsp;<strong>K</strong></li></ol></li><li><strong>Poll&nbsp;phase&nbsp;(I/O&nbsp;–&nbsp;fs.readFile)</strong>:<ol><li>Callback&nbsp;logs&nbsp;<strong>O</strong>,&nbsp;schedules&nbsp;P&nbsp;(setImmediate),&nbsp;Q&nbsp;(timer),&nbsp;R&nbsp;(nextTick),&nbsp;S&nbsp;(Promise)</li><li>Microtasks&nbsp;after&nbsp;O:&nbsp;<strong>R</strong>,&nbsp;then&nbsp;<strong>S</strong></li></ol></li><li><strong>Check&nbsp;phase&nbsp;(setImmediate)&nbsp;in&nbsp;order&nbsp;queued</strong>:<ol><li><strong>G</strong>&nbsp;(from&nbsp;script)&nbsp;→&nbsp;microtasks&nbsp;<strong>H</strong>,&nbsp;<strong>I</strong></li><li><strong>N&nbsp;</strong>(from&nbsp;M)</li><li><strong>F</strong>&nbsp;(from&nbsp;inside&nbsp;B)</li><li><strong>P</strong>&nbsp;(from&nbsp;inside&nbsp;O)</li></ol></li><li><strong>Next&nbsp;tick&nbsp;–&nbsp;Timers&nbsp;phase&nbsp;(second&nbsp;round)</strong>:<ol><li>Remaining&nbsp;timers:&nbsp;<strong>E</strong>&nbsp;(from&nbsp;inside&nbsp;B),&nbsp;then&nbsp;<strong>Q</strong>&nbsp;(from&nbsp;inside&nbsp;O)</li></ol></li></ol><p></p>', '', '{}', true, '2025-12-07 22:29:33.801052+00', '2025-12-07 22:34:53.765583+00');
 
 
 --
@@ -288,17 +338,11 @@ INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) 
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3261, 52, 'JWT always requires a centralized authorization server, while OAuth2 can operate without one.', false, 'OAuth2 requires an authorization server; JWT does not require any servers at all.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3262, 52, 'OAuth2 tokens must always be JWTs, because the framework mandates signed JSON tokens for every flow.', false, 'OAuth2 supports opaque tokens, random strings, or JWTs — it has no token-format requirement.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3355, 64, 'A reverse proxy hides backend servers from clients and routes incoming requests to the appropriate internal service.', true, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3435, 73, 'The Reactor pattern uses a non-blocking event demultiplexer (such as epoll, kqueue, or IOCP) to wait for I/O readiness and dispatch events to handlers.', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2912, 25, 'The Saga Pattern is a way to manage distributed business transactions by executing a series of local operations in different services, each paired with a compensating action that can undo changes if a later step fails. Correct.', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2913, 25, 'The Saga Pattern is a centralized workflow engine that locks all participating services until every operation finishes, ensuring full ACID guarantees across the system.', false, 'Sagas avoid central locking and do not provide ACID transactions.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2914, 25, 'The Saga Pattern requires all microservices to share the same database schema so compensating actions can be applied directly to the original tables.', false, 'Sagas exist because services do not share a database.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2915, 25, 'The Saga Pattern is a technique where a single global transaction manager coordinates distributed commits using two-phase commit.', false, 'Two-phase commit is the opposite of sagas.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2916, 25, 'The Saga Pattern guarantees real-time consistency by forcing all steps to complete before any service can proceed with other requests.', false, 'Sagas provide eventual consistency, not real-time blocking.');
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3436, 73, 'A Reactor manages many concurrent connections on a single thread by invoking handlers when events become ready rather than spinning up threads.', true, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3437, 73, 'The Reactor pattern separates event detection from event handling, allowing the event loop to multiplex many I/O sources efficiently.', true, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3438, 73, 'Network servers like Node.js (via libuv) and Nginx use the Reactor pattern to achieve scalable, asynchronous I/O without blocking.', true, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3439, 73, 'The Reactor pattern handles readiness-based events (e.g., readable or writable sockets), invoking callbacks only when operations can proceed without blocking.', true, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3440, 73, 'The Reactor pattern spawns a new operating-system thread for every incoming connection, allowing each handler to execute independently.', false, 'Reactor avoids thread-per-connection; it relies on a single-threaded event loop.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3263, 52, 'JWT is used only for refresh tokens, and OAuth2 is used only for access tokens.', false, 'JWTs can represent access tokens, ID tokens, or refresh tokens. OAuth2 does not enforce formats.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3264, 52, 'OAuth2 enforces a specific signing algorithm for all tokens, while JWT does not support signatures at all.', false, 'OAuth2 does not mandate algorithms. JWT supports signatures (HS256, RS256, ES256, etc.).');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2917, 25, 'The Saga Pattern is used to automatically discover which service should run next in a workflow by polling all services for their readiness.', false, 'Sagas follow a defined sequence or event choreography, not discovery polling.');
@@ -308,14 +352,6 @@ INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) 
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3322, 62, 'The Saga pattern in DDD forces aggregates to expose their internal state directly so compensating actions can update them without going through domain rules.', false, 'Aggregates never expose internal state directly; Sagas interact via commands or events, respecting domain invariants.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3323, 62, 'DDD prohibits the use of Sagas because they introduce eventual consistency, which is incompatible with the strict transactional guarantees required in all bounded contexts.', false, 'DDD explicitly supports eventual consistency across contexts, and Sagas are a common pattern for handling exactly that.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3356, 64, 'A reverse proxy can improve scalability through load balancing across multiple backend servers.', true, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (1520, 4, 'A J I H B C G F D E', true, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (1521, 4, 'A J H I B C G F D E', false, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (1522, 4, 'A J I H C B G F D E', false, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (1523, 4, 'A J I H B C F G D E', false, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (1524, 4, 'A J I H B C G F E D', false, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (1525, 4, 'A I J H B C G F D E', false, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (1526, 4, 'A J I H B C G D F E', false, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (1527, 4, 'A J H I C B F G D E', false, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3357, 64, 'A reverse proxy can handle SSL termination, offloading encryption work from backend services.', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3358, 64, 'A reverse proxy is a client-side tool that rewrites outgoing HTTP requests before they reach the internet, used mostly in browsers for modifying URLs.', false, 'A reverse proxy operates server-side, handling incoming traffic to backend servers.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3359, 64, 'A reverse proxy stores full copies of backend applications and automatically updates them when clients send new requests.', false, 'Reverse proxies do not store application code; they forward requests.');
@@ -379,7 +415,6 @@ INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) 
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3273, 53, 'The server must store every issued JWT in a database to validate whether it is still active.', false, 'JWT validation is stateless and does not require storage.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3274, 53, 'A JWT automatically expires as soon as the user logs out, even without server involvement.', false, 'JWTs remain valid until expiration unless explicitly revoked.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3275, 53, 'The Payload of a JWT is always hidden from clients because it is encrypted with the server’s private key.', false, 'The payload is visible (Base64Url-encoded), not encrypted.');
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3441, 73, 'The Reactor pattern processes all I/O synchronously, blocking until each handler finishes before checking for new events.', false, 'Reactor is based on non-blocking I/O and asynchronous dispatch.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3116, 28, 'Singleton', false, 'It''s a creational design pattern.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3117, 28, 'Factory', false, 'It''s a creational design pattern.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3118, 28, 'Abstract Factory', false, 'It''s a creational design pattern.');
@@ -448,13 +483,10 @@ INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) 
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3151, 29, 'Observer', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3152, 29, 'Command', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3153, 29, 'Chain of Responsibility', true, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3442, 73, 'The Reactor pattern relies on polling all file descriptors in a tight loop without waiting for readiness notifications.', false, 'Reactor uses an event demultiplexer, not busy-polling.');
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3443, 73, 'In the Reactor pattern, handlers initiate I/O directly without the reactor’s involvement, making the event loop optional.', false, 'The reactor coordinates readiness and dispatch; it is the core of the pattern.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3284, 55, 'Authorization Request → User Grants Permission → Authorization Code / Token Issued → Access Resource → Token Renewal', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3285, 55, 'Token Renewal → Authorization Request → Access Resource → Authorization Code / Token Issued → User Grants Permission', false, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3286, 55, 'Authorization Code / Token Issued → Authorization Request → User Grants Permission → Token Renewal → Access Resource', false, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3287, 55, 'Access Resource → User Grants Permission → Authorization Request → Authorization Code / Token Issued → Token Renewal', false, NULL);
-INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3444, 73, 'The Reactor pattern guarantees that each event handler runs in parallel across multiple CPU cores by default.', false, 'Reactor is typically single-threaded; parallelism requires additional patterns (e.g., thread pools, worker threads).');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3288, 55, 'Access Resource → User Grants Permission → Authorization Request → Authorization Code / Token Issued → Token Renewal', false, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3289, 55, 'Authorization Request → Access Resource → Token Renewal → Authorization Code / Token Issued → User Grants Permission', false, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3290, 55, 'Token Renewal → Access Resource → User Grants Permission → Authorization Code / Token Issued → Authorization Request', false, NULL);
@@ -721,6 +753,7 @@ INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) 
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2855, 19, 'Dependency Injection is a technique where dependencies are bundled directly inside the module during build time, eliminating the need for runtime configuration.', false, 'That describes static linking or compile-time wiring, not DI.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2856, 20, 'Inversion of Control is a design principle where the flow of a program is delegated to an external framework or container, rather than being controlled directly by the application code.', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2857, 20, 'Inversion of Control means that a class inherits its behavior from a parent class so the parent controls all lower-level logic.', false, 'Inheritance is unrelated to IoC.');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3480, 73, 'A Reactor manages many concurrent connections on a single thread by invoking handlers when events become ready rather than spinning up threads.', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2858, 20, 'Inversion of Control is the practice of reversing function arguments so that dependencies are passed last instead of first.', false, 'IoC has nothing to do with argument ordering.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2859, 20, 'Inversion of Control refers to dynamically swapping the roles of caller and callee at runtime, allowing methods to call their parents instead of children.', false, 'IoC is not about call-stack reversal.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (2860, 20, 'Inversion of Control ensures that all business logic is executed inside constructors so that no external framework can manipulate program flow.', false, 'IoC typically reduces constructor-driven logic, not increases it.');
@@ -791,6 +824,7 @@ INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) 
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3403, 69, 'The Node.js event loop is single-phased and strictly identical to the browser event loop, differing only in available global objects.', false, 'Node.js has multiple libuv phases not found in browsers.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3404, 69, 'Browser event loops allow JavaScript to perform synchronous filesystem I/O during the poll phase, but Node.js forbids all filesystem access inside the event loop.', false, 'Browsers cannot access the filesystem synchronously at all; Node.js can, but it blocks the event loop.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3405, 69, 'Node.js executes timers (setTimeout, setInterval) strictly at the scheduled millisecond mark, while browsers may delay timers but Node never does.', false, 'Both environments provide best-effort timing; neither guarantees exact millisecond accuracy.');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3481, 73, 'The Reactor pattern separates event detection from event handling, allowing the event loop to multiplex many I/O sources efficiently.', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3406, 69, 'In browsers, microtasks can be postponed until after several macrotasks, while Node.js forces microtasks to run only at the end of the poll phase.', false, 'Microtasks run immediately after the current operation, in both environments, not arbitrarily postponed.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3411, 70, 'libuv enables Node.js to perform asynchronous operations even when the underlying operating system only supports synchronous APIs.', true, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3412, 70, 'libuv executes all JavaScript code inside its worker threads, allowing Node.js to run JavaScript in parallel by default.', false, 'JavaScript runs on the main V8 thread; worker threads are used only for specific async tasks.');
@@ -824,25 +858,49 @@ INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) 
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3476, 34, 'Hashing transforms data so it can be easily restored later, while encoding randomizes data so it cannot be returned to its original form.', false, 'The opposite of both is true.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3477, 34, 'Hashing and encoding both serve the same purpose: to encrypt data using specialized algorithms for secure transmission.', false, 'Neither hashing nor encoding is encryption.');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3478, 34, 'Hashing changes the structure of text so browsers can render it correctly, while encoding ensures password checks remain deterministic and unforgeable.', false, 'Browser-safe formats are encoding; password verification uses hashing.');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3479, 73, 'The Reactor pattern uses a non-blocking event demultiplexer (such as epoll, kqueue, or IOCP) to wait for I/O readiness and dispatch events to handlers.', true, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3482, 73, 'Network servers like Node.js (via libuv) and Nginx use the Reactor pattern to achieve scalable, asynchronous I/O without blocking.', true, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3483, 73, 'The Reactor pattern handles readiness-based events (e.g., readable or writable sockets), invoking callbacks only when operations can proceed without blocking.', true, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3484, 73, 'The Reactor pattern spawns a new operating-system thread for every incoming connection, allowing each handler to execute independently.', false, 'Reactor avoids thread-per-connection; it relies on a single-threaded event loop.');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3485, 73, 'The Reactor pattern processes all I/O synchronously, blocking until each handler finishes before checking for new events.', false, 'Reactor is based on non-blocking I/O and asynchronous dispatch.');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3486, 73, 'The Reactor pattern relies on polling all file descriptors in a tight loop without waiting for readiness notifications.', false, 'Reactor uses an event demultiplexer, not busy-polling.');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3487, 73, 'In the Reactor pattern, handlers initiate I/O directly without the reactor’s involvement, making the event loop optional.', false, 'The reactor coordinates readiness and dispatch; it is the core of the pattern.');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3488, 73, 'The Reactor pattern guarantees that each event handler runs in parallel across multiple CPU cores by default.', false, 'Reactor is typically single-threaded; parallelism requires additional patterns (e.g., thread pools, worker threads).');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3489, 4, 'A J I H B C G F D E', true, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3490, 4, 'A J H I B C G F D E', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3491, 4, 'A J I H C B G F D E', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3492, 4, 'A J I H B C F G D E', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3493, 4, 'A J I H B C G F E D', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3494, 4, 'A I J H B C G F D E', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3495, 4, 'A J I H B C G D F E', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3496, 4, 'A J H I C B F G D E', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3505, 78, 'A T M J L B C D K O R S G H I N F P E Q', true, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3506, 78, 'A T M J L B C D O R S K G H I N F P E Q', false, '');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3507, 78, 'A T M J L B C D K G H I N F P O R S E Q', false, '');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3508, 78, 'A T M J L B C D K O R S G H I F N P E Q', false, '');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3509, 78, 'A T M J L B C D O R S K G H I F N P Q E', false, '');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3510, 78, 'A T M J L B C D K O R S G H I N F P Q E', false, '');
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3511, 78, 'A T M J L B C D K O R S G H I N E F P Q', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3512, 78, 'A T M J L B C D K O R S G H I F N E P Q', false, NULL);
 
 
 --
 -- Name: choices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.choices_id_seq', 3478, true);
+SELECT pg_catalog.setval('public.choices_id_seq', 3512, true);
 
 
 --
 -- Name: questions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.questions_id_seq', 77, true);
+SELECT pg_catalog.setval('public.questions_id_seq', 78, true);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict FedcyFFy4SomoDna0PaxTI5tCKGxhk1CaKaFtYcsLszcAKcsw99HqLXXhWasekL
+\unrestrict kVBwYbAw2Uus9YbCqhRqT9TQdo87ULNIDblJ2pIgjDFr07j6lDj13yHsF3f3g2D
 
