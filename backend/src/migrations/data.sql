@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict kVBwYbAw2Uus9YbCqhRqT9TQdo87ULNIDblJ2pIgjDFr07j6lDj13yHsF3f3g2D
+\restrict 4FiyNn1nOcXJlvOAgKNI2vXzIqq14mUEdBvtGyRgU58s8fA3vHNqBJsExqDNyhp
 
 -- Dumped from database version 16.11
 -- Dumped by pg_dump version 16.11
@@ -197,6 +197,28 @@ const userRoles: Record&lt;&quot;admin&quot; | &quot;guest&quot;, boolean&gt; = 
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (31, 'text_input', 'medium', 'Frontend', '<p>How&nbsp;do&nbsp;you&nbsp;call&nbsp;the&nbsp;attack&nbsp;where&nbsp;a&nbsp;malicious&nbsp;site&nbsp;tricks&nbsp;a&nbsp;user’s&nbsp;browser&nbsp;into&nbsp;sending&nbsp;<strong>unwanted&nbsp;requests</strong>&nbsp;to&nbsp;a&nbsp;site&nbsp;where&nbsp;the&nbsp;user&nbsp;is&nbsp;authenticated?</p>', '<p><strong>CSRF</strong>&nbsp;(Cross-Site&nbsp;Request&nbsp;Forgery)&nbsp;is&nbsp;an&nbsp;attack&nbsp;where&nbsp;a&nbsp;malicious&nbsp;website&nbsp;tricks&nbsp;a&nbsp;user’s&nbsp;browser&nbsp;into&nbsp;sending&nbsp;unintended&nbsp;requests&nbsp;to&nbsp;a&nbsp;trusted&nbsp;site&nbsp;where&nbsp;the&nbsp;user&nbsp;is&nbsp;already&nbsp;authenticated.&nbsp;Because&nbsp;browsers&nbsp;automatically&nbsp;include&nbsp;cookies,&nbsp;tokens,&nbsp;or&nbsp;session&nbsp;data,&nbsp;the&nbsp;request&nbsp;appears&nbsp;legitimate&nbsp;to&nbsp;the&nbsp;target&nbsp;server.&nbsp;This&nbsp;allows&nbsp;attackers&nbsp;to&nbsp;perform&nbsp;actions&nbsp;such&nbsp;as&nbsp;changing&nbsp;account&nbsp;details,&nbsp;making&nbsp;purchases,&nbsp;or&nbsp;transferring&nbsp;funds&nbsp;without&nbsp;the&nbsp;user’s&nbsp;consent.&nbsp;CSRF&nbsp;targets&nbsp;state-changing&nbsp;operations,&nbsp;not&nbsp;data&nbsp;theft.&nbsp;Proper&nbsp;defenses&nbsp;include&nbsp;same-site&nbsp;cookies,&nbsp;CSRF&nbsp;tokens,&nbsp;and&nbsp;requiring&nbsp;explicit&nbsp;user&nbsp;interaction.</p>', '', '{CSRF}', true, '2025-12-03 14:02:33.741426+00', '2025-12-07 20:27:12.03655+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (34, 'single_choice', 'easy', 'Security', '<p>What&nbsp;is&nbsp;the&nbsp;difference&nbsp;between&nbsp;<strong>encoding</strong>&nbsp;vs.&nbsp;<strong>hashing</strong>?</p>', '<p>Hashing&nbsp;transforms&nbsp;data&nbsp;into&nbsp;a&nbsp;fixed-size,&nbsp;irreversible&nbsp;value&nbsp;for&nbsp;integrity&nbsp;or&nbsp;verification,&nbsp;while&nbsp;encoding&nbsp;transforms&nbsp;data&nbsp;into&nbsp;a&nbsp;reversible&nbsp;format&nbsp;for&nbsp;safe&nbsp;storage&nbsp;or&nbsp;transmission.</p>', '', '{}', true, '2025-12-03 14:13:40.017483+00', '2025-12-07 20:27:24.270582+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (73, 'multiple_choice', 'hard', 'NodeJS Event Loop', '<p>What&nbsp;is&nbsp;the&nbsp;<strong>Reactor&nbsp;Pattern</strong>?</p>', '<p>The&nbsp;Reactor&nbsp;Pattern&nbsp;is&nbsp;an&nbsp;architecture&nbsp;where&nbsp;a&nbsp;single&nbsp;thread&nbsp;(the&nbsp;reactor)&nbsp;waits&nbsp;for&nbsp;events&nbsp;(like&nbsp;incoming&nbsp;connections,&nbsp;data,&nbsp;timers,&nbsp;or&nbsp;file&nbsp;I/O)&nbsp;and&nbsp;dispatches&nbsp;them&nbsp;to&nbsp;handlers&nbsp;without&nbsp;blocking.</p><p>Instead&nbsp;of&nbsp;creating&nbsp;a&nbsp;thread&nbsp;per&nbsp;client,&nbsp;the&nbsp;reactor&nbsp;uses:</p><ul><li>Non-blocking&nbsp;I/O</li><li>Event&nbsp;demultiplexing&nbsp;(like&nbsp;epoll,&nbsp;kqueue,&nbsp;IOCP)</li><li>Callbacks&nbsp;/&nbsp;handlers&nbsp;that&nbsp;run&nbsp;when&nbsp;the&nbsp;data&nbsp;is&nbsp;ready</li><li>This&nbsp;lets&nbsp;one&nbsp;thread&nbsp;efficiently&nbsp;handle&nbsp;thousands&nbsp;of&nbsp;connections.</li></ul><p></p><p><strong>How&nbsp;it&nbsp;works</strong>:</p><ul><li>The&nbsp;Reactor&nbsp;sits&nbsp;in&nbsp;an&nbsp;event&nbsp;loop.</li><li>It&nbsp;listens&nbsp;for&nbsp;I/O&nbsp;events&nbsp;from&nbsp;many&nbsp;sources.</li><li>When&nbsp;an&nbsp;event&nbsp;occurs,&nbsp;it&nbsp;uses&nbsp;an&nbsp;OS&nbsp;mechanism&nbsp;to&nbsp;detect&nbsp;it.</li><li>It&nbsp;dispatches&nbsp;the&nbsp;event&nbsp;to&nbsp;the&nbsp;correct&nbsp;callback/handler.</li><li>The&nbsp;loop&nbsp;continues,&nbsp;never&nbsp;blocking.</li></ul><p></p><p><strong>Why&nbsp;it&nbsp;exists</strong>:</p><ul><li>Traditional&nbsp;server&nbsp;model:&nbsp;One&nbsp;thread&nbsp;per&nbsp;client&nbsp;→&nbsp;Too&nbsp;many&nbsp;threads&nbsp;→&nbsp;slow,&nbsp;expensive,&nbsp;memory-heavy</li><li>Reactor&nbsp;model:&nbsp;One&nbsp;thread&nbsp;handles&nbsp;many&nbsp;clients&nbsp;→&nbsp;Fast,&nbsp;scalable,&nbsp;non-blocking&nbsp;→&nbsp;Perfect&nbsp;for&nbsp;high-concurrency&nbsp;servers&nbsp;(Node,&nbsp;Nginx,&nbsp;Redis)</li></ul>', '<p>Which&nbsp;of&nbsp;the&nbsp;following&nbsp;are&nbsp;true&nbsp;about&nbsp;<strong>Reactor&nbsp;Pattern</strong>?</p>', '{}', true, '2025-12-05 12:43:41.730863+00', '2025-12-07 22:15:43.626349+00');
+INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (80, 'single_choice', 'medium', 'TypeScript', '<p>What&nbsp;is&nbsp;the&nbsp;value&nbsp;of&nbsp;<strong>F</strong>?</p><p></p><pre data-language="plain">
+type Weird&lt;T&gt; =
+  T extends { a: infer A; b: infer B }
+    ? A | B
+    : T extends (infer U)[]
+      ? Weird&lt;U&gt;[]
+      : never;
+
+type F = Weird&lt;Array&lt;{ a: boolean; b: string }&gt;&gt;;
+</pre>', '<pre data-language="plain">
+(boolean | string)[]
+</pre><p></p><p>Because:</p><pre data-language="plain">
+type Weird&lt;T&gt; =
+  // 1) If T is an object with properties a and b...
+  T extends { a: infer A; b: infer B }
+    ? A | B
+    // 2) Else, if T is an array type...
+    : T extends (infer U)[]
+      ? Weird&lt;U&gt;[]
+      // 3) Otherwise...
+      : never;
+</pre>', '', '{}', true, '2025-12-08 14:13:07.084197+00', '2025-12-08 14:13:53.891473+00');
 INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (4, 'single_choice', 'medium', 'NodeJS Event Loop', '<p>In&nbsp;a&nbsp;Node.js&nbsp;environment,&nbsp;what&nbsp;is&nbsp;the&nbsp;order&nbsp;of&nbsp;the&nbsp;console&nbsp;logs?</p><pre data-language="plain">
 const fs = require(&#39;fs&#39;);
 
@@ -286,6 +308,50 @@ fs.readFile(__filename, () =&gt; {
 
 console.log(&#39;T&#39;);
 </pre>', '<ol><li><strong>Sync&nbsp;phase</strong>:<ol><li><strong>A</strong>,&nbsp;<strong>T</strong></li></ol></li><li><strong>Microtasks&nbsp;after&nbsp;script</strong>:<ol><li>process.nextTick:&nbsp;<strong>M</strong></li><li>Promises:&nbsp;<strong>J</strong>&nbsp;→&nbsp;inside&nbsp;it&nbsp;schedule&nbsp;K&nbsp;(timer)&nbsp;+&nbsp;L&nbsp;(nextTick)</li><li>Then&nbsp;nextTick&nbsp;again:&nbsp;<strong>L</strong></li></ol></li><li><strong>Timers&nbsp;phase&nbsp;(first&nbsp;round)</strong>:<ol><li>First&nbsp;timer:&nbsp;callback&nbsp;with&nbsp;<strong>B</strong>&nbsp;(top-level&nbsp;setTimeout)<ol><li>Inside&nbsp;it&nbsp;schedule&nbsp;C&nbsp;(nextTick),&nbsp;D&nbsp;(Promise),&nbsp;E&nbsp;(later&nbsp;timer),&nbsp;F&nbsp;(setImmediate)</li><li>Microtasks&nbsp;after&nbsp;B:&nbsp;<strong>C</strong>,&nbsp;then&nbsp;<strong>D</strong></li></ol></li><li>Second&nbsp;timer:&nbsp;<strong>K</strong></li></ol></li><li><strong>Poll&nbsp;phase&nbsp;(I/O&nbsp;–&nbsp;fs.readFile)</strong>:<ol><li>Callback&nbsp;logs&nbsp;<strong>O</strong>,&nbsp;schedules&nbsp;P&nbsp;(setImmediate),&nbsp;Q&nbsp;(timer),&nbsp;R&nbsp;(nextTick),&nbsp;S&nbsp;(Promise)</li><li>Microtasks&nbsp;after&nbsp;O:&nbsp;<strong>R</strong>,&nbsp;then&nbsp;<strong>S</strong></li></ol></li><li><strong>Check&nbsp;phase&nbsp;(setImmediate)&nbsp;in&nbsp;order&nbsp;queued</strong>:<ol><li><strong>G</strong>&nbsp;(from&nbsp;script)&nbsp;→&nbsp;microtasks&nbsp;<strong>H</strong>,&nbsp;<strong>I</strong></li><li><strong>N&nbsp;</strong>(from&nbsp;M)</li><li><strong>F</strong>&nbsp;(from&nbsp;inside&nbsp;B)</li><li><strong>P</strong>&nbsp;(from&nbsp;inside&nbsp;O)</li></ol></li><li><strong>Next&nbsp;tick&nbsp;–&nbsp;Timers&nbsp;phase&nbsp;(second&nbsp;round)</strong>:<ol><li>Remaining&nbsp;timers:&nbsp;<strong>E</strong>&nbsp;(from&nbsp;inside&nbsp;B),&nbsp;then&nbsp;<strong>Q</strong>&nbsp;(from&nbsp;inside&nbsp;O)</li></ol></li></ol><p></p>', '', '{}', true, '2025-12-07 22:29:33.801052+00', '2025-12-07 22:34:53.765583+00');
+INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (81, 'single_choice', 'hard', 'TypeScript', '<p>What&nbsp;is&nbsp;the&nbsp;value&nbsp;of&nbsp;G?</p><p></p><pre data-language="plain">
+type WeirdKeys&lt;T&gt; =
+  T extends { a: infer A; b: infer B }
+    ? keyof A | keyof B
+    : T extends (infer U)[]
+      ? WeirdKeys&lt;U&gt;[]
+      : never;
+
+type G = WeirdKeys&lt;
+  Array&lt;{
+    a: { foo: number; common: boolean };
+    b: { bar: string; common: boolean };
+  }&gt;
+&gt;;
+</pre>', '<pre data-language="plain">
+type G = (&quot;foo&quot; | &quot;bar&quot; | &quot;common&quot;)[];
+</pre><p></p><p>Explanation:</p><ul><li>For&nbsp;T&nbsp;that&nbsp;looks&nbsp;like&nbsp;{&nbsp;a:&nbsp;A;&nbsp;b:&nbsp;B&nbsp;}:<ul><li>Infer&nbsp;A&nbsp;and&nbsp;B</li><li>Result&nbsp;=&nbsp;keyof&nbsp;A&nbsp;|&nbsp;keyof&nbsp;B</li></ul></li><li>For&nbsp;T&nbsp;that&nbsp;is&nbsp;an&nbsp;array:<ul><li>Infer&nbsp;element&nbsp;type&nbsp;U</li><li>Result&nbsp;=&nbsp;WeirdKeys&lt;U&gt;[]&nbsp;(recursive,&nbsp;then&nbsp;wrap&nbsp;in&nbsp;array)</li></ul></li><li>Otherwise:<ul><li>never</li></ul></li></ul><p></p><p>Now&nbsp;compute&nbsp;G:</p><ul><li>Outer&nbsp;T&nbsp;is&nbsp;Array&lt;{&nbsp;a:&nbsp;{...};&nbsp;b:&nbsp;{...}&nbsp;}&gt;,&nbsp;so&nbsp;it&nbsp;matches&nbsp;the&nbsp;array&nbsp;branch:</li></ul><pre data-language="plain">
+G = WeirdKeys&lt;{ a: {...}; b: {...} &gt;}[]
+</pre><ul><li>For&nbsp;the&nbsp;inner&nbsp;object:</li></ul><pre data-language="plain">
+A = { foo: number; common: boolean }
+B = { bar: string; common: boolean }
+</pre><ul><li>So:</li></ul><pre data-language="plain">
+keyof A = &quot;foo&quot;   | &quot;common&quot;
+keyof B = &quot;bar&quot;   | &quot;common&quot;
+keyof A | keyof B = &quot;foo&quot; | &quot;bar&quot; | &quot;common&quot;
+</pre><ul><li>Then&nbsp;WeirdKeys&lt;{&nbsp;a;&nbsp;b;&nbsp;}&gt;&nbsp;=&nbsp;&quot;foo&quot;&nbsp;|&nbsp;&quot;bar&quot;&nbsp;|&nbsp;&quot;common&quot;,&nbsp;so:</li></ul><pre data-language="plain">
+type G = (&quot;foo&quot; | &quot;bar&quot; | &quot;common&quot;)[];
+</pre>', '', '{}', true, '2025-12-08 14:28:15.889912+00', '2025-12-08 14:29:25.319573+00');
+INSERT INTO public.questions (id, question_type, difficulty, topic, question, answer, quiz, match_keywords, is_active, created_at, updated_at) VALUES (79, 'single_choice', 'medium', 'TypeScript', '<p>What&#39;s&nbsp;the&nbsp;value&nbsp;of&nbsp;<strong>type&nbsp;A</strong>,&nbsp;<strong>type&nbsp;B</strong>&nbsp;and&nbsp;<strong>type&nbsp;C</strong>?</p><p></p><pre data-language="plain">
+type ReturnTypeOf&lt;T&gt; = T extends (...args: any[]) =&gt; infer R ? R : never;
+type A = ReturnTypeOf&lt;() =&gt; string&gt;;
+type B = ReturnTypeOf&lt;(x: number) =&gt; Promise&lt;number&gt;&gt;;
+type C = ReturnTypeOf&lt;string&gt;;
+</pre>', '<pre data-language="plain">
+T extends (...args: any[]) =&gt; infer R
+</pre><ul><li>means&nbsp;it&#39;s&nbsp;a&nbsp;function&nbsp;with&nbsp;any&nbsp;parameters.</li></ul><p></p><pre data-language="plain">
+T extends (...args: any[]) =&gt; infer R
+</pre><ul><li>means&nbsp;any&nbsp;function&nbsp;which&nbsp;accepts&nbsp;any&nbsp;number&nbsp;of&nbsp;arguments&nbsp;and&nbsp;returns&nbsp;something.”</li></ul><p></p><pre data-language="plain">
+type A = ReturnTypeOf&lt;() =&gt; string&gt;;
+</pre><ul><li><strong>string</strong>&nbsp;as&nbsp;it&nbsp;is&nbsp;a&nbsp;function&nbsp;returning&nbsp;a&nbsp;string</li></ul><p></p><pre data-language="plain">
+type B = ReturnTypeOf&lt;(x: number) =&gt; Promise&lt;number&gt;&gt;;
+</pre><ul><li><strong>Promise&lt;number&gt;</strong>&nbsp;as&nbsp;that&#39;s&nbsp;what&nbsp;the&nbsp;function&nbsp;is&nbsp;returning</li></ul><p></p><pre data-language="plain">
+type C = ReturnTypeOf&lt;string&gt;;
+</pre><ul><li><strong>never</strong>&nbsp;as&nbsp;it&#39;s&nbsp;not&nbsp;a&nbsp;function</li></ul>', '', '{}', true, '2025-12-08 13:21:46.203269+00', '2025-12-08 14:45:40.197615+00');
 
 
 --
@@ -882,25 +948,50 @@ INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) 
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3510, 78, 'A T M J L B C D K O R S G H I N F P Q E', false, '');
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3511, 78, 'A T M J L B C D K O R S G H I N E F P Q', false, NULL);
 INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3512, 78, 'A T M J L B C D K O R S G H I F N E P Q', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3548, 80, '(boolean | string)[]', true, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3549, 80, '(boolean | string)[]', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3550, 80, '(boolean[] | string[])', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3551, 80, 'boolean | string', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3552, 80, 'Array<{ a: boolean; b: string }>', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3553, 80, 'never', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3554, 80, 'never[]', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3555, 80, 'Promise<(boolean | string)[]>', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3564, 81, '("foo" | "bar" | "common")[]', true, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3565, 81, '{ foo: number; bar: string; common: boolean }[]', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3566, 81, '("foo" | "bar")[]', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3567, 81, '"foo"[]', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3568, 81, 'string[]', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3569, 81, '"foo" | "bar" | "common"', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3570, 81, 'Array<{ a: { foo: number; common: boolean }; b: { bar: string; common: boolean } }>', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3571, 81, 'never', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3581, 79, 'string, Promise<number>, never', true, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3582, 79, 'string, number, never', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3583, 79, 'string, Promise<number>, undefined', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3584, 79, 'string, Promise<any>, never', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3585, 79, 'string, Promise<number>, string', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3586, 79, 'unknown, Promise<number>, never', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3587, 79, 'string, Promise<unknown>, never', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3588, 79, 'any, Promise<number>, never', false, NULL);
+INSERT INTO public.choices (id, question_id, choice_text, is_good, explanation) VALUES (3589, 79, 'string, Promise<number>, null', false, NULL);
 
 
 --
 -- Name: choices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.choices_id_seq', 3512, true);
+SELECT pg_catalog.setval('public.choices_id_seq', 3589, true);
 
 
 --
 -- Name: questions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.questions_id_seq', 78, true);
+SELECT pg_catalog.setval('public.questions_id_seq', 81, true);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict kVBwYbAw2Uus9YbCqhRqT9TQdo87ULNIDblJ2pIgjDFr07j6lDj13yHsF3f3g2D
+\unrestrict 4FiyNn1nOcXJlvOAgKNI2vXzIqq14mUEdBvtGyRgU58s8fA3vHNqBJsExqDNyhp
 
