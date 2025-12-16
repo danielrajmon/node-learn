@@ -21,28 +21,28 @@ export class AchievementsComponent {
     {
       id: 1,
       title: 'First Steps',
-      description: 'Guessed first single choice question.',
+      description: 'Answered your first single choice question.',
       spriteCol: 0,
       spriteRow: 0
     },
     {
       id: 2,
       title: 'Lucky Guess',
-      description: 'Guessed first multi choice question.',
+      description: 'Answered your first multi-choice question.',
       spriteCol: 1,
       spriteRow: 0
     },
     {
       id: 3,
       title: 'You Did the Thing',
-      description: 'Guessed first type question.',
+      description: 'Answered your first text input question.',
       spriteCol: 2,
       spriteRow: 0
     },
     {
       id: 4,
       title: 'Easy Peasy',
-      description: 'Guessed all easy questions.',
+      description: 'Mastered all easy-level questions.',
       spriteCol: 3,
       spriteRow: 0
     },
@@ -56,105 +56,105 @@ export class AchievementsComponent {
     {
       id: 6,
       title: 'Click Clicker',
-      description: 'Guessed 10 single choice questions.',
+      description: 'Answered 10 single choice questions correctly.',
       spriteCol: 5,
       spriteRow: 0
     },
     {
       id: 7,
       title: 'Brain Overload',
-      description: 'Guessed 10 multi choice questions.',
+      description: 'Answered 10 multi-choice questions correctly.',
       spriteCol: 6,
       spriteRow: 0
     },
     {
       id: 8,
       title: 'Keyboard Warrior',
-      description: 'Guessed 10 type questions.',
+      description: 'Answered 10 text input questions correctly.',
       spriteCol: 0,
       spriteRow: 1
     },
     {
       id: 9,
       title: 'X Marks the Spot',
-      description: 'Guessed 10 questions.',
+      description: 'Answered 10 questions correctly.',
       spriteCol: 1,
       spriteRow: 1
     },
     {
       id: 10,
       title: 'Getting There',
-      description: 'Guessed all medium questions.',
+      description: 'Mastered all medium-level questions.',
       spriteCol: 2,
       spriteRow: 1
     },
     {
       id: 11,
       title: 'Clickety Click',
-      description: 'Guessed 25 single choice questions.',
+      description: 'Answered 25 single choice questions correctly.',
       spriteCol: 3,
       spriteRow: 1
     },
     {
       id: 12,
-      title: 'Analysis Paralysis',
-      description: 'Guessed 25 multi choice questions.',
+      title: 'Choice Champion',
+      description: 'Answered 25 multi-choice questions correctly.',
       spriteCol: 4,
       spriteRow: 1
     },
     {
       id: 13,
       title: 'Type Master',
-      description: 'Guessed 25 type questions.',
+      description: 'Answered 25 text input questions correctly.',
       spriteCol: 5,
       spriteRow: 1
     },
     {
       id: 14,
-      title: 'Century Club',
-      description: 'Guessed 100 questions.',
+      title: 'Quiz Legend',
+      description: 'Answered 100 questions correctly.',
       spriteCol: 6,
       spriteRow: 1
     },
     {
       id: 15,
       title: 'Code Wizard',
-      description: 'Guessed all code-based questions.',
+      description: 'Mastered all code-based questions.',
       spriteCol: 0,
       spriteRow: 2
     },
     {
       id: 16,
       title: 'Book Smarts',
-      description: 'Guessed all theoretical questions.',
+      description: 'Mastered all theoretical questions.',
       spriteCol: 1,
       spriteRow: 2
     },
     {
       id: 17,
       title: 'Single Threat',
-      description: 'Guessed all single choice questions.',
+      description: 'Mastered all single choice questions.',
       spriteCol: 2,
       spriteRow: 2
     },
     {
       id: 18,
       title: 'Multiple Personality',
-      description: 'Guessed all multi choice questions.',
+      description: 'Mastered all multi-choice questions.',
       spriteCol: 3,
       spriteRow: 2
     },
     {
       id: 19,
       title: 'Type Champion',
-      description: 'Guessed all type questions.',
+      description: 'Mastered all text input questions.',
       spriteCol: 4,
       spriteRow: 2
     },
     {
       id: 20,
       title: 'Masochist',
-      description: 'Guessed all hard questions correctly.',
+      description: 'Completed all hard-level questions.',
       spriteCol: 5,
       spriteRow: 2
     },
