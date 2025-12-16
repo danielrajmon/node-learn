@@ -76,7 +76,7 @@ export class AchievementsComponent {
     },
     {
       id: 9,
-      title: 'Decent Decent',
+      title: 'X Marks the Spot',
       description: 'Guessed 10 questions.',
       spriteCol: 1,
       spriteRow: 1
