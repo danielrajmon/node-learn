@@ -1,0 +1,14 @@
+<div class="achievements-container">
+  <h1>Achievements</h1>
+  <p class="subtitle">Unlock and collect achievements as you progress through your learning journey. Soon!</p>
+
+  <div class="achievements-grid">
+    <div class="achievement-card" *ngFor="let achievement of achievements">
+      <div class="achievement-image" [style.backgroundPosition]="getBackgroundPosition(achievement.spriteCol, achievement.spriteRow)"></div>
+      <div class="achievement-content">
+        <h3>{{ achievement.title }}</h3>
+        <p>{{ achievement.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>
