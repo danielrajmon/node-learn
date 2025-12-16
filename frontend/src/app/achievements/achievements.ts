@@ -168,8 +168,8 @@ export class AchievementsComponent {
   ];
 
   getBackgroundPosition(col: number, row: number): string {
-    const x = col * -100;
-    const y = row * -100;
+    const x = col * -80;
+    const y = row * -80;
     return `${x}px ${y}px`;
   }
 }
