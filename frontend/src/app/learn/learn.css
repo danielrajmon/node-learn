@@ -77,6 +77,20 @@
   background-color: #888;
 }
 
+.category-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background-color: #e0e0e0;
+  color: #666;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .topics {
   display: flex;
   gap: 0.5rem;

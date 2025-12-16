@@ -24,6 +24,8 @@ export class Questions implements OnInit {
   searchTerm = '';
   selectedDifficulty = '';
   selectedTopic = '';
+  selectedQuestionType = '';
+  selectedCategory = '';
   visibleAnswers = new Set<number>();
   answers = new Map<number, string>();
   singleQuestionMode = false;
@@ -143,7 +145,13 @@ export class Questions implements OnInit {
       const matchesTopic = !this.selectedTopic ||
         q.topic === this.selectedTopic;
 
-      return matchesSearch && matchesDifficulty && matchesTopic;
+      const matchesQuestionType = !this.selectedQuestionType ||
+        q.questionType === this.selectedQuestionType;
+
+      const matchesCategory = !this.selectedCategory ||
+        (this.selectedCategory === 'practical' ? q.practical : !q.practical);
+
+      return matchesSearch && matchesDifficulty && matchesTopic && matchesQuestionType && matchesCategory;
     });
     // Reapply syntax highlighting after filtering
     this.cdr.detectChanges();
@@ -201,6 +209,18 @@ export class Questions implements OnInit {
 
   getDifficultyCount(difficulty: string): number {
     return this.allQuestions.filter(q => q.difficulty === difficulty).length;
+  }
+
+  getQuestionTypeCount(type: string): number {
+    return this.allQuestions.filter(q => q.questionType === type).length;
+  }
+
+  getCategoryCount(category: string): number {
+    if (category === 'practical') {
+      return this.allQuestions.filter(q => q.practical).length;
+    } else {
+      return this.allQuestions.filter(q => !q.practical).length;
+    }
   }
 
   backToAllQuestions() {
