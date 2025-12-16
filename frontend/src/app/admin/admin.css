@@ -1,19 +1,30 @@
 .admin-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .header {
+  flex-shrink: 0;
+  background-color: white;
+  padding: 0;
+  border-bottom: none;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  margin-top: 0;
 }
 
-.header h1 {
-  margin: 0;
+.admin-content {
+  flex: 1;
+  overflow-y: auto;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 2rem 12rem 2rem;
+  width: 100%;
+}
+
+.admin-content h1 {
+  margin: 0 0 2rem 0;
   color: #2c3e50;
   font-size: 1.5rem;
   font-weight: 600;
@@ -383,6 +394,35 @@
     border-bottom: 1px solid #f1f3f5;
     position: relative;
     padding-left: 50%;
+  }
+
+  .questions-table td:nth-child(1)::before {
+    content: 'ID';
+  }
+
+  .questions-table td:nth-child(2)::before {
+    content: 'Question';
+  }
+
+  .questions-table td:nth-child(3)::before {
+    content: 'Difficulty';
+  }
+
+  .questions-table td:nth-child(4),
+  .questions-table td:nth-child(5) {
+    display: inline-block;
+    width: auto;
+    margin-left: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: none;
+    padding-left: 0;
+    position: static;
+  }
+
+  .questions-table td:nth-child(4)::before,
+  .questions-table td:nth-child(5)::before {
+    content: '';
+    display: none;
   }
 
   .questions-table td:last-child {

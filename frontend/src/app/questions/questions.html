@@ -1,76 +1,85 @@
 <div class="questions-container">
-  <h2>{{ singleQuestionMode ? 'Question' : '' }}</h2>
-  
-  <div class="filters" *ngIf="!singleQuestionMode">
-    <select [(ngModel)]="selectedTopic" (change)="applyFilters()" class="filter-select">
-      <option value="">All Topics ({{ allQuestions.length }})</option>
-      <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }} ({{ getTopicCount(topic) }})</option>
-    </select>
-
-    <select [(ngModel)]="selectedDifficulty" (change)="applyFilters()" class="filter-select">
-      <option value="">All Difficulties</option>
-      <option value="easy">Easy ({{ getDifficultyCount('easy') }})</option>
-      <option value="medium">Medium ({{ getDifficultyCount('medium') }})</option>
-      <option value="hard">Hard ({{ getDifficultyCount('hard') }})</option>
-    </select>
-
-    <input 
-      type="text" 
-      [(ngModel)]="searchTerm" 
-      (input)="applyFilters()"
-      placeholder="Search questions..."
-      class="search-input">
+  <div class="questions-header">
+    <h2>{{ singleQuestionMode ? 'Question' : '' }}</h2>
     
-    <select [(ngModel)]="selectedQuestionType" (change)="applyFilters()" class="filter-select">
-      <option value="">All Types</option>
-      <option value="single_choice">Single Choice ({{ getQuestionTypeCount('single_choice') }})</option>
-      <option value="multiple_choice">Multiple Choice ({{ getQuestionTypeCount('multiple_choice') }})</option>
-      <option value="text_input">Text Input ({{ getQuestionTypeCount('text_input') }})</option>
-    </select>
-
-    <select [(ngModel)]="selectedCategory" (change)="applyFilters()" class="filter-select">
-      <option value="">All Categories</option>
-      <option value="practical">Practical ({{ getCategoryCount('practical') }})</option>
-      <option value="theoretical">Theoretical ({{ getCategoryCount('theoretical') }})</option>
-    </select>
-  </div>
-
-  <div *ngIf="loading" class="loading">Loading questions...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
-
-  <div class="questions-list" *ngIf="!loading && !error">
-    <div *ngFor="let question of questions; trackBy: trackByQuestionId" class="question-item">
-      <div class="question-header">
-        <div class="topics">
-          <span class="topic">{{ question.topic }}</span>
-        </div>
-        <span class="category-badge" [class.practical]="question.practical">
-          {{ question.practical ? 'Practical' : 'Theoretical' }}
-        </span>
-        <span class="difficulty" [class]="question.difficulty">{{ question.difficulty }}</span>
-      </div>
-      <a [routerLink]="['/questions', question.id]" class="question-link">
-        <div class="question-text" [innerHTML]="question.question"></div>
-      </a>
-      
-      <button 
-        class="show-answer-btn" 
-        (click)="toggleAnswer(question.id)"
-        [class.active]="visibleAnswers.has(question.id)">
-        {{ visibleAnswers.has(question.id) ? 'Hide Answer' : 'Show Answer' }}
-      </button>
-      
-      <div class="answer-section" *ngIf="visibleAnswers.has(question.id)">
-        <div class="answer-text" [innerHTML]="answers.get(question.id)"></div>
-      </div>
+    <div class="filters-separator" *ngIf="!singleQuestionMode" (click)="toggleFilters()">
+      <span class="chevron" [class.rotated]="!showFilters">▼</span>
+      <span class="filters-label">FILTERS</span>
     </div>
     
-    <button *ngIf="singleQuestionMode" class="back-btn" (click)="backToAllQuestions()">
-      ← Back to All Questions
-    </button>
-    
-    <div *ngIf="questions.length === 0" class="no-results">
-      No questions found matching your criteria.
+    <div class="filters" *ngIf="!singleQuestionMode" [class.collapsed]="!showFilters">
+      <select [(ngModel)]="selectedTopic" (change)="applyFilters()" class="filter-select">
+        <option value="">All Topics ({{ allQuestions.length }})</option>
+        <option *ngFor="let topic of allTopics" [value]="topic">{{ topic }} ({{ getTopicCount(topic) }})</option>
+      </select>
+
+      <select [(ngModel)]="selectedDifficulty" (change)="applyFilters()" class="filter-select">
+        <option value="">All Difficulties</option>
+        <option value="easy">Easy ({{ getDifficultyCount('easy') }})</option>
+        <option value="medium">Medium ({{ getDifficultyCount('medium') }})</option>
+        <option value="hard">Hard ({{ getDifficultyCount('hard') }})</option>
+      </select>
+
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="applyFilters()"
+        placeholder="Search questions..."
+        class="search-input">
+      
+      <select [(ngModel)]="selectedQuestionType" (change)="applyFilters()" class="filter-select">
+        <option value="">All Types</option>
+        <option value="single_choice">Single Choice ({{ getQuestionTypeCount('single_choice') }})</option>
+        <option value="multiple_choice">Multiple Choice ({{ getQuestionTypeCount('multiple_choice') }})</option>
+        <option value="text_input">Text Input ({{ getQuestionTypeCount('text_input') }})</option>
+      </select>
+
+      <select [(ngModel)]="selectedCategory" (change)="applyFilters()" class="filter-select">
+        <option value="">All Categories</option>
+        <option value="practical">Practical ({{ getCategoryCount('practical') }})</option>
+        <option value="theoretical">Theoretical ({{ getCategoryCount('theoretical') }})</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="questions-content">
+    <div *ngIf="loading" class="loading">Loading questions...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div class="questions-list" *ngIf="!loading && !error">
+      <div *ngFor="let question of questions; trackBy: trackByQuestionId" class="question-item">
+        <div class="question-header">
+          <div class="topics">
+            <span class="topic">{{ question.topic }}</span>
+          </div>
+          <span class="category-badge" [class.practical]="question.practical">
+            {{ question.practical ? 'Practical' : 'Theoretical' }}
+          </span>
+          <span class="difficulty" [class]="question.difficulty">{{ question.difficulty }}</span>
+        </div>
+        <a [routerLink]="['/questions', question.id]" class="question-link">
+          <div class="question-text" [innerHTML]="question.question"></div>
+        </a>
+        
+        <button 
+          class="show-answer-btn" 
+          (click)="toggleAnswer(question.id)"
+          [class.active]="visibleAnswers.has(question.id)">
+          {{ visibleAnswers.has(question.id) ? 'Hide Answer' : 'Show Answer' }}
+        </button>
+        
+        <div class="answer-section" *ngIf="visibleAnswers.has(question.id)">
+          <div class="answer-text" [innerHTML]="answers.get(question.id)"></div>
+        </div>
+      </div>
+      
+      <button *ngIf="singleQuestionMode" class="back-btn" (click)="backToAllQuestions()">
+        ← Back to All Questions
+      </button>
+      
+      <div *ngIf="questions.length === 0" class="no-results">
+        No questions found matching your criteria.
+      </div>
     </div>
   </div>
 </div>

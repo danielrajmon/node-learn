@@ -29,6 +29,7 @@ export class Questions implements OnInit {
   visibleAnswers = new Set<number>();
   answers = new Map<number, string>();
   singleQuestionMode = false;
+  showFilters = true;
 
   constructor(
     private questionService: QuestionService,
@@ -233,5 +234,9 @@ export class Questions implements OnInit {
 
   viewQuestion(questionId: number) {
     this.router.navigate(['/questions', questionId]);
+  }
+
+  toggleFilters() {
+    this.showFilters = !this.showFilters;
   }
 }
