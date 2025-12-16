@@ -8,6 +8,7 @@ export interface Choice {
 export interface Question {
   id: number;
   questionType: 'single_choice' | 'multiple_choice' | 'text_input';
+  practical: boolean;
   question: string;
   answer?: string;
   quiz?: string;
@@ -23,6 +24,7 @@ export interface Question {
 
 export interface CreateQuestion {
   questionType: 'single_choice' | 'multiple_choice' | 'text_input';
+  practical: boolean;
   question: string;
   answer?: string;
   quiz?: string;

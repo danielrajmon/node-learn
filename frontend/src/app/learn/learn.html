@@ -7,6 +7,9 @@
         <div class="topics">
           <span class="topic">{{ currentQuestion.topic }}</span>
         </div>
+        <span class="practical-badge" [class.practical]="currentQuestion.practical">
+          {{ currentQuestion.practical ? 'Practical' : 'Theoretical' }}
+        </span>
         <span class="difficulty" [class]="currentQuestion.difficulty">
           {{ currentQuestion.difficulty }}
         </span>

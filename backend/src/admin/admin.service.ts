@@ -6,6 +6,7 @@ import { ChoiceEntity } from '../question/entities/choice.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { QuestionService } from '../question/question.service';
 import { QuestionFilters } from '../question/interfaces/question.interface';
+import { QuestionDto } from '../question/dto/question.dto';
 
 @Injectable()
 export class AdminService {
@@ -17,7 +18,23 @@ export class AdminService {
     private questionService: QuestionService,
   ) {}
 
-  async findAllQuestions(filters?: QuestionFilters): Promise<QuestionEntity[]> {
+  private entityToDto(entity: QuestionEntity): QuestionDto {
+    return {
+      id: entity.id,
+      questionType: entity.questionType,
+      practical: entity.practical,
+      question: entity.question,
+      answer: entity.answer,
+      quiz: entity.quiz,
+      matchKeywords: entity.matchKeywords,
+      difficulty: entity.difficulty,
+      topic: entity.topic,
+      isActive: entity.isActive,
+      choices: entity.choices,
+    };
+  }
+
+  async findAllQuestions(filters?: QuestionFilters): Promise<QuestionDto[]> {
     const questions = await this.questionRepository.find({
       relations: ['choices'],
       order: { 
@@ -27,10 +44,10 @@ export class AdminService {
         }
       }
     });
-    return questions;
+    return questions.map(q => this.entityToDto(q));
   }
 
-  async createQuestion(createQuestionDto: CreateQuestionDto): Promise<QuestionEntity> {
+  async createQuestion(createQuestionDto: CreateQuestionDto): Promise<QuestionDto> {
     const { choices, ...questionData } = createQuestionDto;
     
     const question = this.questionRepository.create(questionData);
@@ -55,10 +72,10 @@ export class AdminService {
       throw new Error('Failed to create question');
     }
     
-    return result;
+    return this.entityToDto(result);
   }
 
-  async updateQuestion(id: number, updateQuestionDto: any): Promise<QuestionEntity> {
+  async updateQuestion(id: number, updateQuestionDto: any): Promise<QuestionDto> {
     const question = await this.questionRepository.findOne({ 
       where: { id },
       relations: ['choices']
@@ -70,7 +87,7 @@ export class AdminService {
     const { choices, ...questionData } = updateQuestionDto;
     
     // Use transaction to ensure all operations succeed or fail together
-    return await this.questionRepository.manager.transaction(async (transactionalEntityManager) => {
+    const savedQuestion = await this.questionRepository.manager.transaction(async (transactionalEntityManager) => {
       // ALWAYS delete all existing choices first - unconditionally
       await transactionalEntityManager.delete(ChoiceEntity, { questionId: id });
       
@@ -102,6 +119,8 @@ export class AdminService {
       
       return result;
     });
+    
+    return this.entityToDto(savedQuestion);
   }
 
   async deleteQuestion(id: number): Promise<void> {

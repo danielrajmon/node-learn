@@ -110,16 +110,6 @@
           </select>
         </div>
 
-        <div class="form-group checkbox-group">
-          <label>
-            <input
-              type="checkbox"
-              name="isActive"
-              [(ngModel)]="question.isActive"
-            />
-            Active (visible to users)
-          </label>
-        </div>
       </div>
 
       <div class="form-right">
@@ -232,6 +222,28 @@
       </div>
     </div>
 
+    <div class="form-group checkbox-group">
+      <label>
+        <input
+          type="checkbox"
+          name="practical"
+          [(ngModel)]="question.practical"
+        />
+        Practical (code-based)
+      </label>
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label>
+        <input
+          type="checkbox"
+          name="isActive"
+          [(ngModel)]="question.isActive"
+        />
+        Active (visible to users)
+      </label>
+    </div>
+
     <div class="form-actions">
       <button type="submit" class="submit-button" *ngIf="!isEditMode" [disabled]="questionForm.invalid">Create Question</button>
       <button type="submit" class="submit-button" *ngIf="isEditMode" [disabled]="questionForm.invalid">Update Question</button>
@@ -241,7 +253,7 @@
   </form>
 
   <div class="questions-list">
-    <h2>Modify or delete a question ({{ allQuestions.length }})</h2>
+    <h1>Modify or delete a question ({{ allQuestions.length }})</h1>
     
     <div class="loading-message" *ngIf="loading">
       <p>Loading questions...</p>

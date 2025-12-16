@@ -9,6 +9,9 @@ export class QuestionEntity {
   @Column({ name: 'question_type', type: 'varchar' })
   questionType: 'single_choice' | 'multiple_choice' | 'text_input';
 
+  @Column({ name: 'practical', type: 'boolean' })
+  practical: boolean;
+
   @Column({ name: 'question', type: 'text' })
   question: string;
 

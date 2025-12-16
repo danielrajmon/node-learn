@@ -5,6 +5,19 @@ export class QuestionDto {
   id: number;
 
   @ApiProperty({
+    example: 'single_choice',
+    enum: ['single_choice', 'multiple_choice', 'text_input'],
+    description: 'Type of question',
+  })
+  questionType: 'single_choice' | 'multiple_choice' | 'text_input';
+
+  @ApiProperty({
+    example: true,
+    description: 'Whether the question is practical (code-based)',
+  })
+  practical: boolean;
+
+  @ApiProperty({
     example: 'What are the three pillars of OOP?',
     description: 'The interview question text',
   })
@@ -50,6 +63,13 @@ export class QuestionDto {
     description: 'Whether the question is active',
   })
   isActive: boolean;
+
+  @ApiProperty({
+    example: [],
+    description: 'Choices available for the question (if applicable)',
+    required: false,
+  })
+  choices?: any[];
 }
 
 export class QuestionWithoutAnswerDto {

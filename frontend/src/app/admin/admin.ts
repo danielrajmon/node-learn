@@ -17,6 +17,7 @@ import { QuillModule } from 'ngx-quill';
 export class AdminComponent implements OnInit, AfterViewInit {
   question: CreateQuestion = {
     questionType: 'single_choice',
+    practical: false,
     question: '',
     answer: '',
     quiz: '',
@@ -190,6 +191,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
     
     this.question = {
       questionType: q.questionType,
+      practical: q.practical,
       question: q.question,
       answer: (q as any).answer || '',
       quiz: (q as any).quiz || '',
@@ -237,6 +239,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.editingQuestionId = null;
     this.question = {
       questionType: 'single_choice',
+      practical: false,
       question: '',
       answer: '',
       quiz: '',

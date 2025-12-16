@@ -159,7 +159,7 @@ export class AchievementsComponent {
       spriteRow: 2
     },
     {
-      id: 21,
+      id: 50,
       title: 'NodeJS Ninja',
       description: 'You are now well prepared for a NodeJS interview!',
       spriteCol: 6,

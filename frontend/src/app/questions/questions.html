@@ -1,5 +1,5 @@
 <div class="questions-container">
-  <h2>{{ singleQuestionMode ? 'Question' : 'All NodeJS Questions' }}</h2>
+  <h2>{{ singleQuestionMode ? 'Question' : '' }}</h2>
   
   <div class="filters" *ngIf="!singleQuestionMode">
     <select [(ngModel)]="selectedTopic" (change)="applyFilters()" class="filter-select">
@@ -31,6 +31,9 @@
         <div class="topics">
           <span class="topic">{{ question.topic }}</span>
         </div>
+        <span class="practical-badge" [class.practical]="question.practical">
+          {{ question.practical ? 'Practical' : 'Theoretical' }}
+        </span>
         <span class="difficulty" [class]="question.difficulty">{{ question.difficulty }}</span>
       </div>
       <a [routerLink]="['/questions', question.id]" class="question-link">

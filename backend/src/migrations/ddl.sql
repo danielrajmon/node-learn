@@ -24,6 +24,7 @@ CREATE TYPE difficulty_enum AS ENUM (
 CREATE TABLE questions (
     id              BIGSERIAL PRIMARY KEY,
     question_type   question_type_enum NOT NULL,
+    practical       BOOLEAN NOT NULL,
     difficulty      difficulty_enum NOT NULL,
 	topic           TEXT NOT NULL,
     question        TEXT NOT NULL,
