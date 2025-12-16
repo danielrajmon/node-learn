@@ -351,6 +351,36 @@
   background-color: #e74c3c;
 }
 
+.question-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.open-question-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.3s;
+  order: 2;
+}
+
+.open-question-btn:hover {
+  background-color: #2980b9;
+}
+
+.show-answer-btn {
+  order: 1;
+}
+  background-color: #e74c3c;
+}
+
 .answer-section {
   margin-top: 1rem;
   padding: 0.5rem 1rem 0.5rem 1rem;

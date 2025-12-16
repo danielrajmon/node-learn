@@ -57,16 +57,21 @@
           </span>
           <span class="difficulty" [class]="question.difficulty">{{ question.difficulty }}</span>
         </div>
-        <a [routerLink]="['/questions', question.id]" class="question-link">
-          <div class="question-text" [innerHTML]="question.question"></div>
-        </a>
+        <div class="question-text" [innerHTML]="question.question"></div>
         
-        <button 
-          class="show-answer-btn" 
-          (click)="toggleAnswer(question.id)"
-          [class.active]="visibleAnswers.has(question.id)">
-          {{ visibleAnswers.has(question.id) ? 'Hide Answer' : 'Show Answer' }}
-        </button>
+        <div class="question-actions">
+          <button 
+            class="open-question-btn" 
+            [routerLink]="['/questions', question.id]">
+            Open Question
+          </button>
+          <button 
+            class="show-answer-btn" 
+            (click)="toggleAnswer(question.id)"
+            [class.active]="visibleAnswers.has(question.id)">
+            {{ visibleAnswers.has(question.id) ? 'Hide Answer' : 'Show Answer' }}
+          </button>
+        </div>
         
         <div class="answer-section" *ngIf="visibleAnswers.has(question.id)">
           <div class="answer-text" [innerHTML]="answers.get(question.id)"></div>
