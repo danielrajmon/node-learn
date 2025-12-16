@@ -29,7 +29,7 @@ export class Questions implements OnInit {
   visibleAnswers = new Set<number>();
   answers = new Map<number, string>();
   singleQuestionMode = false;
-  showFilters = true;
+  showFilters = window.innerWidth > 768;
 
   constructor(
     private questionService: QuestionService,
