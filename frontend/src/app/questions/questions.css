@@ -98,6 +98,10 @@
     background: #555;
   }
 
+  .search-input {
+    order: 10;
+  }
+
   .search-input,
   .filter-select {
     width: 100%;
