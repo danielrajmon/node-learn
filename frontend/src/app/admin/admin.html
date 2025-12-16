@@ -281,14 +281,16 @@
               [class.inactive-question]="!q.isActive"
               class="clickable-row">
             <td data-label="ID">{{ q.id }}</td>
-            <td data-label="Question Text" class="question-text">{{ stripHtml(q.question) }}</td>
+            <td data-label="Question Text" class="question-text" [title]="stripHtml(q.question)">{{ getQuestionPreview(q.question) }}</td>
             <td data-label="Difficulty">
               <span class="badge" [ngClass]="'badge-' + q.difficulty">{{ q.difficulty }}</span>
             </td>
             <td data-label="Type">
-              <span class="type-badge" [ngClass]="'type-badge-' + q.questionType">{{ q.questionType === 'single_choice' ? 'Single Choice' : q.questionType === 'multiple_choice' ? 'Multiple Choices' : 'Text Input' }}</span>
+              <span class="type-badge" [ngClass]="'type-badge-' + q.questionType" [title]="q.questionType === 'single_choice' ? 'Single Choice' : q.questionType === 'multiple_choice' ? 'Multiple Choices' : 'Text Input'">{{ q.questionType === 'single_choice' ? 'SINGLE' : q.questionType === 'multiple_choice' ? 'MULTI' : 'TEXT' }}</span>
             </td>
-            <td data-label="Topic">{{ q.topic }}</td>
+            <td data-label="Topic">
+              <span class="topic">{{ q.topic }}</span>
+            </td>
           </tr>
         </tbody>
       </table>

@@ -349,6 +349,24 @@ export class AdminComponent implements OnInit, AfterViewInit {
     return tmp.textContent || tmp.innerText || '';
   }
 
+  getQuestionPreview(html: string): string {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    
+    // Remove code and pre tags
+    const codeElements = tmp.querySelectorAll('code, pre, .hljs');
+    codeElements.forEach(el => el.remove());
+    
+    // Get remaining text
+    let text = tmp.textContent || tmp.innerText || '';
+    
+    // Clean up excess whitespace
+    text = text.replace(/\s+/g, ' ').trim();
+    
+    // Return full text without truncation
+    return text;
+  }
+
   trackByIndex(index: number): number {
     return index;
   }

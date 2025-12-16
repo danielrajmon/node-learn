@@ -180,70 +180,61 @@
   font-size: 0.85rem;
 }
 
-.difficulty {
+.difficulty,
+.practical-badge,
+.category-badge,
+.type-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
-  font-size: 0.85rem;
   font-weight: 600;
+}
+
+.difficulty {
+  font-size: 0.85rem;
   text-transform: uppercase;
+}
+
+.difficulty.easy,
+.difficulty.medium,
+.difficulty.hard {
+  color: white;
+}
+
+.difficulty.easy {
+  background-color: #2ecc71;
+}
+
+.difficulty.medium {
+  background-color: #f39c12;
+}
+
+.difficulty.hard {
+  background-color: #e74c3c;
 }
 
 .practical-badge {
   background-color: #888;
   color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
   font-size: 0.85rem;
-  font-weight: 600;
   text-transform: capitalize;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
-.practical-badge.practical {
-  background-color: #888;
-}
-
 .category-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
   background-color: #e0e0e0;
   color: #666;
+  font-size: 0.75rem;
+  text-transform: uppercase;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
-.difficulty.easy {
-  background-color: #2ecc71;
-  color: white;
-}
-
-.difficulty.medium {
-  background-color: #f39c12;
-  color: white;
-}
-
-.difficulty.hard {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.question-type-badge {
-  margin-bottom: 0.5rem;
-}
-
 .type-badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
   font-size: 0.75rem;
-  font-weight: 600;
   text-transform: uppercase;
 }
 
