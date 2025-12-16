@@ -26,4 +26,8 @@ export class AdminService {
   deleteQuestion(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/questions/${id}`);
   }
+
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users`);
+  }
 }

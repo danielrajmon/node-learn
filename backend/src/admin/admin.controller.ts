@@ -79,4 +79,15 @@ export class AdminController {
     }
     return await this.adminService.deleteQuestion(id);
   }
+
+  @Get('users')
+  @UseGuards(OptionalAuthGuard)
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'List of all users' })
+  async getUsers(@Req() req): Promise<any[]> {
+    if (!req.user || !req.user.isAdmin) {
+      throw new UnauthorizedException('Admin access required');
+    }
+    return await this.adminService.getAllUsers();
+  }
 }

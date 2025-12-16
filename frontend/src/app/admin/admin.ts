@@ -38,6 +38,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
   currentUser: User | null = null;
   isAuthenticated = false;
   isAdmin = false;
+  users: any[] = [];
+  showUsersList = false;
 
   quillModules = {
     toolbar: [
@@ -65,6 +67,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
       this.currentUser = user;
       this.isAuthenticated = !!user;
       this.isAdmin = user?.isAdmin || false;
+      
+      // Load users if user is an admin
+      if (user?.isAdmin) {
+        this.loadUsers();
+        this.showUsersList = true;
+      }
+      
       this.cdr.detectChanges();
     });
 
@@ -342,5 +351,17 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  loadUsers(): void {
+    this.adminService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+      }
+    });
   }
 }

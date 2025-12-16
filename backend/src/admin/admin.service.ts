@@ -7,6 +7,7 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { QuestionService } from '../question/question.service';
 import { QuestionFilters } from '../question/interfaces/question.interface';
 import { QuestionDto } from '../question/dto/question.dto';
+import { User } from '../auth/entities/user.entity';
 
 @Injectable()
 export class AdminService {
@@ -15,6 +16,8 @@ export class AdminService {
     private questionRepository: Repository<QuestionEntity>,
     @InjectRepository(ChoiceEntity)
     private choiceRepository: Repository<ChoiceEntity>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private questionService: QuestionService,
   ) {}
 
@@ -128,5 +131,11 @@ export class AdminService {
     if (result.affected === 0) {
       throw new Error('Question not found');
     }
+  }
+
+  async getAllUsers(): Promise<any[]> {
+    return await this.userRepository.find({
+      order: { createdAt: 'DESC' }
+    });
   }
 }
