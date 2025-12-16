@@ -147,6 +147,10 @@
     flex-shrink: 0;
   }
 
+  .search-input {
+    order: 999;
+  }
+
   .question-header {
     flex-direction: row;
     align-items: center;
