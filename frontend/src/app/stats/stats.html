@@ -2,15 +2,20 @@
   <div class="stats-content">
     <h1>Your Statistics</h1>
 
-    <div *ngIf="loading" class="loading">
+    <div *ngIf="!currentUser" class="login-prompt">
+      <p>Please log in to view your statistics.</p>
+      <a routerLink="/login" class="login-link">Go to Login</a>
+    </div>
+
+    <div *ngIf="currentUser && loading" class="loading">
       <p>Loading your statistics...</p>
     </div>
 
-    <div *ngIf="error" class="error">
+    <div *ngIf="currentUser && error" class="error">
       {{ error }}
     </div>
 
-    <div *ngIf="stats && !loading" class="stats-wrapper">
+    <div *ngIf="currentUser && stats && !loading" class="stats-wrapper">
       <!-- Overall Statistics -->
       <div class="overall-stats">
         <h2>Overall Performance</h2>

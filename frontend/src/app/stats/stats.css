@@ -37,6 +37,36 @@
   border-radius: 4px;
 }
 
+.login-prompt {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.login-prompt p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.login-link {
+  display: inline-block;
+  background: #3498db;
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.login-link:hover {
+  background: #2980b9;
+}
+
 /* Overall stats cards */
 .stats-grid {
   display: grid;

@@ -1,12 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { StatsService, UserStatsResponse } from '../services/stats.service';
 import { AuthService, User } from '../services/auth.service';
 
 @Component({
   selector: 'app-stats',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './stats.html',
   styleUrl: './stats.css'
 })
