@@ -31,6 +31,7 @@ export class Quiz implements OnInit {
   textAnswers: string[] = [];
   textAnswersCorrect: boolean[] = [];
   answered = false;
+  submitting = false;
   correct = false;
   feedback = '';
   longAnswer = '';
@@ -95,6 +96,7 @@ export class Quiz implements OnInit {
       question: (question.quiz || question.question).replace(/&nbsp;/g, ' ')
     };
     this.answered = false;
+    this.submitting = false;
     this.correct = false;
     this.feedback = '';
     this.longAnswer = '';
@@ -177,7 +179,9 @@ export class Quiz implements OnInit {
   }
 
   submitAnswer() {
-    if (this.answered || !this.currentQuestion) return;
+    if (this.answered || this.submitting || !this.currentQuestion) return;
+    
+    this.submitting = true;
 
     const isTextInput = this.currentQuestion.questionType === 'text_input';
 
@@ -411,7 +415,7 @@ export class Quiz implements OnInit {
   }
 
   get canSubmit(): boolean {
-    if (this.answered || !this.currentQuestion) return false;
+    if (this.answered || this.submitting || !this.currentQuestion) return false;
 
     if (this.currentQuestion.questionType === 'text_input') {
       // Check if using multiple inputs or single input

@@ -8,9 +8,6 @@
         <div class="topics">
           <span class="topic">{{ currentQuestion.topic }}</span>
         </div>
-        <span class="type-badge" [ngClass]="'type-badge-' + currentQuestion.questionType">
-          {{ currentQuestion.questionType === 'single_choice' ? 'Single Choice' : currentQuestion.questionType === 'multiple_choice' ? 'Multiple Choices' : 'Text Input' }}
-        </span>
         <span class="difficulty" [class]="currentQuestion.difficulty">
           {{ currentQuestion.difficulty }}
         </span>
