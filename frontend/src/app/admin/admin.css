@@ -736,26 +736,29 @@
   background: #c82333;
 }
 
-/* Phone only - hide type badge */
-@media (max-width: 480px) {
+/* Mobile responsiveness */
+@media (max-width: 768px) {
   .type-badge {
     display: none;
   }
-}
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
   .admin-container {
-    padding: 1rem;
+    padding: 0;
   }
 
   .admin-content {
     padding: 1rem;
     padding-bottom: 6rem;
+    margin: 0;
+    max-width: 100%;
   }
 
   .question-form {
     padding: 1rem;
+  }
+
+  .form-layout {
+    grid-template-columns: 1fr;
   }
 
   .admin-content h1 {
