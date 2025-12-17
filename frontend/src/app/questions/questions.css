@@ -439,11 +439,6 @@
   background-color: #2980b9;
 }
 
-.show-answer-btn {
-  order: 1;
-  background-color: #e74c3c;
-}
-
 .answer-section {
   margin-top: 1rem;
   padding: 0.5rem 1rem 0.5rem 1rem;
