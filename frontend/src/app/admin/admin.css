@@ -484,10 +484,6 @@
     justify-self: end;
   }
 
-  .questions-table td:nth-child(4) {
-    display: none;
-  }
-
   .questions-table td:nth-child(5) {
     display: inline-flex;
     width: auto;
@@ -740,31 +736,35 @@
   background: #c82333;
 }
 
+/* Phone only - hide type badge */
+@media (max-width: 480px) {
+  .type-badge {
+    display: none;
+  }
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .admin-container {
-    padding: 0;
+    padding: 1rem;
   }
 
   .admin-content {
-    padding: 0.5rem;
-    padding-bottom: 4rem;
+    padding: 1rem;
+    padding-bottom: 6rem;
   }
 
   .question-form {
-    padding: 0.75rem;
+    padding: 1rem;
   }
 
   .admin-content h1 {
     font-size: 1.1rem;
-    margin-bottom: 1rem;
-    margin-top: 0;
+    margin-bottom: 1.5rem;
   }
 
   .form-actions {
     flex-direction: column;
-    margin-top: 1rem;
-    padding-top: 1rem;
   }
 
   .submit-button,
@@ -773,33 +773,12 @@
     width: 100%;
   }
 
-  .form-group {
-    margin-bottom: 0.75rem;
-  }
-
   .form-group label {
     font-size: 0.9rem;
-    margin-bottom: 0.25rem;
   }
 
   .choices-section {
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .questions-list {
-    margin-bottom: 1rem;
-  }
-
-  .questions-list h1 {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .questions-table tr {
-    margin-bottom: 0.75rem;
-    padding: 0.5rem;
-    gap: 0.5rem;
+    padding: 1rem;
   }
 }
 
