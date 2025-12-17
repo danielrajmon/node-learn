@@ -102,6 +102,26 @@
   margin-top: 0;
 }
 
+/* Tablet responsiveness */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-content {
+    padding: 1rem;
+    padding-bottom: 6rem;
+  }
+
+  .question-form {
+    padding: 1rem;
+  }
+
+  .form-layout {
+    gap: 1rem;
+  }
+
+  .users-table tbody tr {
+    background-color: white;
+  }
+}
+
 @media (max-width: 1024px) {
   .form-layout {
     grid-template-columns: 1fr;
@@ -783,6 +803,10 @@
   .choices-section {
     padding: 1rem;
   }
+
+  .users-table tbody tr {
+    background-color: white;
+  }
 }
 
 .users-section {
@@ -796,25 +820,32 @@
   font-weight: 600;
 }
 
+.users-table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
 .users-table {
   width: 100%;
   border-collapse: collapse;
 }
 
 .users-table thead {
-  background-color: #f8f9fa;
+  background: #2c3e50;
 }
 
 .users-table th,
 .users-table td {
-  padding: 0.75rem;
+  padding: 1rem;
   border-bottom: 1px solid #dee2e6;
 }
 
 .users-table th {
   font-weight: 600;
-  color: #2c3e50;
-  border-bottom: 2px solid #dee2e6;
+  color: white;
+  border-bottom: 2px solid #1a252f;
   text-align: left;
 }
 
