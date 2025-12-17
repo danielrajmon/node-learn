@@ -42,3 +42,33 @@
   color: #666;
   text-align: center;
 }
+
+@media (max-width: 600px) {
+  .home-container {
+    margin: 1rem auto;
+    padding: 0 0.5rem 7rem 0.5rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .card h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+
+  .card p {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .spacer {
+    height: 1rem;
+  }
+
+  .version {
+    margin-top: 2rem;
+    padding-top: 1rem;
+  }
+}
