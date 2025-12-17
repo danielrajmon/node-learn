@@ -215,3 +215,9 @@
 .btn-secondary:disabled {
   background-color: #adb5bd;
 }
+
+@media (max-width: 768px) {
+  .category-badge {
+    display: none;
+  }
+}
