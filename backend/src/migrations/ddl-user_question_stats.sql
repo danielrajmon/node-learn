@@ -5,10 +5,6 @@ CREATE TABLE IF NOT EXISTS user_question_stats (
     question_id INTEGER NOT NULL,
     correct_count INTEGER DEFAULT 0,
     incorrect_count INTEGER DEFAULT 0,
-    total_attempts INTEGER DEFAULT 0,
-    last_attempt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Foreign key constraints
     CONSTRAINT fk_user_question_stats_user 
@@ -26,5 +22,3 @@ CREATE INDEX IF NOT EXISTS idx_user_question_stats_user_id
     ON user_question_stats(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_question_stats_question_id 
     ON user_question_stats(question_id);
-CREATE INDEX IF NOT EXISTS idx_user_question_stats_created_at 
-    ON user_question_stats(created_at);
