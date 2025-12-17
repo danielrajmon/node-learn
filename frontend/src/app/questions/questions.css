@@ -8,14 +8,17 @@
   overflow-y: auto;
 }
 
+.questions-container.single-question-mode {
+  padding: 1rem 2rem 12rem 2rem;
+}
+
 .questions-header {
-  padding: 2rem 0;
+  padding: 0.5rem 2rem;
   position: sticky;
   top: 0;
   background: #f5f5f5;
   z-index: 50;
   margin: 0 -2rem 0 -2rem;
-  padding: 2rem 2rem;
   overflow-y: hidden;
   flex-shrink: 0;
 }
@@ -263,8 +266,9 @@
 
 .question-item {
   background: white;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 8px;
+  border: 1px solid #e0e0e0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
