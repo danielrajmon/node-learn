@@ -63,13 +63,13 @@
           <button 
             class="open-question-btn" 
             [routerLink]="['/questions', question.id]">
-            Open Question
+            <span class="btn-text-full">Open Question</span><span class="btn-text-short">Open</span>
           </button>
           <button 
             class="show-answer-btn" 
             (click)="toggleAnswer(question.id)"
             [class.active]="visibleAnswers.has(question.id)">
-            {{ visibleAnswers.has(question.id) ? 'Hide Answer' : 'Show Answer' }}
+            <span class="btn-text-full">{{ visibleAnswers.has(question.id) ? 'Hide Answer' : 'Show Answer' }}</span><span class="btn-text-short">{{ visibleAnswers.has(question.id) ? 'Hide' : 'Show' }}</span>
           </button>
         </div>
         
