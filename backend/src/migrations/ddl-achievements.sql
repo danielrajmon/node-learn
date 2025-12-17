@@ -1,0 +1,8 @@
+CREATE TABLE achievements (
+  id INTEGER PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  sprite_col INTEGER NOT NULL,
+  sprite_row INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

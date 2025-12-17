@@ -141,3 +141,18 @@
     font-size: 0.85rem;
   }
 }
+
+.loading {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  padding: 2rem;
+}
+
+.error {
+  background-color: #fee;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}

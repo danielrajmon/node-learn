@@ -1,8 +1,11 @@
 <div class="achievements-container">
   <div class="achievements-content">
-    <div class="achievements-grid">
+    <div *ngIf="loading" class="loading">Loading achievements...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+    
+    <div class="achievements-grid" *ngIf="!loading && !error">
       <div class="achievement-card" *ngFor="let achievement of achievements">
-        <div class="achievement-image" [style.backgroundPosition]="getBackgroundPosition(achievement.spriteCol, achievement.spriteRow)"></div>
+        <div class="achievement-image" [style.backgroundPosition]="getBackgroundPosition(achievement.sprite_col, achievement.sprite_row)"></div>
         <div class="achievement-content">
           <h3>{{ achievement.title }}</h3>
           <p>{{ achievement.description }}</p>
