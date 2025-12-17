@@ -414,8 +414,18 @@
     padding-left: 50%;
   }
 
+  .questions-table td:nth-child(1) {
+    text-align: left;
+    padding-left: 1rem;
+  }
+
   .questions-table td:nth-child(1)::before {
-    content: 'ID';
+    content: '#';
+    position: static;
+    font-weight: 600;
+    color: #495057;
+    text-align: left;
+    margin-right: 0;
   }
 
   .questions-table td:nth-child(2)::before {
