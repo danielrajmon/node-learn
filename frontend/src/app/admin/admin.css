@@ -383,6 +383,8 @@
 /* Responsive table - card layout on mobile */
 @media (max-width: 768px) {
   .table-container {
+    background: transparent;
+    box-shadow: none;
     overflow-x: visible;
   }
 
