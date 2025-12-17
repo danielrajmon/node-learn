@@ -220,4 +220,18 @@
   .category-badge {
     display: none;
   }
+
+  .btn-text-full {
+    display: none;
+  }
+
+  .btn-text-short {
+    display: inline;
+  }
+}
+
+@media (min-width: 769px) {
+  .btn-text-short {
+    display: none;
+  }
 }
