@@ -265,6 +265,16 @@
   }
 }
 
+@media (min-width: 601px) and (max-width: 768px) {
+  .btn-text-short {
+    display: none;
+  }
+
+  .btn-text-full {
+    display: inline;
+  }
+}
+
 @media (min-width: 769px) {
   .btn-text-short {
     display: none;
