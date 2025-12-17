@@ -1,7 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { QuestionService } from '../services/question';
+import { AuthService, User } from '../services/auth.service';
 import { Question, Choice } from '../models/question.model';
 import hljs from 'highlight.js/lib/core';
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -35,13 +37,19 @@ export class Quiz implements OnInit {
   loading = false;
   error: string | null = null;
   answerHighlightApplied = false;
+  currentUser: User | null = null;
 
   constructor(
     private questionService: QuestionService,
+    private authService: AuthService,
+    private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    this.authService.user$.subscribe(user => {
+      this.currentUser = user;
+    });
     this.loadQuiz();
   }
 
@@ -218,6 +226,19 @@ export class Quiz implements OnInit {
         
         // Set answered AFTER validation is complete to prevent red blink
         this.answered = true;
+        
+        // Record answer if user is logged in
+        if (this.currentUser && this.currentQuestion) {
+          this.http.post('/api/answers/record', {
+            userId: this.currentUser.id,
+            questionId: this.currentQuestion.id,
+            isCorrect: this.correct,
+          }).subscribe({
+            error: (err) => {
+              console.error('Error recording answer:', err);
+            }
+          });
+        }
         
         this.cdr.detectChanges();
         
