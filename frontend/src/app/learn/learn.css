@@ -269,4 +269,8 @@
   .btn-text-short {
     display: none;
   }
+
+  .btn-text-full {
+    display: inline;
+  }
 }

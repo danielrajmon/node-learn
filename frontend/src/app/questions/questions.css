@@ -224,6 +224,16 @@
   }
 }
 
+@media (min-width: 769px) {
+  .btn-text-short {
+    display: none;
+  }
+
+  .btn-text-full {
+    display: inline;
+  }
+}
+
 .loading, .error {
   text-align: center;
   padding: 2rem;
