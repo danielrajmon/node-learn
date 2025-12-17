@@ -550,6 +550,11 @@
     max-height: none;
   }
 
+  .quiz-header {
+    margin-top: -0.5rem;
+    margin-bottom: 2rem;
+  }
+
   .answer-section,
   .skipped-answers-section {
     margin-bottom: 1rem;
@@ -588,6 +593,8 @@
   .quiz-header {
     flex-direction: column;
     align-items: flex-start;
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .quiz-question {
