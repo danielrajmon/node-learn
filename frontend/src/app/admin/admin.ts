@@ -212,7 +212,14 @@ export class AdminComponent implements OnInit, AfterViewInit {
     };
     this.successMessage = '';
     this.errorMessage = '';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Scroll the admin-content container to top
+    setTimeout(() => {
+      const adminContent = document.querySelector('.admin-content');
+      if (adminContent) {
+        adminContent.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 0);
   }
 
   deleteQuestion(id: number): void {
