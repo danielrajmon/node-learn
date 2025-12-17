@@ -224,7 +224,7 @@
   background-color: #adb5bd;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .learn-container {
     padding: 1rem 1rem 7rem 1rem;
   }
