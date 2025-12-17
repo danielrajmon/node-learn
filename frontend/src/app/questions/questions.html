@@ -79,7 +79,7 @@
       </div>
       
       <button *ngIf="singleQuestionMode" class="back-btn" (click)="backToAllQuestions()">
-        ← Back to All Questions
+        ← {{ fromStats ? 'Back to Stats' : 'Back to All Questions' }}
       </button>
       
       <div *ngIf="questions.length === 0" class="no-results">

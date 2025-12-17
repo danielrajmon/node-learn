@@ -1,0 +1,73 @@
+<div class="stats-container">
+  <div class="stats-content">
+    <h1>Your Statistics</h1>
+
+    <div *ngIf="loading" class="loading">
+      <p>Loading your statistics...</p>
+    </div>
+
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="stats && !loading" class="stats-wrapper">
+      <!-- Overall Statistics -->
+      <div class="overall-stats">
+        <h2>Overall Performance</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Attempts</div>
+            <div class="stat-value">{{ stats.overall.totalAttempts }}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Correct</div>
+            <div class="stat-value correct">{{ stats.overall.totalCorrect }}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Incorrect</div>
+            <div class="stat-value incorrect">{{ stats.overall.totalIncorrect }}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Accuracy</div>
+            <div class="stat-value accuracy">{{ stats.overall.overallAccuracy }}%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Per-Question Statistics -->
+      <div class="per-question-stats">
+        <h2>Performance by Question</h2>
+        <div class="questions-list">
+          <div *ngFor="let q of stats.questions" class="question-row">
+            <div class="question-col">
+              <div class="question-text" [title]="stripHtml(q.question)">{{ getQuestionPreview(q.question) }}</div>
+              <div class="meta">
+                <span class="topic">{{ q.topic }}</span>
+                <span class="difficulty" [ngClass]="'difficulty-' + q.difficulty">{{ q.difficulty }}</span>
+              </div>
+            </div>
+            <div class="stats-col">
+              <div class="stat-item">
+                <span class="stat-label">Correct</span>
+                <strong class="correct">{{ q.correct_count }}</strong>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Incorrect</span>
+                <strong class="incorrect">{{ q.incorrect_count }}</strong>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Accuracy</span>
+                <strong class="accuracy">{{ q.accuracy_percentage }}%</strong>
+              </div>
+            </div>
+            <button class="btn-view" (click)="navigateToQuestion(q.question_id)">View</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="stats && stats.questions.length === 0 && !loading" class="no-data">
+      <p>No quiz attempts recorded yet.</p>
+    </div>
+  </div>
+</div>

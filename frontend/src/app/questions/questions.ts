@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Location } from '@angular/common';
 import { QuestionService } from '../services/question';
 import { Question } from '../models/question.model';
 import hljs from 'highlight.js/lib/core';
@@ -30,15 +31,22 @@ export class Questions implements OnInit {
   answers = new Map<number, string>();
   singleQuestionMode = false;
   showFilters = window.innerWidth > 768;
+  fromStats = false;
 
   constructor(
     private questionService: QuestionService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit() {
+    // Check if coming from Stats page
+    this.route.queryParams.subscribe(params => {
+      this.fromStats = params['from'] === 'stats';
+    });
+
     // Check if a specific question ID is provided in route params
     this.route.paramMap.subscribe(params => {
       const questionId = params.get('id');
@@ -225,7 +233,11 @@ export class Questions implements OnInit {
   }
 
   backToAllQuestions() {
-    this.router.navigate(['/questions']);
+    if (this.fromStats) {
+      this.router.navigate(['/stats']);
+    } else {
+      this.router.navigate(['/questions']);
+    }
   }
 
   openInQuiz(questionId: number) {

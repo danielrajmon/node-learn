@@ -1,8 +1,6 @@
-import { Controller, Get, Post, Param, Body, NotFoundException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { AnswerService } from './answer.service';
-import { RecordAnswerDto } from './dto/record-answer.dto';
-import { OptionalAuthGuard } from '../auth/guards/optional-auth.guard';
 
 @ApiTags('answers')
 @Controller('answers')
@@ -35,25 +33,6 @@ export class AnswerController {
       throw new NotFoundException(`Question with ID ${questionId} not found`);
     }
     return result;
-  }
-
-  @Post('record')
-  @UseGuards(OptionalAuthGuard)
-  @ApiOperation({
-    summary: 'Record a quiz answer',
-    description: 'Record whether the user answered a question correctly or incorrectly',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Answer recorded successfully',
-  })
-  async recordAnswer(@Body() recordAnswerDto: RecordAnswerDto): Promise<{ success: boolean }> {
-    await this.answerService.recordAnswer(
-      recordAnswerDto.userId,
-      recordAnswerDto.questionId,
-      recordAnswerDto.isCorrect,
-    );
-    return { success: true };
   }
 }
 

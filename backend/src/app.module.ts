@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
+import { StatsModule } from './stats/stats.module';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { QuestionEntity } from './question/entities/question.entity';
@@ -32,6 +33,7 @@ import { User } from './auth/entities/user.entity';
     AuthModule,
     QuestionModule,
     AnswerModule,
+    StatsModule,
     AdminModule,
   ],
   controllers: [AppController],

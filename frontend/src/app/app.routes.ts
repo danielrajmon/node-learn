@@ -7,6 +7,7 @@ import { AdminComponent } from './admin/admin';
 import { LoginComponent } from './login/login';
 import { AuthCallbackComponent } from './auth-callback/auth-callback';
 import { AchievementsComponent } from './achievements/achievements';
+import { StatsComponent } from './stats/stats';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'questions/:id', component: Questions },
   { path: 'quiz', component: Quiz },
   { path: 'achievements', component: AchievementsComponent },
+  { path: 'stats', component: StatsComponent },
   { path: 'admin', component: AdminComponent },
   { path: 'login', component: LoginComponent },
   { path: 'auth/callback', component: AuthCallbackComponent },

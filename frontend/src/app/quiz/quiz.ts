@@ -229,7 +229,7 @@ export class Quiz implements OnInit {
         
         // Record answer if user is logged in
         if (this.currentUser && this.currentQuestion) {
-          this.http.post('/api/answers/record', {
+          this.http.post('/api/stats/record', {
             userId: this.currentUser.id,
             questionId: this.currentQuestion.id,
             isCorrect: this.correct,
