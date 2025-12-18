@@ -317,7 +317,7 @@
           <tr *ngFor="let user of users">
             <td data-label="ID">{{ user.id }}</td>
             <td data-label="Email">{{ user.email }}</td>
-            <td data-label="Name">{{ user.displayName || '-' }}</td>
+            <td data-label="Name">{{ user.name || '-' }}</td>
             <td data-label="Admin">{{ user.isAdmin ? 'Yes' : 'No' }}</td>
             <td data-label="Created">{{ user.createdAt | date: 'short' }}</td>
           </tr>
