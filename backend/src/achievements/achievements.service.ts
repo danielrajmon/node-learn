@@ -34,9 +34,7 @@ export class AchievementsService {
     userId: number,
     questionId: number,
     isCorrect: boolean,
-  ): Promise<number[]> {
-    const awardedAchievementIds: number[] = [];
-
+  ): Promise<Achievement[]> {
     // Get question details
     const question = await this.dataSource.query(
       'SELECT id, question_type, difficulty, practical FROM questions WHERE id = $1',
@@ -44,8 +42,7 @@ export class AchievementsService {
     );
 
     if (!question || question.length === 0) {
-      console.log(`Question ${questionId} not found`);
-      return awardedAchievementIds;
+      return [];
     }
 
     const questionType = question[0].question_type;
@@ -356,6 +353,7 @@ export class AchievementsService {
     ];
 
     // Check each achievement and award if earned
+    const awardedAchievementIds: number[] = [];
     for (const achievement of achievementsToCheck) {
       try {
         const isEarned = await achievement.check();
@@ -376,6 +374,16 @@ export class AchievementsService {
       }
     }
 
-    return awardedAchievementIds;
+    // Fetch full achievement details for awarded achievements
+    if (awardedAchievementIds.length > 0) {
+      const achievementDetails = await this.dataSource.query(
+        `SELECT id, title, description, sprite_col, sprite_row FROM achievements 
+         WHERE id = ANY($1)`,
+        [awardedAchievementIds],
+      );
+      return achievementDetails;
+    }
+
+    return [];
   }
 }

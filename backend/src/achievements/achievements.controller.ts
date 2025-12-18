@@ -13,12 +13,12 @@ export class AchievementsController {
   @Post('check')
   async checkAndAwardAchievements(
     @Body() body: { userId: number; questionId: number; isCorrect: boolean },
-  ): Promise<{ awardedAchievementIds: number[] }> {
-    const awardedAchievementIds = await this.achievementsService.checkAndAwardAchievements(
+  ): Promise<{ awardedAchievements: any[] }> {
+    const awardedAchievements = await this.achievementsService.checkAndAwardAchievements(
       body.userId,
       body.questionId,
       body.isCorrect,
     );
-    return { awardedAchievementIds };
+    return { awardedAchievements };
   }
 }

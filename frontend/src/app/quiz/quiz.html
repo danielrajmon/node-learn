@@ -3,6 +3,26 @@
     <div *ngIf="loading" class="loading">Loading quiz...</div>
     <div *ngIf="error" class="error">{{ error }}</div>
 
+    <!-- Achievement Notification - Below Header -->
+    <div *ngIf="showAchievementNotification && awardedAchievements.length > 0" class="achievement-notification">
+      <div class="achievement-content">
+        <div class="achievement-header">Achievement Unlocked!</div>
+        <div *ngIf="awardedAchievements[currentAchievementIndex]" class="achievement-details">
+          <div class="achievement-icon-container">
+            <div 
+              class="achievement-icon"
+              [style.backgroundPosition]="getAchievementBackgroundPosition(awardedAchievements[currentAchievementIndex].sprite_col, awardedAchievements[currentAchievementIndex].sprite_row)"
+            ></div>
+          </div>
+          <h3 class="achievement-title">{{ awardedAchievements[currentAchievementIndex].title }}</h3>
+          <p class="achievement-description">{{ awardedAchievements[currentAchievementIndex].description }}</p>
+        </div>
+        <div *ngIf="awardedAchievements.length > 1" class="achievement-counter">
+          {{ currentAchievementIndex + 1 }} / {{ awardedAchievements.length }}
+        </div>
+      </div>
+    </div>
+
     <div *ngIf="!loading && !error && !isQuizComplete && currentQuestion">
       <div class="quiz-header">
         <div class="topics">

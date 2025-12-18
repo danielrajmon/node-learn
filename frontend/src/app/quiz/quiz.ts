@@ -39,6 +39,9 @@ export class Quiz implements OnInit {
   error: string | null = null;
   answerHighlightApplied = false;
   currentUser: User | null = null;
+  awardedAchievements: any[] = [];
+  showAchievementNotification = false;
+  currentAchievementIndex = 0;
 
   constructor(
     private questionService: QuestionService,
@@ -46,6 +49,12 @@ export class Quiz implements OnInit {
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
+
+  getAchievementBackgroundPosition(col: number, row: number): string {
+    const x = col * -80;
+    const y = row * -80;
+    return `${x}px ${y}px`;
+  }
 
   ngOnInit() {
     this.authService.user$.subscribe(user => {
@@ -233,11 +242,48 @@ export class Quiz implements OnInit {
         
         // Record answer if user is logged in
         if (this.currentUser && this.currentQuestion) {
-          this.http.post('/api/stats/record', {
+          this.http.post<any>('/api/stats/record', {
             userId: this.currentUser.id,
             questionId: this.currentQuestion.id,
             isCorrect: this.correct,
           }).subscribe({
+            next: (response) => {
+              console.log('Stats record response:', response);
+              
+              // Display achievement notifications if any were earned
+              if (response.awardedAchievements && response.awardedAchievements.length > 0) {
+                console.log('Achievements awarded:', response.awardedAchievements);
+                this.awardedAchievements = response.awardedAchievements;
+                this.currentAchievementIndex = 0;
+                this.showAchievementNotification = true;
+                this.cdr.detectChanges();
+                
+                // Show achievements one-by-one with 4 sec delay
+                let index = 0;
+                const showNextAchievement = () => {
+                  // Hide current achievement
+                  this.showAchievementNotification = false;
+                  this.cdr.detectChanges();
+                  
+                  setTimeout(() => {
+                    index++;
+                    if (index < this.awardedAchievements.length) {
+                      this.currentAchievementIndex = index;
+                      this.showAchievementNotification = true;
+                      this.cdr.detectChanges();
+                      setTimeout(showNextAchievement, 4000);
+                    } else {
+                      // All achievements shown, hide
+                      this.showAchievementNotification = false;
+                      this.cdr.detectChanges();
+                    }
+                  }, 300);
+                };
+                
+                // Start the sequence after 4 seconds
+                setTimeout(showNextAchievement, 4000);
+              }
+            },
             error: (err) => {
               console.error('Error recording answer:', err);
             }
@@ -388,6 +434,7 @@ export class Quiz implements OnInit {
   }
 
   nextQuestion() {
+    this.showAchievementNotification = false;
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
       this.loadCurrentQuestion();

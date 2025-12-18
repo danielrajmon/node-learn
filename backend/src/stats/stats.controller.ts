@@ -23,7 +23,7 @@ export class StatsController {
     status: 201,
     description: 'Answer recorded successfully',
   })
-  async recordAnswer(@Body() recordAnswerDto: RecordAnswerDto): Promise<{ success: boolean; awardedAchievementIds: number[] }> {
+  async recordAnswer(@Body() recordAnswerDto: RecordAnswerDto): Promise<{ success: boolean; awardedAchievements: any[] }> {
     await this.statsService.recordAnswer(
       recordAnswerDto.userId,
       recordAnswerDto.questionId,
@@ -31,16 +31,16 @@ export class StatsController {
     );
 
     // Check and award achievements only if answer was correct
-    let awardedAchievementIds: number[] = [];
+    let awardedAchievements: any[] = [];
     if (recordAnswerDto.isCorrect) {
-      awardedAchievementIds = await this.achievementsService.checkAndAwardAchievements(
+      awardedAchievements = await this.achievementsService.checkAndAwardAchievements(
         recordAnswerDto.userId,
         recordAnswerDto.questionId,
         recordAnswerDto.isCorrect,
       );
     }
 
-    return { success: true, awardedAchievementIds };
+    return { success: true, awardedAchievements };
   }
 
   @Get('user/:userId')

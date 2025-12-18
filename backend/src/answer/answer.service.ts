@@ -28,15 +28,15 @@ export class AnswerService {
     userId: number,
     questionId: number,
     isCorrect: boolean,
-  ): Promise<{ awardedAchievementIds: number[] }> {
+  ): Promise<{ awardedAchievements: any[] }> {
     // Check and award achievements
-    const awardedAchievementIds = await this.achievementsService.checkAndAwardAchievements(
+    const awardedAchievements = await this.achievementsService.checkAndAwardAchievements(
       userId,
       questionId,
       isCorrect,
     );
 
-    return { awardedAchievementIds };
+    return { awardedAchievements };
   }
 }
 
