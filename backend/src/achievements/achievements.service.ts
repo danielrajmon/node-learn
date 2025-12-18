@@ -29,4 +29,353 @@ export class AchievementsService {
 
     return await this.dataSource.query(query);
   }
+
+  async checkAndAwardAchievements(
+    userId: number,
+    questionId: number,
+    isCorrect: boolean,
+  ): Promise<number[]> {
+    const awardedAchievementIds: number[] = [];
+
+    // Get question details
+    const question = await this.dataSource.query(
+      'SELECT id, question_type, difficulty, practical FROM questions WHERE id = $1',
+      [questionId],
+    );
+
+    if (!question || question.length === 0) {
+      console.log(`Question ${questionId} not found`);
+      return awardedAchievementIds;
+    }
+
+    const questionType = question[0].question_type;
+    const difficulty = question[0].difficulty;
+    const isPractical = question[0].practical;
+
+    // Get user stats
+    const userStats = await this.dataSource.query(
+      `SELECT 
+        user_id,
+        SUM(correct_count) as total_correct,
+        COUNT(DISTINCT question_id) as unique_questions_answered,
+        SUM(CASE WHEN q.question_type = 'single_choice' AND user_question_stats.correct_count > 0 THEN 1 ELSE 0 END) as single_choice_correct,
+        SUM(CASE WHEN q.question_type = 'multiple_choice' AND user_question_stats.correct_count > 0 THEN 1 ELSE 0 END) as multi_choice_correct,
+        SUM(CASE WHEN q.question_type = 'text_input' AND user_question_stats.correct_count > 0 THEN 1 ELSE 0 END) as text_input_correct
+       FROM user_question_stats
+       JOIN questions q ON user_question_stats.question_id = q.id
+       WHERE user_id = $1
+       GROUP BY user_id`,
+      [userId],
+    );
+
+    const stats = userStats[0] || {
+      total_correct: 0,
+      unique_questions_answered: 0,
+      single_choice_correct: 0,
+      multi_choice_correct: 0,
+      text_input_correct: 0,
+    };
+
+    // Convert string values to numbers
+    const totalCorrect = parseInt(stats.total_correct, 10) || 0;
+    const singleChoiceCorrect = parseInt(stats.single_choice_correct, 10) || 0;
+    const multiChoiceCorrect = parseInt(stats.multi_choice_correct, 10) || 0;
+    const textInputCorrect = parseInt(stats.text_input_correct, 10) || 0;
+
+    // Get already obtained achievements
+    const obtainedAchievements = await this.dataSource.query(
+      'SELECT achievement_id FROM user_achievements WHERE user_id = $1',
+      [userId],
+    );
+    const obtainedIds = new Set(obtainedAchievements.map((a: any) => a.achievement_id));
+
+    // Check each achievement
+    const achievementsToCheck = [
+      // 1. First Steps - Answered first single choice question correctly
+      {
+        id: 1,
+        check: async () =>
+          !obtainedIds.has(1) &&
+          singleChoiceCorrect >= 1,
+      },
+      // 2. Lucky Guess - Answered first multi-choice question correctly
+      {
+        id: 2,
+        check: async () =>
+          !obtainedIds.has(2) &&
+          multiChoiceCorrect >= 1,
+      },
+      // 3. You Did the Thing - Answered first text input question correctly
+      {
+        id: 3,
+        check: async () =>
+          !obtainedIds.has(3) &&
+          textInputCorrect >= 1,
+      },
+      // 4. Easy Peasy - Mastered all easy-level questions
+      {
+        id: 4,
+        check: async () => {
+          if (obtainedIds.has(4)) return false;
+          const easyQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as easy_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.difficulty = 'easy' AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalEasy = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_easy FROM questions WHERE difficulty = 'easy'`,
+          );
+          const easyCorrectCount = parseInt(easyQuestions[0].easy_correct, 10) || 0;
+          const totalEasyCount = parseInt(totalEasy[0].total_easy, 10) || 0;
+          return easyCorrectCount > 0 && easyCorrectCount === totalEasyCount;
+        },
+      },
+      // 5. Redemption Arc - Answered a previously missed question correctly
+      {
+        id: 5,
+        check: async () => {
+          if (obtainedIds.has(5)) return false;
+          if (!isCorrect) return false;
+          const prevIncorrect = await this.dataSource.query(
+            `SELECT incorrect_count FROM user_question_stats WHERE user_id = $1 AND question_id = $2`,
+            [userId, questionId],
+          );
+          return prevIncorrect.length > 0 && prevIncorrect[0].incorrect_count > 0;
+        },
+      },
+      // 6. Click Clicker - Answered 10 single choice questions correctly
+      {
+        id: 6,
+        check: async () =>
+          !obtainedIds.has(6) &&
+          singleChoiceCorrect >= 10,
+      },
+      // 7. Brain Overload - Answered 10 multi-choice questions correctly
+      {
+        id: 7,
+        check: async () =>
+          !obtainedIds.has(7) &&
+          multiChoiceCorrect >= 10,
+      },
+      // 8. Keyboard Warrior - Answered 10 text input questions correctly
+      {
+        id: 8,
+        check: async () =>
+          !obtainedIds.has(8) &&
+          textInputCorrect >= 10,
+      },
+      // 9. X Marks the Spot - Answered 10 questions correctly
+      {
+        id: 9,
+        check: async () =>
+          !obtainedIds.has(9) &&
+          totalCorrect >= 10,
+      },
+      // 10. Getting There - Mastered all medium-level questions
+      {
+        id: 10,
+        check: async () => {
+          if (obtainedIds.has(10)) return false;
+          const mediumQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as medium_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.difficulty = 'medium' AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalMedium = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_medium FROM questions WHERE difficulty = 'medium'`,
+          );
+          const mediumCorrectCount = parseInt(mediumQuestions[0].medium_correct, 10) || 0;
+          const totalMediumCount = parseInt(totalMedium[0].total_medium, 10) || 0;
+          return mediumCorrectCount > 0 && mediumCorrectCount === totalMediumCount;
+        },
+      },
+      // 11. Clickety Click - Answered 25 single choice questions correctly
+      {
+        id: 11,
+        check: async () =>
+          !obtainedIds.has(11) &&
+          singleChoiceCorrect >= 25,
+      },
+      // 12. Choice Champion - Answered 25 multi-choice questions correctly
+      {
+        id: 12,
+        check: async () =>
+          !obtainedIds.has(12) &&
+          multiChoiceCorrect >= 25,
+      },
+      // 13. Type Master - Answered 25 text input questions correctly
+      {
+        id: 13,
+        check: async () =>
+          !obtainedIds.has(13) &&
+          textInputCorrect >= 25,
+      },
+      // 14. Quiz Legend - Answered 100 questions correctly
+      {
+        id: 14,
+        check: async () =>
+          !obtainedIds.has(14) &&
+          totalCorrect >= 100,
+      },
+      // 15. Code Wizard - Mastered all code-based questions
+      {
+        id: 15,
+        check: async () => {
+          if (obtainedIds.has(15)) return false;
+          const codeQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as code_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.practical = true AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalCode = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_code FROM questions WHERE practical = true`,
+          );
+          const codeCorrectCount = parseInt(codeQuestions[0].code_correct, 10) || 0;
+          const totalCodeCount = parseInt(totalCode[0].total_code, 10) || 0;
+          return codeCorrectCount > 0 && codeCorrectCount === totalCodeCount;
+        },
+      },
+      // 16. Book Smarts - Mastered all theoretical questions
+      {
+        id: 16,
+        check: async () => {
+          if (obtainedIds.has(16)) return false;
+          const theoreticalQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as theoretical_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.practical = false AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalTheoretical = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_theoretical FROM questions WHERE practical = false`,
+          );
+          const theoreticalCorrectCount = parseInt(theoreticalQuestions[0].theoretical_correct, 10) || 0;
+          const totalTheoreticalCount = parseInt(totalTheoretical[0].total_theoretical, 10) || 0;
+          return theoreticalCorrectCount > 0 && theoreticalCorrectCount === totalTheoreticalCount;
+        },
+      },
+      // 17. Single Threat - Mastered all single choice questions
+      {
+        id: 17,
+        check: async () => {
+          if (obtainedIds.has(17)) return false;
+          const singleQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as single_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.question_type = 'single_choice' AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalSingle = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_single FROM questions WHERE question_type = 'single_choice'`,
+          );
+          const singleCorrectCount = parseInt(singleQuestions[0].single_correct, 10) || 0;
+          const totalSingleCount = parseInt(totalSingle[0].total_single, 10) || 0;
+          return singleCorrectCount > 0 && singleCorrectCount === totalSingleCount;
+        },
+      },
+      // 18. Multiple Personality - Mastered all multi-choice questions
+      {
+        id: 18,
+        check: async () => {
+          if (obtainedIds.has(18)) return false;
+          const multiQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as multi_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.question_type = 'multiple_choice' AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalMulti = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_multi FROM questions WHERE question_type = 'multiple_choice'`,
+          );
+          const multiCorrectCount = parseInt(multiQuestions[0].multi_correct, 10) || 0;
+          const totalMultiCount = parseInt(totalMulti[0].total_multi, 10) || 0;
+          return multiCorrectCount > 0 && multiCorrectCount === totalMultiCount;
+        },
+      },
+      // 19. Type Champion - Mastered all text input questions
+      {
+        id: 19,
+        check: async () => {
+          if (obtainedIds.has(19)) return false;
+          const textQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as text_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.question_type = 'text_input' AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalText = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_text FROM questions WHERE question_type = 'text_input'`,
+          );
+          const textCorrectCount = parseInt(textQuestions[0].text_correct, 10) || 0;
+          const totalTextCount = parseInt(totalText[0].total_text, 10) || 0;
+          return textCorrectCount > 0 && textCorrectCount === totalTextCount;
+        },
+      },
+      // 20. Masochist - Completed all hard-level questions
+      {
+        id: 20,
+        check: async () => {
+          if (obtainedIds.has(20)) return false;
+          const hardQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as hard_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.difficulty = 'hard' AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalHard = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_hard FROM questions WHERE difficulty = 'hard'`,
+          );
+          const hardCorrectCount = parseInt(hardQuestions[0].hard_correct, 10) || 0;
+          const totalHardCount = parseInt(totalHard[0].total_hard, 10) || 0;
+          return hardCorrectCount > 0 && hardCorrectCount === totalHardCount;
+        },
+      },
+      // 50. NodeJS Ninja - You are now well prepared for a NodeJS interview!
+      {
+        id: 50,
+        check: async () => {
+          if (obtainedIds.has(50)) return false;
+          const hasTopicMastery = await this.dataSource.query(
+            `SELECT COUNT(*) as count FROM user_achievements WHERE user_id = $1 AND achievement_id IN (4, 10, 20, 15, 16)`,
+            [userId],
+          );
+          return parseInt(hasTopicMastery[0].count, 10) >= 3;
+        },
+      },
+    ];
+
+    // Check each achievement and award if earned
+    for (const achievement of achievementsToCheck) {
+      try {
+        const isEarned = await achievement.check();
+        if (isEarned) {
+          await this.dataSource.query(
+            `INSERT INTO user_achievements (user_id, achievement_id, unlocked_at)
+             VALUES ($1, $2, NOW())
+             ON CONFLICT (user_id, achievement_id) DO NOTHING`,
+            [userId, achievement.id],
+          );
+          awardedAchievementIds.push(achievement.id);
+        }
+      } catch (error) {
+        console.error(
+          `Error checking achievement ${achievement.id} for user ${userId}:`,
+          error,
+        );
+      }
+    }
+
+    return awardedAchievementIds;
+  }
 }

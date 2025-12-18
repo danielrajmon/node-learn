@@ -3,11 +3,15 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { StatsService } from './stats.service';
 import { RecordAnswerDto } from '../answer/dto/record-answer.dto';
 import { OptionalAuthGuard } from '../auth/guards/optional-auth.guard';
+import { AchievementsService } from '../achievements/achievements.service';
 
 @ApiTags('stats')
 @Controller('stats')
 export class StatsController {
-  constructor(private readonly statsService: StatsService) {}
+  constructor(
+    private readonly statsService: StatsService,
+    private readonly achievementsService: AchievementsService,
+  ) {}
 
   @Post('record')
   @UseGuards(OptionalAuthGuard)
@@ -19,13 +23,24 @@ export class StatsController {
     status: 201,
     description: 'Answer recorded successfully',
   })
-  async recordAnswer(@Body() recordAnswerDto: RecordAnswerDto): Promise<{ success: boolean }> {
+  async recordAnswer(@Body() recordAnswerDto: RecordAnswerDto): Promise<{ success: boolean; awardedAchievementIds: number[] }> {
     await this.statsService.recordAnswer(
       recordAnswerDto.userId,
       recordAnswerDto.questionId,
       recordAnswerDto.isCorrect,
     );
-    return { success: true };
+
+    // Check and award achievements only if answer was correct
+    let awardedAchievementIds: number[] = [];
+    if (recordAnswerDto.isCorrect) {
+      awardedAchievementIds = await this.achievementsService.checkAndAwardAchievements(
+        recordAnswerDto.userId,
+        recordAnswerDto.questionId,
+        recordAnswerDto.isCorrect,
+      );
+    }
+
+    return { success: true, awardedAchievementIds };
   }
 
   @Get('user/:userId')
