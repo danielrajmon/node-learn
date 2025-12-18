@@ -1,15 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AchievementsService } from '../services/achievements.service';
-
-interface Achievement {
-  id: number;
-  title: string;
-  description: string;
-  sprite_col: number;
-  sprite_row: number;
-  created_at: string;
-}
+import { AchievementsService, UserAchievement } from '../services/achievements.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-achievements',
@@ -19,18 +11,47 @@ interface Achievement {
   styleUrls: ['./achievements.css']
 })
 export class AchievementsComponent implements OnInit {
-  achievements: Achievement[] = [];
+  achievements: UserAchievement[] = [];
   loading = true;
   error: string | null = null;
+  isGuest = false;
 
-  constructor(private achievementsService: AchievementsService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private achievementsService: AchievementsService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadAchievements();
   }
 
   loadAchievements(): void {
-    this.achievementsService.getAllAchievements().subscribe({
+    const user = this.authService.getCurrentUser();
+    
+    if (user) {
+      // Logged in user
+      this.isGuest = false;
+      this.loadUserAchievements(user.id);
+    } else {
+      // Not logged in - fetch guest user ID
+      this.isGuest = true;
+      this.achievementsService.getGuestUserId().subscribe({
+        next: (response) => {
+          this.loadUserAchievements(response.userId);
+        },
+        error: (err) => {
+          console.error('Error getting guest user ID:', err);
+          this.error = 'Failed to load achievements';
+          this.loading = false;
+          this.cdr.markForCheck();
+        }
+      });
+    }
+  }
+
+  private loadUserAchievements(userId: number): void {
+    this.achievementsService.getUserAchievements(userId).subscribe({
       next: (data) => {
         this.achievements = data;
         this.loading = false;
@@ -49,5 +70,10 @@ export class AchievementsComponent implements OnInit {
     const x = col * -80;
     const y = row * -80;
     return `${x}px ${y}px`;
+  }
+
+  getProgressPercentage(progress: { current: number; total: number } | undefined): number {
+    if (!progress) return 0;
+    return Math.round((progress.current / progress.total) * 100);
   }
 }

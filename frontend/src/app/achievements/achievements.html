@@ -4,11 +4,32 @@
     <div *ngIf="error" class="error">{{ error }}</div>
     
     <div class="achievements-grid" *ngIf="!loading && !error">
-      <div class="achievement-card" *ngFor="let achievement of achievements">
-        <div class="achievement-image" [style.backgroundPosition]="getBackgroundPosition(achievement.sprite_col, achievement.sprite_row)"></div>
+      <div class="achievement-card" 
+           *ngFor="let achievement of achievements"
+           [class.locked]="!achievement.unlocked">
+        <div class="achievement-image-wrapper">
+          <div class="achievement-image" 
+               [style.backgroundPosition]="getBackgroundPosition(achievement.sprite_col, achievement.sprite_row)"></div>
+        </div>
         <div class="achievement-content">
           <h3>{{ achievement.title }}</h3>
           <p>{{ achievement.description }}</p>
+          
+          <!-- Show progress for locked achievements -->
+          <div *ngIf="!achievement.unlocked" class="progress-section">
+            <div class="progress-label" *ngIf="achievement.progress">{{ achievement.progress.label }}</div>
+            <div class="progress-bar" *ngIf="achievement.progress">
+              <div class="progress-fill" 
+                   [style.width.%]="getProgressPercentage(achievement.progress)"
+                   [style.--progress-percentage]="getProgressPercentage(achievement.progress) + '%'"></div>
+            </div>
+            <div class="progress-text" *ngIf="achievement.progress">{{ achievement.progress.current }} / {{ achievement.progress.total }}</div>
+          </div>
+          
+          <!-- Show unlock time for unlocked achievements -->
+          <div *ngIf="achievement.unlocked" class="unlocked-badge">
+            Unlocked
+          </div>
         </div>
       </div>
     </div>
