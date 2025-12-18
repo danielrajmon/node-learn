@@ -588,11 +588,11 @@ export class AchievementsService {
           total: 50,
           label: `${stats.textInputCorrect} / 50 text input`,
         };
-      case 14: // Thousandaire - 1000 total correct
+      case 14: // Quiz Legend - 100 total correct
         return {
-          current: Math.min(stats.totalCorrect, 1000),
-          total: 1000,
-          label: `${stats.totalCorrect} / 1000 correct answers`,
+          current: Math.min(stats.totalCorrect, 100),
+          total: 100,
+          label: `${stats.totalCorrect} / 100 correct answers`,
         };
       case 15: // Single Champion - Mastered all single choice questions
         {
