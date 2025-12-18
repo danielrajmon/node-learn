@@ -30,7 +30,11 @@ export class App {
   }
 
   onQuizClick(): void {
-    this.quizStateService.resetToModeSelection();
+    this.quizStateService.requestConfirmReset((confirmed) => {
+      if (confirmed) {
+        this.quizStateService.resetToModeSelection();
+      }
+    });
     this.closeMobileMenu();
   }
 

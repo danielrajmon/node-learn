@@ -1,12 +1,14 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { QuestionService, QuestionFilters } from '../services/question';
 import { AuthService, User } from '../services/auth.service';
 import { QuizStateService } from '../services/quiz-state.service';
+import { ConfirmationDialogComponent } from '../components/confirmation-dialog';
+import { CanComponentDeactivate } from '../guards/unsaved-changes.guard';
 import { Question, Choice } from '../models/question.model';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, from } from 'rxjs';
 import hljs from 'highlight.js/lib/core';
 import typescript from 'highlight.js/lib/languages/typescript';
 
@@ -26,9 +28,10 @@ interface QuizMode {
 
 @Component({
   selector: 'app-quiz',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmationDialogComponent],
   templateUrl: './quiz.html',
-  styleUrl: './quiz.css'
+  styleUrl: './quiz.css',
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class Quiz implements OnInit, OnDestroy {
   // Mode selection
@@ -72,6 +75,11 @@ export class Quiz implements OnInit, OnDestroy {
   showAchievementNotification = false;
   currentAchievementIndex = 0;
   private resetSubscription: Subscription | null = null;
+  questionsAnswered = 0;  // Track number of answered questions
+  
+  // Confirmation dialog
+  showConfirmationDialog = false;
+  confirmationDialogResolver: ((value: boolean) => void) | null = null;
 
   constructor(
     private questionService: QuestionService,
@@ -96,6 +104,19 @@ export class Quiz implements OnInit, OnDestroy {
     this.resetSubscription = this.quizStateService.resetToModeSelection$.subscribe(() => {
       this.resetToModeSelection();
     });
+
+    // Subscribe to confirmation reset requests from header Quiz click
+    this.quizStateService.confirmReset$.subscribe((callback) => {
+      // If in mode selection or no questions answered, allow reset
+      if (this.showModeSelection || this.questionsAnswered === 0 || this.isQuizComplete) {
+        callback(true);
+        return;
+      }
+
+      // Show confirmation dialog
+      this.confirmationDialogResolver = callback;
+      this.showConfirmationDialog = true;
+    });
     
     // Check if we're returning to quiz page - reset if no mode selected
     if (!this.selectedMode || this.showModeSelection) {
@@ -109,6 +130,36 @@ export class Quiz implements OnInit, OnDestroy {
     }
   }
 
+  canDeactivate(): Observable<boolean> | boolean {
+    // Allow navigation if in mode selection, no questions answered, or quiz complete
+    if (this.showModeSelection || this.questionsAnswered === 0 || this.isQuizComplete) {
+      return true;
+    }
+
+    // Show custom confirmation dialog and convert Promise to Observable
+    return from(new Promise<boolean>((resolve) => {
+      this.confirmationDialogResolver = resolve;
+      this.showConfirmationDialog = true;
+    }));
+  }
+
+  onDialogConfirmed(): void {
+    this.showConfirmationDialog = false;
+    if (this.confirmationDialogResolver) {
+      this.confirmationDialogResolver(true);
+      this.resetToModeSelection();
+      this.confirmationDialogResolver = null;
+    }
+  }
+
+  onDialogCancelled(): void {
+    this.showConfirmationDialog = false;
+    if (this.confirmationDialogResolver) {
+      this.confirmationDialogResolver(false);
+      this.confirmationDialogResolver = null;
+    }
+  }
+
   resetToModeSelection() {
     this.showModeSelection = true;
     this.selectedMode = null;
@@ -118,6 +169,7 @@ export class Quiz implements OnInit, OnDestroy {
     this.leaderboardMode = false;
     this.streak = 0;
     this.maxStreak = 0;
+    this.questionsAnswered = 0;
   }
 
   selectMode(mode: QuizMode) {
@@ -372,6 +424,7 @@ export class Quiz implements OnInit, OnDestroy {
         
         // Set answered AFTER validation is complete to prevent red blink
         this.answered = true;
+        this.questionsAnswered++;  // Increment answered questions counter
         
         // Record answer if user is logged in
         if (this.currentUser && this.currentQuestion) {

@@ -1,4 +1,14 @@
 <div class="quiz-container">
+  <!-- Confirmation Dialog -->
+  <app-confirmation-dialog
+    [isOpen]="showConfirmationDialog"
+    title="Leave Quiz?"
+    [message]="'You have answered ' + questionsAnswered + ' question(s). Are you sure you want to leave?'"
+    confirmText="Leave"
+    (confirmed)="onDialogConfirmed()"
+    (cancelled)="onDialogCancelled()"
+  ></app-confirmation-dialog>
+
   <div class="card">
     <div *ngIf="loading" class="loading">Loading quiz...</div>
     <div *ngIf="error" class="error">{{ error }}</div>
