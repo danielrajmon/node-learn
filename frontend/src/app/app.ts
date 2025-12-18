@@ -32,4 +32,8 @@ export class App {
     this.authService.logout();
     this.closeMobileMenu();
   }
+
+  isGuestUser(): boolean {
+    return this.user?.id === 1 && this.user?.email === 'guest@node-learn.local';
+  }
 }

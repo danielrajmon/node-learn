@@ -14,7 +14,6 @@ export class AchievementsComponent implements OnInit {
   achievements: UserAchievement[] = [];
   loading = true;
   error: string | null = null;
-  isGuest = false;
 
   constructor(
     private achievementsService: AchievementsService,
@@ -28,30 +27,13 @@ export class AchievementsComponent implements OnInit {
 
   loadAchievements(): void {
     const user = this.authService.getCurrentUser();
-    
-    if (user) {
-      // Logged in user
-      this.isGuest = false;
-      this.loadUserAchievements(user.id);
-    } else {
-      // Not logged in - fetch guest user ID
-      this.isGuest = true;
-      this.achievementsService.getGuestUserId().subscribe({
-        next: (response) => {
-          this.loadUserAchievements(response.userId);
-        },
-        error: (err) => {
-          console.error('Error getting guest user ID:', err);
-          this.error = 'Failed to load achievements';
-          this.loading = false;
-          this.cdr.markForCheck();
-        }
-      });
+    if (!user) {
+      this.error = 'Failed to load user';
+      this.loading = false;
+      return;
     }
-  }
 
-  private loadUserAchievements(userId: number): void {
-    this.achievementsService.getUserAchievements(userId).subscribe({
+    this.achievementsService.getUserAchievements(user.id).subscribe({
       next: (data) => {
         this.achievements = data;
         this.loading = false;

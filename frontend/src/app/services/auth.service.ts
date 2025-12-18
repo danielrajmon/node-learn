@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 
 export interface User {
@@ -17,7 +18,7 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   public user$ = this.userSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.loadUserFromStorage();
   }
 
@@ -27,6 +28,16 @@ export class AuthService {
     
     if (token && user) {
       this.userSubject.next(JSON.parse(user));
+    } else {
+      // No user logged in - load guest user
+      const guestUser: User = {
+        id: 1,
+        email: 'guest@node-learn.local',
+        name: 'Guest User',
+        picture: '',
+        isAdmin: false
+      };
+      this.userSubject.next(guestUser);
     }
   }
 
@@ -61,7 +72,16 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
-    this.userSubject.next(null);
+    // Load guest user after logout
+    const guestUser: User = {
+      id: 1,
+      email: 'guest@node-learn.local',
+      name: 'Guest User',
+      picture: '',
+      isAdmin: false
+    };
+    this.userSubject.next(guestUser);
+    this.router.navigate(['/']);
   }
 
   getToken(): string | null {
