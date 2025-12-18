@@ -29,10 +29,10 @@
 
 .modes-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   flex: 1;
   align-content: start;
 }
@@ -48,93 +48,6 @@
   border-radius: 12px;
   width: 100%;
   margin-top: auto;
-}
-
-.challenge-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.challenge-label {
-  font-weight: 600;
-  color: #2c3e50;
-  font-size: 1.05rem;
-}
-
-.challenge-description {
-  font-size: 0.9rem;
-  color: #7f8c8d;
-  font-weight: 400;
-}
-
-.toggle-switch {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 26px;
-  background: #e0e0e0;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-  overflow: hidden;
-}
-
-.toggle-switch.on {
-  background: #27ae60;
-}
-
-.toggle-switch:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.toggle-slider {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 22px;
-  height: 22px;
-  background: white;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-switch.on .toggle-slider {
-  left: calc(100% - 26px);
-}
-
-.toggle-text {
-  position: absolute;
-  font-weight: 600;
-  font-size: 0.75rem;
-  color: #2c3e50;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.toggle-switch.on .toggle-text {
-  color: white;
-}
-
-.mode-subtitle {
-  font-size: 1.1rem;
-  color: #7f8c8d;
-  margin-bottom: 2rem;
-}
-
-.modes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 1200px;
-  flex: 1;
-  align-content: start;
 }
 
 .mode-button {
@@ -232,50 +145,6 @@
 }
 
 /* Leaderboard Streak Display */
-.leaderboard-streak {
-  position: fixed;
-  top: 120px;
-  right: 20px;
-  background: #e74c3c;
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
-  z-index: 50;
-}
-
-.toggle-btn {
-  padding: 0.6rem 1.2rem;
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  color: #2c3e50;
-}
-
-.toggle-btn:hover {
-  border-color: #3498db;
-  background: #ecf0f1;
-}
-
-.toggle-btn.active {
-  background: #3498db;
-  border-color: #3498db;
-  color: white;
-}
-
-.streak-display {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #e74c3c;
-  padding: 0 0.5rem;
-}
-
 .leaderboard-streak {
   position: fixed;
   top: 1rem;
@@ -435,6 +304,7 @@
   text-transform: uppercase;
   background-color: #e0e0e0;
   color: #666;
+  justify-self: center;
 }
 
 .progress-counter {
@@ -443,17 +313,6 @@
   font-weight: 600;
   color: #3498db;
   margin: 2rem 0 0 0;
-}
-
-.topics {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-self: start;
-}
-
-.type-badge {
-  justify-self: center;
 }
 
 .topic {
