@@ -22,4 +22,6 @@ export interface QuestionFilters {
   search?: string;
   difficulty?: 'easy' | 'medium' | 'hard';
   topic?: string | string[];
+  questionType?: 'single_choice' | 'multiple_choice' | 'text_input';
+  practical?: boolean;
 }

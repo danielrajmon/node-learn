@@ -3,6 +3,46 @@
     <div *ngIf="loading" class="loading">Loading quiz...</div>
     <div *ngIf="error" class="error">{{ error }}</div>
 
+    <!-- Mode Selection Screen -->
+    <div *ngIf="showModeSelection" class="mode-selection">
+      <h2>Choose Quiz Mode</h2>
+      <div class="modes-grid">
+        <button
+          *ngFor="let mode of quizModes"
+          class="mode-button"
+          (click)="selectMode(mode)"
+        >
+          <div class="mode-title">{{ mode.name }}</div>
+          <div class="mode-description">{{ mode.description }}</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Leaderboard Mode Toggle - Hidden during quiz -->
+    <div *ngIf="false" class="leaderboard-toggle-section">
+      <div class="toggle-container">
+        <span class="toggle-label">Challenge Mode (Leaderboard):</span>
+        <button 
+          class="toggle-btn"
+          [class.active]="!leaderboardMode"
+          (click)="leaderboardMode = false"
+        >
+          Normal (10 questions)
+        </button>
+        <button 
+          class="toggle-btn"
+          [class.active]="leaderboardMode"
+          (click)="toggleLeaderboardMode()"
+        >
+          Challenge (until fail)
+        </button>
+        <span *ngIf="leaderboardMode" class="streak-display">Streak: {{ streak }} | Best: {{ maxStreak }}</span>
+      </div>
+    </div>
+    <div *ngIf="leaderboardMode" class="leaderboard-streak">
+      Current Streak: {{ streak }} | Max Streak: {{ maxStreak }}
+    </div>
+
     <!-- Achievement Notification - Below Header -->
     <div *ngIf="showAchievementNotification && awardedAchievements.length > 0" class="achievement-notification">
       <div class="achievement-content">
@@ -23,10 +63,13 @@
       </div>
     </div>
 
-    <div *ngIf="!loading && !error && !isQuizComplete && currentQuestion">
+    <div *ngIf="!loading && !error && !isQuizComplete && !showModeSelection && currentQuestion">
       <div class="quiz-header">
         <div class="topics">
           <span class="topic">{{ currentQuestion.topic }}</span>
+        </div>
+        <div class="quiz-mode-header">
+          <span class="selected-mode">{{ selectedMode?.name }} Questions</span>
         </div>
         <span class="difficulty" [class]="currentQuestion.difficulty">
           {{ currentQuestion.difficulty }}
@@ -162,14 +205,20 @@
 
     <div *ngIf="isQuizComplete" class="quiz-complete">
       <h2>Quiz Complete! 🎉</h2>
-      <p>You've completed all {{ totalQuestions }} questions.</p>
+      <div *ngIf="leaderboardMode">
+        <p>Streak: {{ streak }} / {{ totalQuestions }}</p>
+        <p>Best Streak: {{ maxStreak }}</p>
+      </div>
+      <div *ngIf="!leaderboardMode">
+        <p>You've completed all {{ totalQuestions }} questions.</p>
+      </div>
       <button class="btn btn-primary" (click)="restartQuiz()">
-        Start New Quiz
+        Choose Different Mode
       </button>
     </div>
   </div>
 
-  <div *ngIf="!loading && !error && !isQuizComplete" class="progress-counter">
+  <div *ngIf="!loading && !error && !isQuizComplete && !showModeSelection" class="progress-counter">
     {{ currentQuestionNumber }} / {{ totalQuestions }}
   </div>
 </div>

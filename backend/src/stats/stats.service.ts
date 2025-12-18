@@ -61,4 +61,18 @@ export class StatsService {
       questions: stats,
     };
   }
+
+  async getUserWrongQuestions(userId: number): Promise<{ wrongQuestionIds: number[] }> {
+    const query = `
+      SELECT DISTINCT question_id
+      FROM user_question_stats
+      WHERE user_id = $1 AND incorrect_count > 0
+      ORDER BY question_id
+    `;
+
+    const results = await this.dataSource.query(query, [userId]);
+    const wrongQuestionIds = results.map((row: any) => row.question_id);
+
+    return { wrongQuestionIds };
+  }
 }

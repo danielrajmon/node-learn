@@ -91,6 +91,18 @@ export class QuestionService {
       });
     }
 
+    if (filters?.questionType) {
+      queryBuilder.andWhere('q.questionType = :questionType', {
+        questionType: filters.questionType,
+      });
+    }
+
+    if (filters?.practical !== undefined) {
+      queryBuilder.andWhere('q.practical = :practical', {
+        practical: filters.practical,
+      });
+    }
+
     const questions = await queryBuilder.getMany();
     return questions.map((q) => this.removeAnswer(q));
   }
@@ -120,6 +132,18 @@ export class QuestionService {
     if (filters?.topic) {
       queryBuilder.andWhere('q.topic = :topic', {
         topic: filters.topic,
+      });
+    }
+
+    if (filters?.questionType) {
+      queryBuilder.andWhere('q.questionType = :questionType', {
+        questionType: filters.questionType,
+      });
+    }
+
+    if (filters?.practical !== undefined) {
+      queryBuilder.andWhere('q.practical = :practical', {
+        practical: filters.practical,
       });
     }
 

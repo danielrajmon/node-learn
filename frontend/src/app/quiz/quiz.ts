@@ -1,10 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { QuestionService } from '../services/question';
+import { QuestionService, QuestionFilters } from '../services/question';
 import { AuthService, User } from '../services/auth.service';
+import { QuizStateService } from '../services/quiz-state.service';
 import { Question, Choice } from '../models/question.model';
+import { Subscription } from 'rxjs';
 import hljs from 'highlight.js/lib/core';
 import typescript from 'highlight.js/lib/languages/typescript';
 
@@ -15,13 +17,40 @@ interface QuizChoice extends Choice {
   skipped?: boolean; // For correct answers that weren't displayed initially
 }
 
+interface QuizMode {
+  id: string;
+  name: string;
+  description: string;
+  filters: QuestionFilters;
+}
+
 @Component({
   selector: 'app-quiz',
   imports: [CommonModule, FormsModule],
   templateUrl: './quiz.html',
   styleUrl: './quiz.css'
 })
-export class Quiz implements OnInit {
+export class Quiz implements OnInit, OnDestroy {
+  // Mode selection
+  quizModes: QuizMode[] = [
+    { id: 'random', name: 'Random', description: 'Random questions', filters: {} },
+    { id: 'code', name: 'Code-Based', description: 'Code questions', filters: { practical: true } },
+    { id: 'theory', name: 'Theoretical', description: 'Theoretical questions', filters: { practical: false } },
+    { id: 'easy', name: 'Easy', description: 'Easy difficulty', filters: { difficulty: 'easy' } },
+    { id: 'medium', name: 'Medium', description: 'Medium difficulty', filters: { difficulty: 'medium' } },
+    { id: 'hard', name: 'Hard', description: 'Hard difficulty', filters: { difficulty: 'hard' } },
+    { id: 'single', name: 'Single Choice', description: 'Single choice questions', filters: { questionType: 'single_choice' } },
+    { id: 'multi', name: 'Multiple Choice', description: 'Multiple choice questions', filters: { questionType: 'multiple_choice' } },
+    { id: 'text', name: 'Text Input', description: 'Text input questions', filters: { questionType: 'text_input' } },
+    { id: 'missed', name: 'Missed', description: 'Questions you got wrong', filters: {} },
+  ];
+  selectedMode: QuizMode | null = null;
+  showModeSelection = true;
+  showLeaderboardToggle = true;
+  leaderboardMode = false;
+  streak = 0;
+  maxStreak = 0;
+
   questions: Question[] = [];
   currentQuestionIndex = 0;
   currentQuestion: Question | null = null;
@@ -42,10 +71,12 @@ export class Quiz implements OnInit {
   awardedAchievements: any[] = [];
   showAchievementNotification = false;
   currentAchievementIndex = 0;
+  private resetSubscription: Subscription | null = null;
 
   constructor(
     private questionService: QuestionService,
     private authService: AuthService,
+    private quizStateService: QuizStateService,
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
@@ -60,6 +91,50 @@ export class Quiz implements OnInit {
     this.authService.user$.subscribe(user => {
       this.currentUser = user;
     });
+    
+    // Subscribe to reset signal from header Quiz click
+    this.resetSubscription = this.quizStateService.resetToModeSelection$.subscribe(() => {
+      this.resetToModeSelection();
+    });
+    
+    // Check if we're returning to quiz page - reset if no mode selected
+    if (!this.selectedMode || this.showModeSelection) {
+      this.resetToModeSelection();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.resetSubscription) {
+      this.resetSubscription.unsubscribe();
+    }
+  }
+
+  resetToModeSelection() {
+    this.showModeSelection = true;
+    this.selectedMode = null;
+    this.currentQuestionIndex = 0;
+    this.questions = [];
+    this.currentQuestion = null;
+    this.leaderboardMode = false;
+    this.streak = 0;
+    this.maxStreak = 0;
+  }
+
+  selectMode(mode: QuizMode) {
+    this.selectedMode = mode;
+    this.showModeSelection = false;
+    this.showLeaderboardToggle = mode.id !== 'missed'; // Don't show leaderboard toggle for missed mode
+    this.streak = 0;
+    this.maxStreak = 0;
+    this.loadQuiz();
+  }
+
+  toggleLeaderboardMode() {
+    this.leaderboardMode = !this.leaderboardMode;
+    this.streak = 0;
+    this.maxStreak = 0;
+    this.currentQuestionIndex = 0;
+    this.questions = [];
     this.loadQuiz();
   }
 
@@ -71,14 +146,20 @@ export class Quiz implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.questionService.getAllQuestions().subscribe({
+    // Handle missed questions mode
+    if (this.selectedMode?.id === 'missed') {
+      this.loadMissedQuestions();
+      return;
+    }
+
+    this.questionService.getAllQuestions(this.selectedMode?.filters).subscribe({
       next: (questions) => {
-        // Get 10 random active questions
+        // Get active questions
         const activeQuestions = questions.filter(q => q.isActive);
-        this.questions = this.shuffleArray(activeQuestions).slice(0, 10);
+        this.questions = this.shuffleArray(activeQuestions);
         
         if (this.questions.length === 0) {
-          this.error = 'No active questions available for quiz.';
+          this.error = 'No active questions available for this quiz mode.';
           this.loading = false;
           return;
         }
@@ -93,6 +174,58 @@ export class Quiz implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
         console.error('Error loading quiz:', err);
+      }
+    });
+  }
+
+  loadMissedQuestions() {
+    // Load all questions and filter to only those the user got wrong
+    if (!this.currentUser) {
+      this.error = 'You must be logged in to view missed questions.';
+      this.loading = false;
+      this.showModeSelection = true;
+      return;
+    }
+
+    this.http.get<any>(`/api/stats/user/${this.currentUser.id}/wrong-questions`).subscribe({
+      next: (response) => {
+        // Get the wrong question IDs
+        const wrongQuestionIds = new Set(response.wrongQuestionIds || []);
+        
+        if (wrongQuestionIds.size === 0) {
+          this.error = 'You haven\'t missed any questions yet! Great job!';
+          this.loading = false;
+          return;
+        }
+
+        // Load all questions and filter to only missed ones
+        this.questionService.getAllQuestions({}).subscribe({
+          next: (questions) => {
+            const missedQuestions = questions.filter(q => wrongQuestionIds.has(q.id) && q.isActive);
+            this.questions = this.shuffleArray(missedQuestions);
+            
+            if (this.questions.length === 0) {
+              this.error = 'No missed questions available.';
+              this.loading = false;
+              return;
+            }
+
+            this.currentQuestionIndex = 0;
+            this.loadCurrentQuestion();
+            this.loading = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            this.error = 'Failed to load questions.';
+            this.loading = false;
+            console.error('Error loading questions:', err);
+          }
+        });
+      },
+      error: (err) => {
+        this.error = 'Failed to load missed questions data.';
+        this.loading = false;
+        console.error('Error loading stats:', err);
       }
     });
   }
@@ -431,10 +564,28 @@ export class Quiz implements OnInit {
       
       this.feedback = this.correct ? 'Correct! ✓' : '';
     }
+
+    // Track streak for leaderboard mode
+    if (this.leaderboardMode) {
+      if (this.correct) {
+        this.streak++;
+        this.maxStreak = Math.max(this.maxStreak, this.streak);
+      } else {
+        // Wrong answer in leaderboard mode ends the quiz
+        this.maxStreak = Math.max(this.maxStreak, this.streak);
+      }
+    }
   }
 
   nextQuestion() {
     this.showAchievementNotification = false;
+    
+    // In leaderboard mode, end quiz if answer was wrong
+    if (this.leaderboardMode && !this.correct) {
+      this.currentQuestion = null;
+      return;
+    }
+
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
       this.loadCurrentQuestion();
@@ -445,8 +596,14 @@ export class Quiz implements OnInit {
   }
 
   restartQuiz() {
+    this.showModeSelection = true;
+    this.selectedMode = null;
     this.currentQuestionIndex = 0;
-    this.loadQuiz();
+    this.questions = [];
+    this.currentQuestion = null;
+    this.leaderboardMode = false;
+    this.streak = 0;
+    this.maxStreak = 0;
   }
 
   get currentQuestionNumber(): number {

@@ -22,14 +22,19 @@ export class QuestionController {
   @ApiQuery({ name: 'search', required: false, description: 'Search in question and topics' })
   @ApiQuery({ name: 'difficulty', required: false, enum: ['easy', 'medium', 'hard'], description: 'Filter by difficulty level' })
   @ApiQuery({ name: 'topic', required: false, description: 'Filter by topic (comma-separated for multiple topics)' })
+  @ApiQuery({ name: 'questionType', required: false, enum: ['single_choice', 'multiple_choice', 'text_input'], description: 'Filter by question type' })
+  @ApiQuery({ name: 'practical', required: false, description: 'Filter by practical (true/false)' })
   @ApiResponse({ status: 200, description: 'List of questions without answers', type: [QuestionWithoutAnswerDto] })
   async findAll(
     @Query('search') search?: string,
     @Query('difficulty') difficulty?: 'easy' | 'medium' | 'hard',
     @Query('topic') topicParam?: string,
+    @Query('questionType') questionType?: 'single_choice' | 'multiple_choice' | 'text_input',
+    @Query('practical') practicalParam?: string,
   ): Promise<QuestionWithoutAnswer[]> {
     const topic = topicParam ? topicParam.split(',').map((t) => t.trim()) : undefined;
-    const filters: QuestionFilters = { search, difficulty, topic };
+    const practical = practicalParam !== undefined ? practicalParam === 'true' : undefined;
+    const filters: QuestionFilters = { search, difficulty, topic, questionType, practical };
     return await this.questionService.findAll(filters);
   }
 

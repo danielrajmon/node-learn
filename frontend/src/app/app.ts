@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService, User } from './services/auth.service';
+import { QuizStateService } from './services/quiz-state.service';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,7 @@ export class App {
   protected readonly mobileMenuOpen = signal(false);
   user: User | null = null;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private quizStateService: QuizStateService) {
     this.authService.user$.subscribe(user => {
       this.user = user;
     });
@@ -26,6 +27,11 @@ export class App {
 
   closeMobileMenu(): void {
     this.mobileMenuOpen.set(false);
+  }
+
+  onQuizClick(): void {
+    this.quizStateService.resetToModeSelection();
+    this.closeMobileMenu();
   }
 
   logout(): void {

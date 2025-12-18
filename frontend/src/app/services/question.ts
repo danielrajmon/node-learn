@@ -3,15 +3,43 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Question, AnswerResult } from '../models/question.model';
 
+export interface QuestionFilters {
+  difficulty?: 'easy' | 'medium' | 'hard';
+  questionType?: 'single_choice' | 'multiple_choice' | 'text_input';
+  practical?: boolean;
+  search?: string;
+  topic?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class QuestionService {
   constructor(private http: HttpClient) {}
 
-  getAllQuestions(): Observable<Question[]> {
+  getAllQuestions(filters?: QuestionFilters): Observable<Question[]> {
     // Add timestamp to prevent caching
-    return this.http.get<Question[]>(`/api/questions?_t=${Date.now()}`);
+    let url = `/api/questions?_t=${Date.now()}`;
+    
+    if (filters) {
+      if (filters.difficulty) {
+        url += `&difficulty=${encodeURIComponent(filters.difficulty)}`;
+      }
+      if (filters.questionType) {
+        url += `&questionType=${encodeURIComponent(filters.questionType)}`;
+      }
+      if (filters.practical !== undefined) {
+        url += `&practical=${filters.practical}`;
+      }
+      if (filters.search) {
+        url += `&search=${encodeURIComponent(filters.search)}`;
+      }
+      if (filters.topic) {
+        url += `&topic=${encodeURIComponent(filters.topic)}`;
+      }
+    }
+    
+    return this.http.get<Question[]>(url);
   }
 
   getRandomQuestion(): Observable<Question> {

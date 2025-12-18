@@ -58,4 +58,20 @@ export class StatsController {
   ): Promise<any> {
     return this.statsService.getUserStats(+userId);
   }
+
+  @Get('user/:userId/wrong-questions')
+  @ApiOperation({
+    summary: 'Get user wrong questions',
+    description: 'Retrieve list of question IDs that the user answered incorrectly',
+  })
+  @ApiParam({ name: 'userId', description: 'User ID', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'List of wrong question IDs',
+  })
+  async getUserWrongQuestions(
+    @Param('userId') userId: string,
+  ): Promise<{ wrongQuestionIds: number[] }> {
+    return this.statsService.getUserWrongQuestions(+userId);
+  }
 }
