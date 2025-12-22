@@ -1,6 +1,6 @@
 -- Leaderboard table for quiz modes
 CREATE TABLE IF NOT EXISTS leaderboards (
-  quiz_mode_id VARCHAR(50) NOT NULL,
+  quiz_mode_id INTEGER NOT NULL,
   position INTEGER NOT NULL CHECK (position >= 1 AND position <= 6),
   user_id INTEGER NOT NULL,
   correct_answers INTEGER NOT NULL,

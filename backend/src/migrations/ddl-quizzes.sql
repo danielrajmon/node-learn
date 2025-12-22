@@ -1,6 +1,6 @@
 -- Quiz modes table
 CREATE TABLE IF NOT EXISTS quiz_modes (
-  id VARCHAR(50) PRIMARY KEY,
+  id INTEGER PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   description VARCHAR(255),
   filters JSONB,
