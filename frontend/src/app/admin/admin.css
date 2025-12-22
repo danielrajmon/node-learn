@@ -103,7 +103,7 @@
 }
 
 /* Tablet responsiveness */
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 601px) and (max-width: 1024px) {
   .admin-content {
     padding: 1rem;
     padding-bottom: 6rem;
@@ -401,7 +401,7 @@
 }
 
 /* Responsive table - card layout on mobile */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .table-container {
     background: transparent;
     box-shadow: none;
@@ -754,63 +754,6 @@
 
 .remove-choice-btn:hover {
   background: #c82333;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 600px) {
-  .type-badge {
-    display: none;
-  }
-
-  .badge {
-    display: none;
-  }
-
-  .admin-container {
-    padding: 0;
-  }
-
-  .admin-content {
-    padding: 1rem;
-    padding-bottom: 6rem;
-    margin: 0;
-    max-width: 100%;
-  }
-
-  .question-form {
-    padding: 1rem;
-  }
-
-  .form-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-content h1 {
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .submit-button,
-  .delete-button,
-  .cancel-button {
-    width: 100%;
-  }
-
-  .form-group label {
-    font-size: 0.9rem;
-  }
-
-  .choices-section {
-    padding: 1rem;
-  }
-
-  .users-table tbody tr {
-    background-color: white;
-  }
 }
 
 .users-section {

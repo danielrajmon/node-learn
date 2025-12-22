@@ -780,7 +780,7 @@
   margin-bottom: 2rem;
 }
 
-@media (max-width: 1024px) and (min-width: 769px) {
+@media (min-width: 601px) and (max-width: 1024px) {
   .quiz-container {
     padding: 2rem 2rem 4rem 2rem;
   }
@@ -814,7 +814,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .quiz-container {
     padding: 1rem 1rem 7rem 1rem;
   }

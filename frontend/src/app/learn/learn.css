@@ -265,7 +265,7 @@
   }
 }
 
-@media (min-width: 601px) and (max-width: 768px) {
+@media (min-width: 601px) and (max-width: 1024px) {
   .btn-text-short {
     display: none;
   }
@@ -275,7 +275,7 @@
   }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1025px) {
   .btn-text-short {
     display: none;
   }

@@ -133,8 +133,8 @@
   display: none;
 }
 
-/* Mobile styles */
-@media (max-width: 768px) {
+/* Tablet and Mobile styles */
+@media (max-width: 1024px) {
   .nav .logout-link {
     display: block;
   }
