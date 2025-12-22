@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +29,7 @@ export class AuthController {
   }
 
   @Get('profile')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   getProfile(@Req() req) {
     return req.user;
   }

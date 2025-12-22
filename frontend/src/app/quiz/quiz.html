@@ -28,29 +28,9 @@
       </div>
     </div>
 
-    <!-- Leaderboard Mode Toggle - Hidden during quiz -->
-    <div *ngIf="false" class="leaderboard-toggle-section">
-      <div class="toggle-container">
-        <span class="toggle-label">Challenge Mode (Leaderboard):</span>
-        <button 
-          class="toggle-btn"
-          [class.active]="!leaderboardMode"
-          (click)="leaderboardMode = false"
-        >
-          Normal (10 questions)
-        </button>
-        <button 
-          class="toggle-btn"
-          [class.active]="leaderboardMode"
-          (click)="toggleLeaderboardMode()"
-        >
-          Challenge (until fail)
-        </button>
-        <span *ngIf="leaderboardMode" class="streak-display">Streak: {{ streak }} | Best: {{ maxStreak }}</span>
-      </div>
-    </div>
-    <div *ngIf="leaderboardMode" class="leaderboard-streak">
-      Current Streak: {{ streak }} | Max Streak: {{ maxStreak }}
+    <!-- Leaderboard Streak Display -->
+    <div class="leaderboard-streak">
+      Current Streak: {{ streak }}
     </div>
 
     <!-- Achievement Notification - Below Header -->
@@ -215,13 +195,7 @@
 
     <div *ngIf="isQuizComplete" class="quiz-complete">
       <h2>Quiz Complete! 🎉</h2>
-      <div *ngIf="leaderboardMode">
-        <p>Streak: {{ streak }} / {{ totalQuestions }}</p>
-        <p>Best Streak: {{ maxStreak }}</p>
-      </div>
-      <div *ngIf="!leaderboardMode">
-        <p>You've completed all {{ totalQuestions }} questions.</p>
-      </div>
+      <p>Final Streak: {{ streak }}</p>
       <button class="btn btn-primary" (click)="restartQuiz()">
         Choose Different Mode
       </button>

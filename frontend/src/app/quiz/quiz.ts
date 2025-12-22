@@ -2,10 +2,12 @@ import { Component, OnInit, ChangeDetectorRef, OnDestroy, NO_ERRORS_SCHEMA } fro
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { QuestionService, QuestionFilters } from '../services/question';
 import { AuthService, User } from '../services/auth.service';
 import { QuizStateService } from '../services/quiz-state.service';
 import { QuizService } from '../services/quiz.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { ConfirmationDialogComponent } from '../components/confirmation-dialog';
 import { CanComponentDeactivate } from '../guards/unsaved-changes.guard';
 import { Question, Choice } from '../models/question.model';
@@ -40,9 +42,8 @@ export class Quiz implements OnInit, OnDestroy {
   selectedMode: QuizMode | null = null;
   showModeSelection = true;
   showLeaderboardToggle = true;
-  leaderboardMode = false;
+  leaderboardMode = true;
   streak = 0;
-  maxStreak = 0;
 
   questions: Question[] = [];
   currentQuestionIndex = 0;
@@ -66,6 +67,7 @@ export class Quiz implements OnInit, OnDestroy {
   currentAchievementIndex = 0;
   private resetSubscription: Subscription | null = null;
   questionsAnswered = 0;  // Track number of answered questions
+  correctAnswers = 0;  // Track number of correct answers
   
   // Confirmation dialog
   showConfirmationDialog = false;
@@ -76,7 +78,9 @@ export class Quiz implements OnInit, OnDestroy {
     private authService: AuthService,
     private quizStateService: QuizStateService,
     private quizService: QuizService,
+    private leaderboardService: LeaderboardService,
     private http: HttpClient,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -98,7 +102,6 @@ export class Quiz implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error loading quiz modes:', err);
         this.error = 'Failed to load quiz modes.';
       }
     });
@@ -171,7 +174,6 @@ export class Quiz implements OnInit, OnDestroy {
     this.currentQuestion = null;
     this.leaderboardMode = false;
     this.streak = 0;
-    this.maxStreak = 0;
     this.questionsAnswered = 0;
   }
 
@@ -180,16 +182,6 @@ export class Quiz implements OnInit, OnDestroy {
     this.showModeSelection = false;
     this.showLeaderboardToggle = mode.id !== 'missed'; // Don't show leaderboard toggle for missed mode
     this.streak = 0;
-    this.maxStreak = 0;
-    this.loadQuiz();
-  }
-
-  toggleLeaderboardMode() {
-    this.leaderboardMode = !this.leaderboardMode;
-    this.streak = 0;
-    this.maxStreak = 0;
-    this.currentQuestionIndex = 0;
-    this.questions = [];
     this.loadQuiz();
   }
 
@@ -228,7 +220,6 @@ export class Quiz implements OnInit, OnDestroy {
         this.error = 'Failed to load quiz questions.';
         this.loading = false;
         this.cdr.detectChanges();
-        console.error('Error loading quiz:', err);
       }
     });
   }
@@ -273,14 +264,12 @@ export class Quiz implements OnInit, OnDestroy {
           error: (err) => {
             this.error = 'Failed to load questions.';
             this.loading = false;
-            console.error('Error loading questions:', err);
           }
         });
       },
       error: (err) => {
         this.error = 'Failed to load missed questions data.';
         this.loading = false;
-        console.error('Error loading stats:', err);
       }
     });
   }
@@ -428,6 +417,32 @@ export class Quiz implements OnInit, OnDestroy {
         // Set answered AFTER validation is complete to prevent red blink
         this.answered = true;
         this.questionsAnswered++;  // Increment answered questions counter
+        if (this.correct) {
+          this.correctAnswers++;  // Track correct answers
+        }
+        
+        // Update leaderboard with current stats after incrementing counters
+        if (this.selectedMode) {
+          // Use current user or fall back to guest user (id: 1)
+          const userId = this.currentUser?.id || 1;
+          const username = this.currentUser?.name || 'Guest User';
+          
+          this.leaderboardService.updateLeaderboard(
+            this.selectedMode.id,
+            userId,
+            this.correctAnswers,
+            this.questionsAnswered,
+            this.streak,
+            username
+          ).subscribe({
+            next: () => {
+              // Leaderboard registered successfully
+            },
+            error: (err) => {
+              // Failed to register answer to leaderboard
+            }
+          });
+        }
         
         // Record answer if user is logged in
         if (this.currentUser && this.currentQuestion) {
@@ -437,11 +452,8 @@ export class Quiz implements OnInit, OnDestroy {
             isCorrect: this.correct,
           }).subscribe({
             next: (response) => {
-              console.log('Stats record response:', response);
-              
               // Display achievement notifications if any were earned
               if (response.awardedAchievements && response.awardedAchievements.length > 0) {
-                console.log('Achievements awarded:', response.awardedAchievements);
                 this.awardedAchievements = response.awardedAchievements;
                 this.currentAchievementIndex = 0;
                 this.showAchievementNotification = true;
@@ -474,7 +486,7 @@ export class Quiz implements OnInit, OnDestroy {
               }
             },
             error: (err) => {
-              console.error('Error recording answer:', err);
+              // Error recording answer
             }
           });
         }
@@ -493,7 +505,7 @@ export class Quiz implements OnInit, OnDestroy {
         }, 0);
       },
       error: (err) => {
-        console.error('Error loading answer:', err);
+        // Error loading answer
       }
     });
 
@@ -621,27 +633,18 @@ export class Quiz implements OnInit, OnDestroy {
       this.feedback = this.correct ? 'Correct! ✓' : '';
     }
 
-    // Track streak for leaderboard mode
-    if (this.leaderboardMode) {
-      if (this.correct) {
-        this.streak++;
-        this.maxStreak = Math.max(this.maxStreak, this.streak);
-      } else {
-        // Wrong answer in leaderboard mode ends the quiz
-        this.maxStreak = Math.max(this.maxStreak, this.streak);
-      }
+    // Track streak for leaderboard
+    if (this.correct) {
+      this.streak++;
+    } else {
+      // Wrong answer resets streak
+      this.streak = 0;
     }
   }
 
   nextQuestion() {
     this.showAchievementNotification = false;
     
-    // In leaderboard mode, end quiz if answer was wrong
-    if (this.leaderboardMode && !this.correct) {
-      this.currentQuestion = null;
-      return;
-    }
-
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
       this.loadCurrentQuestion();
@@ -657,9 +660,9 @@ export class Quiz implements OnInit, OnDestroy {
     this.currentQuestionIndex = 0;
     this.questions = [];
     this.currentQuestion = null;
-    this.leaderboardMode = false;
     this.streak = 0;
-    this.maxStreak = 0;
+    this.questionsAnswered = 0;
+    this.correctAnswers = 0;
   }
 
   get currentQuestionNumber(): number {
@@ -751,7 +754,7 @@ export class Quiz implements OnInit, OnDestroy {
         }, 0);
       },
       error: (err) => {
-        console.error('Error loading answer:', err);
+        // Error loading answer
       }
     });
 

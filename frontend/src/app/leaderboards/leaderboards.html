@@ -1,0 +1,41 @@
+<div class="leaderboards-container">
+  
+  <div *ngIf="modesLoading" class="loading">Loading leaderboards...</div>
+
+  <div *ngIf="!modesLoading && getLeaderboardModes().length > 0" class="leaderboards-grid">
+    <div *ngFor="let leaderboardMode of getLeaderboardModes()" class="leaderboard-card">
+      <h2>{{ leaderboardMode.mode.name }}</h2>
+      <p class="leaderboard-description">{{ leaderboardMode.mode.description }}</p>
+
+      <div *ngIf="leaderboardMode.loading" class="loading-small">Loading...</div>
+      <div *ngIf="leaderboardMode.error" class="error">{{ leaderboardMode.error }}</div>
+
+      <div *ngIf="!leaderboardMode.loading && leaderboardMode.entries.length > 0" class="leaderboard-table">
+        <div class="leaderboard-header">
+          <div class="column position">Position</div>
+          <div class="column username">Username</div>
+          <div class="column points">Points</div>
+          <div class="column questions">Questions</div>
+          <div class="column streak">Streak</div>
+          <div class="column date">Achieved</div>
+        </div>
+        
+        <div *ngFor="let entry of leaderboardMode.entries" class="leaderboard-row" [class.top-3]="entry.position <= 3">
+          <div class="column position">
+            <span class="medal">{{ getMedalIcon(entry.position) }}</span>
+            {{ entry.position }}
+          </div>
+          <div class="column username">{{ entry.username }}</div>
+          <div class="column points">{{ entry.correct_answers }}</div>
+          <div class="column questions">{{ entry.total_questions }}</div>
+          <div class="column streak">{{ entry.streak }}</div>
+          <div class="column date">{{ entry.achieved_at | date: 'shortDate' }}</div>
+        </div>
+      </div>
+
+      <div *ngIf="!leaderboardMode.loading && leaderboardMode.entries.length === 0 && !leaderboardMode.error" class="no-data">
+        No leaderboard entries yet
+      </div>
+    </div>
+  </div>
+</div>

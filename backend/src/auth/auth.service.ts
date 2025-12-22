@@ -1,17 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './strategies/jwt.strategy';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
+
+  onModuleInit() {
+    // JWT_SECRET configured
+  }
 
   async validateOAuthUser(profile: {
     googleId: string;
@@ -50,8 +56,10 @@ export class AuthService {
       isAdmin: user.isAdmin,
     };
 
+    const access_token = this.jwtService.sign(payload);
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token,
       user: {
         id: user.id,
         email: user.email,

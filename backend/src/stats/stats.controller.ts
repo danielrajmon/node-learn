@@ -1,8 +1,9 @@
-import { Controller, Post, Get, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { StatsService } from './stats.service';
 import { RecordAnswerDto } from '../answer/dto/record-answer.dto';
 import { OptionalAuthGuard } from '../auth/guards/optional-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AchievementsService } from '../achievements/achievements.service';
 
 @ApiTags('stats')
@@ -23,9 +24,12 @@ export class StatsController {
     status: 201,
     description: 'Answer recorded successfully',
   })
-  async recordAnswer(@Body() recordAnswerDto: RecordAnswerDto): Promise<{ success: boolean; awardedAchievements: any[] }> {
+  async recordAnswer(@Body() recordAnswerDto: RecordAnswerDto, @Req() req): Promise<{ success: boolean; awardedAchievements: any[] }> {
+    // Use JWT user ID if authenticated, otherwise use body userId (guest)
+    const userId = req.user?.id || recordAnswerDto.userId;
+
     await this.statsService.recordAnswer(
-      recordAnswerDto.userId,
+      userId,
       recordAnswerDto.questionId,
       recordAnswerDto.isCorrect,
     );
@@ -34,7 +38,7 @@ export class StatsController {
     let awardedAchievements: any[] = [];
     if (recordAnswerDto.isCorrect) {
       awardedAchievements = await this.achievementsService.checkAndAwardAchievements(
-        recordAnswerDto.userId,
+        userId,
         recordAnswerDto.questionId,
         recordAnswerDto.isCorrect,
       );
