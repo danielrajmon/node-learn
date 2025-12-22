@@ -83,6 +83,18 @@
   background-size: 560px 240px;
   border-radius: 0px;
   border: 0px solid #ddd;
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.achievement-card.locked .achievement-image {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.achievement-card:not(.locked) .achievement-image {
+  filter: grayscale(0%);
+  opacity: 1;
 }
 
 .achievement-content {
