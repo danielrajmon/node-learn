@@ -594,47 +594,7 @@ export class AchievementsService {
           total: 100,
           label: `${stats.totalCorrect} / 100 correct answers`,
         };
-      case 15: // Single Champion - Mastered all single choice questions
-        {
-          const singleQuestions = await this.dataSource.query(
-            `SELECT COUNT(DISTINCT uqs.question_id) as single_correct
-             FROM user_question_stats uqs
-             JOIN questions q ON uqs.question_id = q.id
-             WHERE uqs.user_id = $1 AND q.question_type = 'single_choice' AND uqs.correct_count > 0`,
-            [userId],
-          );
-          const totalSingle = await this.dataSource.query(
-            `SELECT COUNT(DISTINCT id) as total_single FROM questions WHERE question_type = 'single_choice'`,
-          );
-          const singleCorrectCount = parseInt(singleQuestions[0]?.single_correct, 10) || 0;
-          const totalSingleCount = parseInt(totalSingle[0]?.total_single, 10) || 0;
-          return {
-            current: singleCorrectCount,
-            total: totalSingleCount,
-            label: `${singleCorrectCount} / ${totalSingleCount} single choice`,
-          };
-        }
-      case 16: // Multi Champion - Mastered all multiple choice questions
-        {
-          const multiQuestions = await this.dataSource.query(
-            `SELECT COUNT(DISTINCT uqs.question_id) as multi_correct
-             FROM user_question_stats uqs
-             JOIN questions q ON uqs.question_id = q.id
-             WHERE uqs.user_id = $1 AND q.question_type = 'multiple_choice' AND uqs.correct_count > 0`,
-            [userId],
-          );
-          const totalMulti = await this.dataSource.query(
-            `SELECT COUNT(DISTINCT id) as total_multi FROM questions WHERE question_type = 'multiple_choice'`,
-          );
-          const multiCorrectCount = parseInt(multiQuestions[0]?.multi_correct, 10) || 0;
-          const totalMultiCount = parseInt(totalMulti[0]?.total_multi, 10) || 0;
-          return {
-            current: multiCorrectCount,
-            total: totalMultiCount,
-            label: `${multiCorrectCount} / ${totalMultiCount} multiple choice`,
-          };
-        }
-      case 17: // Practical Master - Mastered all practical questions
+      case 15: // Code Wizard - Mastered all practical questions
         {
           const practicalQuestions = await this.dataSource.query(
             `SELECT COUNT(DISTINCT uqs.question_id) as practical_correct
@@ -654,7 +614,7 @@ export class AchievementsService {
             label: `${practicalCorrectCount} / ${totalPracticalCount} practical questions`,
           };
         }
-      case 18: // Theoretical Master - Mastered all theoretical questions
+      case 16: // Book Smarts - Mastered all theoretical questions
         {
           const theoreticalQuestions = await this.dataSource.query(
             `SELECT COUNT(DISTINCT uqs.question_id) as theoretical_correct
@@ -672,6 +632,46 @@ export class AchievementsService {
             current: theoreticalCorrectCount,
             total: totalTheoreticalCount,
             label: `${theoreticalCorrectCount} / ${totalTheoreticalCount} theoretical questions`,
+          };
+        }
+      case 17: // Single Threat - Mastered all single choice questions
+        {
+          const singleQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as single_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.question_type = 'single_choice' AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalSingle = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_single FROM questions WHERE question_type = 'single_choice'`,
+          );
+          const singleCorrectCount = parseInt(singleQuestions[0]?.single_correct, 10) || 0;
+          const totalSingleCount = parseInt(totalSingle[0]?.total_single, 10) || 0;
+          return {
+            current: singleCorrectCount,
+            total: totalSingleCount,
+            label: `${singleCorrectCount} / ${totalSingleCount} single choice`,
+          };
+        }
+      case 18: // Multiple Personality - Mastered all multi-choice questions
+        {
+          const multiQuestions = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT uqs.question_id) as multi_correct
+             FROM user_question_stats uqs
+             JOIN questions q ON uqs.question_id = q.id
+             WHERE uqs.user_id = $1 AND q.question_type = 'multiple_choice' AND uqs.correct_count > 0`,
+            [userId],
+          );
+          const totalMulti = await this.dataSource.query(
+            `SELECT COUNT(DISTINCT id) as total_multi FROM questions WHERE question_type = 'multiple_choice'`,
+          );
+          const multiCorrectCount = parseInt(multiQuestions[0]?.multi_correct, 10) || 0;
+          const totalMultiCount = parseInt(totalMulti[0]?.total_multi, 10) || 0;
+          return {
+            current: multiCorrectCount,
+            total: totalMultiCount,
+            label: `${multiCorrectCount} / ${totalMultiCount} multiple choice`,
           };
         }
       case 19: // Type Champion - Mastered all text input questions
