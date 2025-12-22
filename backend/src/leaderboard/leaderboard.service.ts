@@ -38,14 +38,14 @@ export class LeaderboardService {
         [correctAnswers, totalQuestions, streak, modeId, userId]
       );
     } else {
-      // User doesn't exist yet - get current top 10
+      // User doesn't exist yet - get current top 6
       const topEntries = await this.dataSource.query(
-        `SELECT user_id, correct_answers, streak FROM leaderboards WHERE quiz_mode_id = $1 ORDER BY correct_answers DESC, streak DESC LIMIT 10`,
+        `SELECT user_id, correct_answers, streak FROM leaderboards WHERE quiz_mode_id = $1 ORDER BY correct_answers DESC, streak DESC LIMIT 6`,
         [modeId]
       );
 
-      // If less than 10 entries, always add the user
-      if (topEntries.length < 10) {
+      // If less than 6 entries, always add the user
+      if (topEntries.length < 6) {
         // Find an available position
         const usedPositions = await this.dataSource.query(
           `SELECT position FROM leaderboards WHERE quiz_mode_id = $1 ORDER BY position`,
@@ -76,7 +76,7 @@ export class LeaderboardService {
           
           await this.dataSource.query(
             `INSERT INTO leaderboards (quiz_mode_id, position, user_id, correct_answers, total_questions, streak, achieved_at) 
-             VALUES ($1, 10, $2, $3, $4, $5, CURRENT_TIMESTAMP)`,
+             VALUES ($1, 6, $2, $3, $4, $5, CURRENT_TIMESTAMP)`,
             [modeId, userId, correctAnswers, totalQuestions, streak]
           );
         }
@@ -90,7 +90,7 @@ export class LeaderboardService {
   private async recalculatePositions(modeId: string): Promise<void> {
     // Get all entries sorted by correct_answers DESC, streak DESC
     const entries = await this.dataSource.query(
-      `SELECT user_id, correct_answers, total_questions, streak FROM leaderboards WHERE quiz_mode_id = $1 ORDER BY correct_answers DESC, streak DESC LIMIT 10`,
+      `SELECT user_id, correct_answers, total_questions, streak FROM leaderboards WHERE quiz_mode_id = $1 ORDER BY correct_answers DESC, streak DESC LIMIT 6`,
       [modeId]
     );
 
@@ -120,6 +120,48 @@ export class LeaderboardService {
        ORDER BY l.position ASC`,
       [modeId]
     );
+
+    // If fewer than 6 entries, add fake entries to fill the leaderboard
+    if (result.length < 6) {
+      const firstNames = [
+        'James', 'Mary', 'Robert', 'Patricia', 'Michael', 'Jennifer', 'William', 'Linda',
+        'David', 'Barbara', 'Richard', 'Elizabeth', 'Joseph', 'Susan', 'Thomas', 'Jessica',
+        'Charles', 'Sarah', 'Christopher', 'Karen', 'Daniel', 'Nancy', 'Matthew', 'Lisa',
+        'Anthony', 'Betty', 'Mark', 'Margaret', 'Donald', 'Sandra', 'Steven', 'Ashley',
+        'Paul', 'Kimberly', 'Andrew', 'Emily', 'Joshua', 'Donna', 'Kenneth', 'Michelle',
+        'Kevin', 'Dorothy', 'Brian', 'Carol', 'Edward', 'Amanda', 'Ronald', 'Melissa'
+      ];
+
+      const lastNames = [
+        'Smith (fake)', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+        'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
+        'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson',
+        'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Young',
+        'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Peterson', 'Phillips', 'Campbell',
+        'Parker', 'Evans', 'Edwards', 'Collins', 'Reyes', 'Stewart', 'Morris', 'Morales'
+      ];
+
+      const getRandomName = () => {
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        return `${firstName} ${lastName}`;
+      };
+
+      for (let i = result.length; i < 6; i++) {
+        const fakeEntry: LeaderboardEntry = {
+          quiz_mode_id: modeId,
+          position: i + 1,
+          user_id: 0, // Fake user ID
+          correct_answers: 0,
+          total_questions: 0,
+          streak: 0,
+          achieved_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Random date in last 30 days
+          username: getRandomName()
+        };
+        result.push(fakeEntry);
+      }
+    }
+
     return result;
   }
 }
