@@ -1,9 +1,9 @@
 .leaderboards-container {
   max-width: 1400px;
   margin: 2rem auto;
-  padding: 0 1rem 2rem 1rem;
+  padding: 0 1rem 5rem 1rem;
   overflow-y: auto;
-  max-height: calc(100vh - 100px);
+  max-height: 90vh;
 }
 
 .leaderboards-container h1 {
