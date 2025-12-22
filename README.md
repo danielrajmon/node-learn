@@ -26,6 +26,7 @@ Additional phases will expand the system with persistence, authentication, user 
 ## Achievement ideas
 - In a multiple choice test guess everything wrong
 - In a quiz mess up all answers
+- Answer all quiz questions correctly (call it Perfect 5/7)
 
 ## Questions to add
 - Angular service vs controller vs module
