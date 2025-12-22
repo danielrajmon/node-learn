@@ -20,7 +20,7 @@
           <div class="column date">Achieved</div>
         </div>
         
-        <div *ngFor="let entry of leaderboardMode.entries" class="leaderboard-row" [class.top-3]="entry.position <= 3">
+        <div *ngFor="let entry of leaderboardMode.entries" class="leaderboard-row" [class.top-3]="entry.position <= 3" [class.real-user]="isRealUser(entry)">
           <div class="column position">
             <span class="medal">{{ getMedalIcon(entry.position) }}</span>
             {{ entry.position }}

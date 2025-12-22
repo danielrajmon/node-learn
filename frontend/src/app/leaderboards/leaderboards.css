@@ -107,6 +107,14 @@
   background-color: #e6f2ff;
 }
 
+.leaderboard-row.real-user {
+  font-weight: bold;
+}
+
+.leaderboard-row.real-user .column.username {
+  font-weight: 700;
+}
+
 .leaderboard-row:last-child {
   border-bottom: none;
 }

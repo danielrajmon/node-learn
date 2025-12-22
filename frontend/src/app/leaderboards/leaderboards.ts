@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@
 import { CommonModule } from '@angular/common';
 import { LeaderboardService, LeaderboardEntry } from '../services/leaderboard.service';
 import { QuizService } from '../services/quiz.service';
+import { AuthService } from '../services/auth.service';
 
 interface QuizMode {
   id: string;
@@ -29,14 +30,21 @@ export class LeaderboardsComponent implements OnInit {
   quizModes: QuizMode[] = [];
   leaderboards: LeaderboardMode[] = [];
   modesLoading = true;
+  currentUserId: number | null = null;
 
   constructor(
     private leaderboardService: LeaderboardService,
     private quizService: QuizService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.currentUserId = user.id;
+    }
+
     this.quizService.loadQuizModes().subscribe({
       next: (modes) => {
         // Filter out 'missed' mode as it doesn't make sense for leaderboards
@@ -92,6 +100,11 @@ export class LeaderboardsComponent implements OnInit {
       default:
         return '•';
     }
+  }
+
+  isRealUser(entry: LeaderboardEntry): boolean {
+    // Show bold for real users (user_id > 0) or current user
+    return entry.user_id > 0 || entry.user_id === this.currentUserId;
   }
 
   getLeaderboardModes(): LeaderboardMode[] {
