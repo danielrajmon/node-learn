@@ -16,6 +16,7 @@ Additional phases will expand the system with persistence, authentication, user 
 - Create a valid home page text
 
 ## Ideas
+- Export / Import questions
 - Database altering functionalities (creating, truncating tables, migrating data, remove gaps in IDs)
 - Make question codes foldable
 - Convert monolith modules to Microservices
