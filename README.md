@@ -12,7 +12,6 @@ Additional phases will expand the system with persistence, authentication, user 
 
 ## TODOs
 - UI/UX fixes (desktop vs. tablet vs. mobile)
-- Fix same answers offered for single or multi choice questions
 - Create a valid home page text
 
 ## Ideas
