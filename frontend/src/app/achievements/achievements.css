@@ -164,7 +164,7 @@
 
 @media (min-width: 601px) and (max-width: 1024px) {
   .achievements-content {
-    padding: 2rem 20px 12rem 20px;
+    padding: 2rem 20px 6rem 20px;
   }
 
   .achievements-content h1 {
