@@ -1,10 +1,18 @@
 #!/bin/bash
 
 # Script to initialize PostgreSQL database in Kubernetes
-# This script:
-# 1. Opens a port-forward to the postgres pod
-# 2. Applies the DDL and DML scripts
-# 3. Closes the port-forward
+# Usage: ./init-db.sh <filename>
+# Example: ./init-db.sh ddl.sql
+#          ./init-db.sh dml-quizzes.sql
+
+if [ -z "$1" ]; then
+    echo "❌ Usage: $0 <filename>"
+    echo "   Example: $0 ddl.sql"
+    echo "   Example: $0 dml-quizzes.sql"
+    exit 1
+fi
+
+FILENAME="$1"
 
 set -e
 
@@ -38,14 +46,18 @@ POSTGRES_PASSWORD=$(kubectl get secret postgres-secret -n $NAMESPACE -o jsonpath
 POSTGRES_DB=$(kubectl get secret postgres-secret -n $NAMESPACE -o jsonpath='{.data.POSTGRES_DB}' | base64 -d)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DDL_FILE="$SCRIPT_DIR/../backend/src/migrations/ddl.sql"
-DML_FILE="$SCRIPT_DIR/../backend/src/migrations/dml.sql"
+FILE_PATH="$SCRIPT_DIR/../backend/src/migrations/$FILENAME"
 
-echo "📝 Applying DDL script..."
-if kubectl exec -n $NAMESPACE $POD_NAME -i -- psql -U $POSTGRES_USER -d $POSTGRES_DB < "$DDL_FILE"; then
-    echo "✅ DDL script applied successfully"
+if [ ! -f "$FILE_PATH" ]; then
+    echo "❌ File not found: $FILE_PATH"
+    exit 1
+fi
+
+echo "📝 Applying $FILENAME..."
+if kubectl exec -n $NAMESPACE $POD_NAME -i -- psql -U $POSTGRES_USER -d $POSTGRES_DB < "$FILE_PATH"; then
+    echo "✅ $FILENAME applied successfully"
 else
-    echo "❌ Failed to apply DDL script"
+    echo "❌ Failed to apply $FILENAME"
     exit 1
 fi
 

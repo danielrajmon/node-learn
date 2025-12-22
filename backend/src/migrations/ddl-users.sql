@@ -1,8 +1,6 @@
--- Auth Database Schema
--- Simple user authentication table
+DROP TABLE IF EXISTS users;
 
--- Users table
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     google_id VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,

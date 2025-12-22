@@ -1,6 +1,3 @@
--- User Achievements Table
--- Represents the many-to-many relationship between users and achievements
-
 DROP TABLE IF EXISTS user_achievements;
 
 CREATE TABLE user_achievements (

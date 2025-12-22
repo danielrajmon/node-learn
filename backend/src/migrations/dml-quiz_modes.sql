@@ -1,4 +1,5 @@
--- Insert quiz modes based on the frontend quiz modes
+DELETE FROM quiz_modes;
+
 INSERT INTO quiz_modes (id, name, description, filters) VALUES
 (1, 'Single Choice', 'Single choice questions', '{"questionType": "single_choice"}'),
 (2, 'Multiple Choice', 'Multiple choice questions', '{"questionType": "multiple_choice"}'),

@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS achievements;
+
 CREATE TABLE achievements (
   id INTEGER PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
