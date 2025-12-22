@@ -383,7 +383,7 @@
 
 .question-text {
   color: #2c3e50;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   line-height: 1.6;
   margin-bottom: 1rem;
   transition: color 0.3s;
@@ -453,6 +453,13 @@
   background-color: #fafafa;
   border-radius: 4px;
   border-left: 4px solid #3498db;
+}
+
+.answer-label {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .answer-section h4 {

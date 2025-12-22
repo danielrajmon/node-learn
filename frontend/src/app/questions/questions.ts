@@ -71,18 +71,40 @@ export class Questions implements OnInit {
         };
         this.allQuestions = [cleanedQuestion];
         this.questions = [cleanedQuestion];
-        this.loading = false;
-        this.cdr.detectChanges();
-        // Apply syntax highlighting
-        setTimeout(() => {
-          document.querySelectorAll('.question-text pre').forEach((block) => {
-            if (!block.classList.contains('hljs')) {
-              block.classList.add('hljs');
-              block.classList.add('language-typescript');
-              hljs.highlightElement(block as HTMLElement);
-            }
-          });
-        }, 0);
+        // Show answer by default in single question mode
+        this.visibleAnswers.add(questionId);
+        
+        // Fetch the answer
+        this.questionService.getAnswer(questionId).subscribe({
+          next: (result) => {
+            const cleanedAnswer = result.answer.replace(/&nbsp;/g, ' ');
+            this.answers.set(questionId, cleanedAnswer);
+            this.loading = false;
+            this.cdr.detectChanges();
+            // Apply syntax highlighting
+            setTimeout(() => {
+              document.querySelectorAll('.question-text pre').forEach((block) => {
+                if (!block.classList.contains('hljs')) {
+                  block.classList.add('hljs');
+                  block.classList.add('language-typescript');
+                  hljs.highlightElement(block as HTMLElement);
+                }
+              });
+              document.querySelectorAll('.answer-text pre').forEach((block) => {
+                if (!block.classList.contains('hljs')) {
+                  block.classList.add('hljs');
+                  block.classList.add('language-typescript');
+                  hljs.highlightElement(block as HTMLElement);
+                }
+              });
+            }, 0);
+          },
+          error: (err) => {
+            this.loading = false;
+            this.cdr.detectChanges();
+            console.error('Error loading answer:', err);
+          }
+        });
       },
       error: (err: any) => {
         this.error = 'Failed to load question.';

@@ -66,6 +66,7 @@
             <span class="btn-text-full">Open Question</span><span class="btn-text-short">Open</span>
           </button>
           <button 
+            *ngIf="!singleQuestionMode"
             class="show-answer-btn" 
             (click)="toggleAnswer(question.id)"
             [class.active]="visibleAnswers.has(question.id)">
@@ -73,6 +74,7 @@
           </button>
         </div>
         
+        <div *ngIf="visibleAnswers.has(question.id) && singleQuestionMode" class="answer-label">Answer</div>
         <div class="answer-section" *ngIf="visibleAnswers.has(question.id)">
           <div class="answer-text" [innerHTML]="answers.get(question.id)"></div>
         </div>
