@@ -13,6 +13,7 @@ Additional phases will expand the system with persistence, authentication, user 
 ## TODOs
 - UI/UX fixes (desktop vs. tablet vs. mobile)
 - Create a valid home page text
+- When a type question was correct, don't show correct answer again
 
 ## Ideas
 - Export / Import questions
