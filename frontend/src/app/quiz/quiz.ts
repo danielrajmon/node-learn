@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { QuestionService, QuestionFilters } from '../services/question';
 import { AuthService, User } from '../services/auth.service';
 import { QuizStateService } from '../services/quiz-state.service';
+import { QuizService } from '../services/quiz.service';
 import { ConfirmationDialogComponent } from '../components/confirmation-dialog';
 import { CanComponentDeactivate } from '../guards/unsaved-changes.guard';
 import { Question, Choice } from '../models/question.model';
@@ -35,18 +36,7 @@ interface QuizMode {
 })
 export class Quiz implements OnInit, OnDestroy {
   // Mode selection
-  quizModes: QuizMode[] = [
-    { id: 'random', name: 'Random', description: 'Random questions', filters: {} },
-    { id: 'code', name: 'Code-Based', description: 'Code questions', filters: { practical: true } },
-    { id: 'theory', name: 'Theoretical', description: 'Theoretical questions', filters: { practical: false } },
-    { id: 'easy', name: 'Easy', description: 'Easy difficulty', filters: { difficulty: 'easy' } },
-    { id: 'medium', name: 'Medium', description: 'Medium difficulty', filters: { difficulty: 'medium' } },
-    { id: 'hard', name: 'Hard', description: 'Hard difficulty', filters: { difficulty: 'hard' } },
-    { id: 'single', name: 'Single Choice', description: 'Single choice questions', filters: { questionType: 'single_choice' } },
-    { id: 'multi', name: 'Multiple Choice', description: 'Multiple choice questions', filters: { questionType: 'multiple_choice' } },
-    { id: 'text', name: 'Text Input', description: 'Text input questions', filters: { questionType: 'text_input' } },
-    { id: 'missed', name: 'Missed', description: 'Questions you got wrong', filters: {} },
-  ];
+  quizModes: QuizMode[] = [];
   selectedMode: QuizMode | null = null;
   showModeSelection = true;
   showLeaderboardToggle = true;
@@ -85,6 +75,7 @@ export class Quiz implements OnInit, OnDestroy {
     private questionService: QuestionService,
     private authService: AuthService,
     private quizStateService: QuizStateService,
+    private quizService: QuizService,
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
@@ -98,6 +89,18 @@ export class Quiz implements OnInit, OnDestroy {
   ngOnInit() {
     this.authService.user$.subscribe(user => {
       this.currentUser = user;
+    });
+
+    // Load quiz modes from database
+    this.quizService.loadQuizModes().subscribe({
+      next: (modes) => {
+        this.quizModes = modes;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading quiz modes:', err);
+        this.error = 'Failed to load quiz modes.';
+      }
     });
     
     // Subscribe to reset signal from header Quiz click
