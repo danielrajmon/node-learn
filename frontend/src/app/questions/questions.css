@@ -228,6 +228,10 @@
 }
 
 @media (min-width: 601px) and (max-width: 768px) {
+  .questions-container {
+    padding: 0 2rem 6rem 2rem;
+  }
+
   .btn-text-short {
     display: none;
   }
