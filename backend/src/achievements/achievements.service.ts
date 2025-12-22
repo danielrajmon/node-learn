@@ -714,17 +714,21 @@ export class AchievementsService {
             label: `${hardCorrectCount} / ${totalHardCount} hard questions`,
           };
         }
-      case 50: // NodeJS Ninja - 3+ major masteries
+      case 50: // NodeJS Ninja - Unlock all achievements except this one
         {
-          const majorMasteries = await this.dataSource.query(
-            `SELECT COUNT(*) as count FROM user_achievements WHERE user_id = $1 AND achievement_id IN (4, 10, 20, 15, 16)`,
+          const userAchievements = await this.dataSource.query(
+            `SELECT COUNT(*) as count FROM user_achievements WHERE user_id = $1`,
             [userId],
           );
-          const count = parseInt(majorMasteries[0]?.count, 10) || 0;
+          const totalAchievements = await this.dataSource.query(
+            `SELECT COUNT(*) as count FROM achievements`,
+          );
+          const count = parseInt(userAchievements[0]?.count, 10) || 0;
+          const total = Math.max(0, (parseInt(totalAchievements[0]?.count, 10) || 0) - 1);
           return {
-            current: Math.min(count, 3),
-            total: 3,
-            label: `${count} / 3 major masteries`,
+            current: Math.min(count, total),
+            total: total,
+            label: `${count} / ${total} achievements`,
           };
         }
       default:
