@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Full-stack quiz application with NestJS backend and Angular frontend",
   "scripts": {
-    "start": "docker-compose up postgres -d && npm run start:backend & npm run start:frontend",
+    "start": "npm run start:db && (npm run start:backend & npm run start:frontend)",
     "start:backend": "cd backend && npm run start:dev",
     "start:frontend": "cd frontend && npm start",
     "start:db": "docker-compose up postgres -d",
