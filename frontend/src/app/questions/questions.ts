@@ -254,7 +254,7 @@ export class Questions implements OnInit {
     }
   }
 
-  backToAllQuestions() {
+  backToQuestions() {
     if (this.fromStats) {
       this.router.navigate(['/stats']);
     } else {
