@@ -1,7 +1,7 @@
 .leaderboards-container {
   max-width: 1400px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .leaderboards-container h1 {
@@ -181,14 +181,18 @@
   }
 
   .leaderboards-container {
-    padding: 0 2rem 3rem 2rem;
+    padding: 2rem;
   }
 }
 
 @media (max-width: 600px) {
+  .leaderboards-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
   .leaderboards-container {
-    padding: 0.5rem 0.5rem 1rem 0.5rem;
-    margin: 1rem auto;
+    padding: 0.5rem;
   }
 
   .leaderboards-container h1 {
@@ -197,7 +201,7 @@
   }
 
   .leaderboard-card {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .leaderboard-card h2 {
@@ -210,9 +214,9 @@
 
   .leaderboard-header,
   .leaderboard-row {
-    grid-template-columns: 45px 1fr 50px 65px 55px 100px;
+    grid-template-columns: 35px 1fr 40px 70px 40px;
     gap: 0.4rem;
-    padding: 0.6rem 0.5rem;
+    padding: 0.5rem;
     font-size: 0.8rem;
   }
 

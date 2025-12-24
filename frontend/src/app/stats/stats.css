@@ -222,7 +222,7 @@ strong.accuracy { color: #3498db; }
 
 @media (max-width: 600px) {
   .stats-content {
-    padding: 1rem 10px 0 10px;
+    padding: 0.5rem;
   }
 
   .stats-grid {

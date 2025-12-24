@@ -100,14 +100,13 @@
   margin-top: 0;
 }
 
-/* Tablet responsiveness */
 @media (min-width: 601px) and (max-width: 1024px) {
   .admin-content {
-    padding: 1rem;
+    padding: 2rem;
   }
 
   .question-form {
-    padding: 1rem;
+    padding: 2rem;
   }
 
   .form-layout {
@@ -122,14 +121,6 @@
 @media (max-width: 1024px) {
   .form-layout {
     grid-template-columns: 1fr;
-  }
-
-  .admin-content {
-    padding: 1.5rem;
-  }
-
-  .question-form {
-    padding: 1.5rem;
   }
 
   .admin-content h1 {
@@ -247,7 +238,6 @@
   background: #5a6268;
 }
 
-/* Questions List Table */
 .questions-list {
   margin-bottom: 1.75rem;
 }
@@ -396,8 +386,15 @@
   font-weight: 500;
 }
 
-/* Responsive table - card layout on mobile */
 @media (max-width: 600px) {
+  .admin-content {
+    padding: 0.5rem;
+  }
+
+  .question-form {
+    padding: 0.5rem;
+  }
+
   .table-container {
     background: transparent;
     box-shadow: none;
@@ -416,7 +413,7 @@
     width: 100%;
   }
   .questions-table tr {
-    margin-bottom: 1rem;
+    margin: 0rem;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     overflow: visible;
@@ -426,7 +423,7 @@
     grid-template-rows: auto auto;
     align-items: center;
     gap: 1rem;
-    padding: 0.75rem;
+    padding: 0.5rem;
   }
 
   .questions-table td {
@@ -467,7 +464,7 @@
     grid-column: 1 / -1;
     grid-row: 2;
     width: 100%;
-    padding: 0.75rem 0;
+    padding: 0.5rem;
     text-align: left;
   }
 
@@ -526,7 +523,7 @@
   .questions-table td::before {
     content: attr(data-label);
     position: absolute;
-    left: 1rem;
+    left: 0.5rem;
     font-weight: 600;
     color: #495057;
     text-align: left;
@@ -572,7 +569,6 @@
   color: #6c757d;
 }
 
-/* Choices Section */
 .choices-section {
   padding: 1.5rem;
   background: #f8f9fa;

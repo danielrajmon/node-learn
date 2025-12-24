@@ -25,7 +25,6 @@
 .questions-container h2 {
   color: #2c3e50;
   margin: 0 0 2rem 0;
-  font-size: 1.2rem;
   font-weight: 600;
   min-height: 1.75rem;
 }
@@ -197,7 +196,7 @@
 
   .question-text {
     margin-bottom: 0.5rem;
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   .question-actions {
@@ -379,7 +378,7 @@
 
 .question-text {
   color: #2c3e50;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 1rem;
   transition: color 0.3s;
