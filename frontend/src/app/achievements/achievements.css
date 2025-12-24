@@ -1,13 +1,12 @@
 .achievements-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
 }
 
 .achievements-content {
   flex: 1;
   overflow-y: auto;
-  padding: 2rem 20px 12rem 20px;
+  padding: 2rem 20px 2rem 20px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
@@ -164,8 +163,8 @@
 
 @media (min-width: 601px) and (max-width: 1024px) {
   .achievements-content {
-    padding: 2rem 20px 6rem 20px;
-  }
+    padding: 2rem;
+  }}
 
   .achievements-content h1 {
     margin: 0 0 1.5rem 0;
@@ -182,7 +181,7 @@
 
 @media (max-width: 600px) {
   .achievements-content {
-    padding: 0.5rem 10px 7rem 10px;
+    padding: 0.5rem 10px 0 10px;
   }
 
   .achievements-content h1 {
