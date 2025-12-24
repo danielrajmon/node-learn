@@ -86,7 +86,6 @@
   text-align: center;
 }
 
-/* Leaderboard Toggle Section */
 .leaderboard-toggle-section {
   display: flex;
   justify-content: center;
@@ -142,7 +141,6 @@
   border: 2px solid #e74c3c;
 }
 
-/* Leaderboard Streak Display */
 .leaderboard-streak {
   position: fixed;
   top: 1rem;
@@ -157,7 +155,6 @@
   z-index: 10;
 }
 
-/* Achievement Notification */
 .achievement-notification {
   position: absolute;
   top: 20px;
@@ -840,8 +837,14 @@
     padding: 1rem;
   }
 
+  .mode-selection h2 {
+    font-size: 1.3rem;
+    margin: 0.5rem;
+
+  }
+
   .card {
-    padding: 1.5rem;
+    padding: 0.8rem 0.5rem;
     width: 100%;
     box-sizing: border-box;
   }
@@ -850,17 +853,26 @@
   .skipped-answers-section {
     width: 100%;
     box-sizing: border-box;
+    margin: 0 0 1rem 0;
   }
 
   .quiz-header {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    margin-top: -0.5rem;
-    margin-bottom: 1.5rem;
+    align-items: center;
+    margin: 0rem;
+    padding: 0rem;
+  }
+
+  .difficulty,
+  .selected-mode,
+  .type-badge {
+    display: none;
   }
 
   .quiz-question {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin: 0rem;
   }
 
   .button-group {
@@ -871,5 +883,9 @@
 
   .btn {
     width: 100%;
+  }
+
+  .progress-counter {
+    margin: 1rem 0 1rem 0;
   }
 }
