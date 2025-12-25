@@ -16,7 +16,9 @@ Additional phases will expand the system with persistence, authentication, user 
 - When a type question was correct, don't show correct answer again
 
 ## Ideas
-- Export / Import questions
+- Move user administration to a separate page
+- Don't show Admin page in header if user is not admin
+- Database export/import page
 - Database altering functionalities (creating, truncating tables, migrating data, remove gaps in IDs)
 - Make question codes foldable
 - Convert monolith modules to Microservices
