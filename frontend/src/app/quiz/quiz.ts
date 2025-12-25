@@ -459,6 +459,12 @@ export class Quiz implements OnInit, OnDestroy {
                 this.showAchievementNotification = true;
                 this.cdr.detectChanges();
                 
+                // Scroll to top before showing achievements
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) {
+                  mainContent.scrollTop = 0;
+                }
+                
                 // Show achievements one-by-one with 4 sec delay
                 let index = 0;
                 const showNextAchievement = () => {

@@ -88,6 +88,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
     }, 100);
   }
 
+  private scrollToTop(): void {
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      mainContent.scrollTop = 0;
+    }
+  }
+
   addTooltipsToQuillToolbar(): void {
     const tooltips: { [key: string]: string } = {
       '.ql-bold': 'Bold',
@@ -148,6 +155,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
       this.adminService.updateQuestion(this.editingQuestionId, this.question).subscribe({
         next: () => {
           this.successMessage = `Question updated successfully!`;
+          this.scrollToTop();
           this.resetForm();
           this.loadQuestions();
         },
@@ -155,7 +163,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
           const message = error?.error?.message || error?.message || 'Unknown error';
           this.errorMessage = message;
           this.cdr.detectChanges();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.scrollToTop();
           setTimeout(() => {
             this.errorMessage = '';
           }, 5000);
@@ -166,6 +174,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
       this.adminService.createQuestion(this.question).subscribe({
         next: (createdQuestion: any) => {
           this.successMessage = `Question created successfully! ID: ${createdQuestion.id}`;
+          this.scrollToTop();
           this.resetForm();
           this.loadQuestions();
         },
@@ -173,7 +182,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
           const message = error?.error?.message || error?.message || 'Unknown error';
           this.errorMessage = message;
           this.cdr.detectChanges();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.scrollToTop();
           setTimeout(() => {
             this.errorMessage = '';
           }, 5000);
@@ -186,11 +195,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.isEditMode = true;
     this.editingQuestionId = q.id;
     
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) {
-      mainContent.scrollTop = 0;
-    }
-    
+    this.scrollToTop();
+   
     // If no choices exist for choice-based questions, initialize them
     let choices = q.choices && q.choices.length > 0 ? [...q.choices] : [];
     if (choices.length === 0) {
@@ -217,14 +223,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
     };
     this.successMessage = '';
     this.errorMessage = '';
-    
-    // Scroll the admin-content container to top
-    setTimeout(() => {
-      const adminContent = document.querySelector('.admin-content');
-      if (adminContent) {
-        adminContent.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 0);
   }
 
   deleteQuestion(id: number): void {
@@ -241,7 +239,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
         const message = error?.error?.message || error?.message || 'Unknown error';
         this.errorMessage = message;
         this.cdr.detectChanges();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.scrollToTop();
         setTimeout(() => {
           this.errorMessage = '';
         }, 5000);
