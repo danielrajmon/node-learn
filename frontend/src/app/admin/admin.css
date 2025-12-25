@@ -619,6 +619,10 @@
     grid-template-columns: 1fr;
   }
 
+  .questions-table thead {
+    display: none;
+  }
+
   .admin-content h1 {
     font-size: 1.25rem;
   }
