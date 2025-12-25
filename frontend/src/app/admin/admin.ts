@@ -186,6 +186,11 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.isEditMode = true;
     this.editingQuestionId = q.id;
     
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      mainContent.scrollTop = 0;
+    }
+    
     // If no choices exist for choice-based questions, initialize them
     let choices = q.choices && q.choices.length > 0 ? [...q.choices] : [];
     if (choices.length === 0) {
