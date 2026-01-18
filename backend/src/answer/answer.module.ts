@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AnswerController } from './answer.controller';
 import { AnswerService } from './answer.service';
-import { QuestionModule } from '../question/question.module';
+import { QuestionEntity } from '../shared/entities/question.entity';
 import { AchievementsModule } from '../achievements/achievements.module';
 
 @Module({
-  imports: [QuestionModule, TypeOrmModule, AchievementsModule],
+  imports: [TypeOrmModule.forFeature([QuestionEntity]), AchievementsModule],
   controllers: [AnswerController],
   providers: [AnswerService],
 })

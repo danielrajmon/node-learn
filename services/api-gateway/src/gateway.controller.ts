@@ -72,9 +72,8 @@ export class GatewayController {
     }
 
     // Question Service - read-only endpoints (GET /questions)
-    // NOTE: Until question-service is extracted, route to monolith
     if (path.startsWith('/api/questions') && method === 'GET') {
-      return 'monolith'; // TODO: change to 'question-service' once extracted
+      return 'question-service';
     }
 
     // Stats/Answer Service - answer submission, stats

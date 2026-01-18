@@ -102,10 +102,35 @@ services:
       retries: 3
       start_period: 40s
 
+  # ====== Question Microservice ======
+  # Handles question retrieval - read-only endpoints
+  # Status: Phase 3 - Extracted from monolith, ready for deployment
+  question-service:
+    container_name: node-learn-question-service
+    build:
+      context: ./services/question-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - SERVICE_ID=question-service
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/docs", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   # ====== API Gateway ======
   # Strangler proxy pattern: routes requests to microservices or falls back to monolith
   # /api/auth/* → auth-service:3001
-  # /api/questions GET → question-service (future)
+  # /api/questions GET → question-service:3002 ✅ Phase 3
   # /api/admin/* → monolith:3000
   # Everything else → monolith:3000 (gradual migration)
   api-gateway:
@@ -131,6 +156,7 @@ services:
     depends_on:
       - backend
       - auth-service
+      - question-service
       - nats
     restart: unless-stopped
     healthcheck:

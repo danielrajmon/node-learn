@@ -48,7 +48,13 @@ export class GatewayService {
       throw new Error(`Unknown service target: ${target}`);
     }
 
-    const url = `${serviceUrl}${req.path}`;
+    // For microservices, strip the /api prefix from the path
+    let path = req.path;
+    if (target !== 'monolith' && path.startsWith('/api')) {
+      path = path.slice(4); // Remove '/api'
+    }
+
+    const url = `${serviceUrl}${path}`;
     const query = req.url.split('?')[1];
     const fullUrl = query ? `${url}?${query}` : url;
 

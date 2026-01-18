@@ -5,9 +5,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { QuestionModule } from './question/question.module';
+import { JwtStrategy } from './shared/strategies/jwt.strategy';
 import { AnswerModule } from './answer/answer.module';
 import { StatsModule } from './stats/stats.module';
 import { AdminModule } from './admin/admin.module';
@@ -15,8 +17,8 @@ import { AchievementsModule } from './achievements/achievements.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { QuizModule } from './quiz/quiz.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
-import { QuestionEntity } from './question/entities/question.entity';
-import { ChoiceEntity } from './question/entities/choice.entity';
+import { QuestionEntity } from './shared/entities/question.entity';
+import { ChoiceEntity } from './shared/entities/choice.entity';
 import { User } from './shared/entities/user.entity';
 
 @Module({
@@ -25,6 +27,11 @@ import { User } from './shared/entities/user.entity';
       isGlobal: true,
     }),
     ScheduleModule.forRoot(),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'your-secret-key',
+      signOptions: { expiresIn: '7d' },
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
@@ -35,7 +42,6 @@ import { User } from './shared/entities/user.entity';
       entities: [QuestionEntity, ChoiceEntity, User],
       synchronize: false, // Don't auto-create tables, we already have them
     }),
-    QuestionModule,
     AnswerModule,
     StatsModule,
     AchievementsModule,
@@ -45,6 +51,6 @@ import { User } from './shared/entities/user.entity';
     LeaderboardModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}

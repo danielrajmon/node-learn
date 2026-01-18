@@ -11,7 +11,7 @@ class OptionalAuthGuard extends AuthGuard('jwt') {
 import { AdminService } from './admin.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
-import { QuestionDto } from '../question/dto/question.dto';
+import { QuestionDto } from './dto/question.dto';
 
 @ApiTags('admin')
 @Controller('admin')

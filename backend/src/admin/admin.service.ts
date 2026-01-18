@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { QuestionEntity } from '../question/entities/question.entity';
-import { ChoiceEntity } from '../question/entities/choice.entity';
+import { QuestionEntity } from '../shared/entities/question.entity';
+import { ChoiceEntity } from '../shared/entities/choice.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
-import { QuestionService } from '../question/question.service';
-import { QuestionFilters } from '../question/interfaces/question.interface';
-import { QuestionDto } from '../question/dto/question.dto';
+import { QuestionDto, QuestionFilters } from './dto/question.dto';
 import { User } from '../shared/entities/user.entity';
 
 @Injectable()
@@ -18,7 +16,6 @@ export class AdminService {
     private choiceRepository: Repository<ChoiceEntity>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private questionService: QuestionService,
   ) {}
 
   private entityToDto(entity: QuestionEntity): QuestionDto {

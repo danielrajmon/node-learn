@@ -32,5 +32,5 @@ export class ChoiceDto {
   })
   @IsOptional()
   @IsString()
-  explanation?: string;
+  explanation?: string | null;
 }

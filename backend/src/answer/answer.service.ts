@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { QuestionService } from '../question/question.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { QuestionEntity } from '../shared/entities/question.entity';
 import { AchievementsService } from '../achievements/achievements.service';
 
 @Injectable()
 export class AnswerService {
   constructor(
-    private readonly questionService: QuestionService,
+    @InjectRepository(QuestionEntity)
+    private questionRepository: Repository<QuestionEntity>,
     private readonly achievementsService: AchievementsService,
   ) {}
 
   async getAnswer(questionId: number): Promise<{ questionId: number; answer: string; choices?: any[]; matchKeywords?: string[] } | null> {
-    const question = await this.questionService.findOne(questionId);
+    const question = await this.questionRepository.findOne({
+      where: { id: questionId },
+      relations: ['choices'],
+    });
 
     if (!question) {
       return null;

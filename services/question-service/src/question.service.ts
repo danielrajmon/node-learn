@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -10,6 +10,8 @@ import { QuestionEntity } from './entities/question.entity';
 
 @Injectable()
 export class QuestionService {
+  private readonly logger = new Logger('QuestionService');
+
   constructor(
     @InjectRepository(QuestionEntity)
     private questionRepository: Repository<QuestionEntity>,
