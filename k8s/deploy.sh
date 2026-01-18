@@ -9,6 +9,7 @@ NC='\033[0m' # No Color
 # Configuration
 REGISTRY="danielrajmon"  # Docker Hub username
 BACKEND_IMAGE="${REGISTRY}/node-learn-backend:latest"
+AUTH_SERVICE_IMAGE="${REGISTRY}/node-learn-auth-service:latest"
 FRONTEND_IMAGE="${REGISTRY}/node-learn-frontend:latest"
 IMPORT_QUESTIONS=true  # Set to false to skip import
 
@@ -72,6 +73,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "Building auth-service image for amd64..."
+docker buildx build --platform linux/amd64 -t node-learn-auth-service:latest ./services/auth-service
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build auth-service image${NC}"
+    exit 1
+fi
+
 echo -e "${GREEN}✓ Images built successfully${NC}"
 echo ""
 
@@ -84,6 +92,10 @@ docker push ${BACKEND_IMAGE}
 echo "Tagging and pushing frontend image..."
 docker tag node-learn-frontend:latest ${FRONTEND_IMAGE}
 docker push ${FRONTEND_IMAGE}
+
+echo "Tagging and pushing auth-service image..."
+docker tag node-learn-auth-service:latest ${AUTH_SERVICE_IMAGE}
+docker push ${AUTH_SERVICE_IMAGE}
 
 echo -e "${GREEN}✓ Images pushed successfully${NC}"
 echo ""
@@ -129,8 +141,18 @@ kubectl wait --for=condition=ready pod -l app=backend -n node-learn --timeout=12
 echo -e "${GREEN}✓ Backend deployed${NC}"
 echo ""
 
-# Step 7: Deploy frontend
-echo -e "${YELLOW}Step 8: Deploying frontend...${NC}"
+# Step 8: Deploy auth-service
+echo -e "${YELLOW}Step 8: Deploying auth-service...${NC}"
+kubectl apply -f k8s/auth-deployment.yaml
+echo "Forcing auth-service to restart and pull latest image..."
+kubectl rollout restart deployment/auth-service -n node-learn
+echo "Waiting for auth-service to be ready..."
+kubectl wait --for=condition=ready pod -l app=auth-service -n node-learn --timeout=120s
+echo -e "${GREEN}✓ Auth-service deployed${NC}"
+echo ""
+
+# Step 9: Deploy frontend
+echo -e "${YELLOW}Step 9: Deploying frontend...${NC}"
 kubectl apply -f k8s/frontend-deployment.yaml
 echo "Forcing frontend to restart and pull latest image..."
 kubectl rollout restart deployment/frontend -n node-learn
@@ -140,21 +162,21 @@ echo -e "${GREEN}✓ Frontend deployed${NC}"
 echo ""
 
 # Step 8: Deploy ingress
-echo -e "${YELLOW}Step 9: Deploying ingress...${NC}"
+echo -e "${YELLOW}Step 10: Deploying ingress...${NC}"
 kubectl apply -f k8s/ingress.yaml
 echo -e "${GREEN}✓ Ingress deployed${NC}"
 echo ""
 
 # Step 9: Import questions into the database
 if [ "$IMPORT_QUESTIONS" = true ]; then
-    echo -e "${YELLOW}Step 10: Importing questions into the database...${NC}"
+    echo -e "${YELLOW}Step 11: Importing questions into the database...${NC}"
     # Delete existing job to force re-import
     kubectl delete job import-questions -n node-learn --ignore-not-found=true
     kubectl apply -f k8s/import-questions.yaml
     kubectl wait --for=condition=complete job/import-questions -n node-learn --timeout=60s
     echo -e "${GREEN}✓ Questions imported${NC}"
 else
-    echo -e "${YELLOW}Step 10: Skipping questions import.${NC}"
+    echo -e "${YELLOW}Step 11: Skipping questions import.${NC}"
 fi
 
 # Show deployment status
