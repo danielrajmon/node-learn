@@ -1,6 +1,7 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { NatsService } from './nats/nats.service';
 import { User } from './entities/user.entity';
 
 export interface JwtPayload {
@@ -11,14 +12,25 @@ export interface JwtPayload {
 }
 
 @Injectable()
-export class AuthService implements OnModuleInit {
+export class AuthService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
+    private natsService: NatsService,
   ) {}
 
-  onModuleInit() {
-    // JWT_SECRET configured
+  async onModuleInit() {
+    // Connect to NATS on service startup
+    try {
+      await this.natsService.connect(process.env.NATS_URL || 'nats://localhost:4222');
+    } catch (error) {
+      console.error('Failed to connect to NATS:', error);
+    }
+  }
+
+  async onModuleDestroy() {
+    // Disconnect from NATS on service shutdown
+    await this.natsService.disconnect();
   }
 
   getHealth() {
@@ -37,7 +49,7 @@ export class AuthService implements OnModuleInit {
   }): Promise<User> {
     // TODO: Implement database lookup/creation in Phase 2
     // For now, return user object
-    return {
+    const user = {
       id: 1,
       googleId: profile.googleId,
       email: profile.email,
@@ -47,6 +59,16 @@ export class AuthService implements OnModuleInit {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
+
+    // Publish user.login event to NATS
+    await this.natsService.publish('user.login', {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      provider: 'google',
+    });
+
+    return user;
   }
 
   async login(user: User) {
@@ -58,6 +80,13 @@ export class AuthService implements OnModuleInit {
     };
 
     const access_token = this.jwtService.sign(payload);
+
+    // Publish user.login event
+    await this.natsService.publish('user.login', {
+      userId: user.id,
+      email: user.email,
+      timestamp: new Date(),
+    });
 
     return {
       access_token,
