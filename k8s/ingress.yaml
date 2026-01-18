@@ -5,6 +5,7 @@ metadata:
   namespace: node-learn
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: node-learn-strip-api-auth@kubernetescrd
 spec:
   tls:
   - hosts:
@@ -23,7 +24,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: auth-service
+            name: auth
             port:
               number: 3001
       - path: /api
@@ -40,3 +41,13 @@ spec:
             name: frontend
             port:
               number: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-api-auth
+  namespace: node-learn
+spec:
+  stripPrefix:
+    prefixes:
+      - /api

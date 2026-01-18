@@ -29,7 +29,47 @@ fi
 echo ""
 
 # Test 2: Service connectivity (via port-forward)
-echo -e "${YELLOW}Test 2: Backend API Connectivity${NC}"
+echo -e "${YELLOW}Test 2: Auth Service Connectivity${NC}"
+echo "=================================="
+# Start port-forward in background
+kubectl -n node-learn port-forward svc/auth 3001:3001 >/dev/null 2>&1 &
+PF_AUTH=$!
+sleep 2
+
+# Test health endpoint
+AUTH_HEALTH=$(curl -s http://localhost:3001/auth/health 2>/dev/null)
+if [ -n "$AUTH_HEALTH" ]; then
+    echo -e "${GREEN}✓ Auth health endpoint responding${NC}"
+else
+    echo -e "${RED}✗ Auth health endpoint not responding${NC}"
+fi
+
+kill $PF_AUTH 2>/dev/null
+wait $PF_AUTH 2>/dev/null
+echo ""
+
+# Test 2.5: Questions Service Connectivity
+echo -e "${YELLOW}Test 2.5: Questions Service Connectivity${NC}"
+echo "=================================="
+kubectl -n node-learn port-forward svc/questions 3002:3002 >/dev/null 2>&1 &
+PF_QUESTIONS=$!
+sleep 2
+
+# Test questions endpoint
+QUESTIONS=$(curl -s http://localhost:3002/questions 2>/dev/null | jq '.' 2>/dev/null)
+if [ -n "$QUESTIONS" ]; then
+    QUESTION_COUNT=$(echo "$QUESTIONS" | jq 'length')
+    echo -e "${GREEN}✓ Questions service returning $QUESTION_COUNT questions${NC}"
+else
+    echo -e "${RED}✗ Questions service not responding${NC}"
+fi
+
+kill $PF_QUESTIONS 2>/dev/null
+wait $PF_QUESTIONS 2>/dev/null
+echo ""
+
+# Test 3: Backend API Connectivity
+echo -e "${YELLOW}Test 3: Backend API Connectivity${NC}"
 echo "=================================="
 # Start port-forward in background
 kubectl -n node-learn port-forward svc/backend 3000:3000 >/dev/null 2>&1 &
@@ -44,21 +84,12 @@ else
     echo -e "${RED}✗ Backend health endpoint not responding${NC}"
 fi
 
-# Test questions endpoint
-QUESTIONS=$(curl -s http://localhost:3000/api/questions 2>/dev/null | jq '.' 2>/dev/null)
-if [ -n "$QUESTIONS" ]; then
-    QUESTION_COUNT=$(echo "$QUESTIONS" | jq 'length')
-    echo -e "${GREEN}✓ Backend returning $QUESTION_COUNT questions${NC}"
-else
-    echo -e "${RED}✗ Backend questions endpoint not responding${NC}"
-fi
-
 kill $PF_PID 2>/dev/null
 wait $PF_PID 2>/dev/null
 echo ""
 
-# Test 3: NATS Service Status
-echo -e "${YELLOW}Test 3: NATS Service Status${NC}"
+# Test 4: NATS Service Status
+echo -e "${YELLOW}Test 4: NATS Service Status${NC}"
 echo "=================================="
 NATS_POD=$(kubectl -n node-learn get pods -l app=nats -o jsonpath='{.items[0].metadata.name}')
 NATS_STATUS=$(kubectl -n node-learn get pod $NATS_POD -o jsonpath='{.status.phase}')
@@ -69,8 +100,8 @@ else
 fi
 echo ""
 
-# Test 4: PostgreSQL Service Status
-echo -e "${YELLOW}Test 4: PostgreSQL Service Status${NC}"
+# Test 5: PostgreSQL Service Status
+echo -e "${YELLOW}Test 5: PostgreSQL Service Status${NC}"
 echo "=================================="
 PG_POD=$(kubectl -n node-learn get pods -l app=postgres -o jsonpath='{.items[0].metadata.name}')
 PG_STATUS=$(kubectl -n node-learn get pod $PG_POD -o jsonpath='{.status.phase}')
@@ -81,24 +112,24 @@ else
 fi
 echo ""
 
-# Test 5: Service Discovery
-echo -e "${YELLOW}Test 5: Service Configuration${NC}"
+# Test 6: Service Discovery
+echo -e "${YELLOW}Test 6: Service Configuration${NC}"
 echo "=================================="
 echo "Available services:"
-kubectl -n node-learn get svc --no-headers | grep -E "backend|frontend|nats|postgres" | awk '{print "  " $1 ": " $2 " - " $3}'
+kubectl -n node-learn get svc --no-headers | grep -E "backend|frontend|nats|postgres|auth|questions|api-gateway" | awk '{print "  " $1 ": " $2 " - " $3}'
 echo ""
 
-# Test 6: Resource metrics
-echo -e "${YELLOW}Test 6: Resource Usage${NC}"
+# Test 7: Resource metrics
+echo -e "${YELLOW}Test 7: Resource Usage${NC}"
 echo "=================================="
 echo "Pod resource consumption:"
-kubectl -n node-learn top pods 2>/dev/null | grep -E "backend|frontend|nats|postgres" | awk '{printf "  %-20s CPU: %-8s Memory: %-8s\n", $1, $2, $3}'
+kubectl -n node-learn top pods 2>/dev/null | grep -E "backend|frontend|nats|postgres|auth|questions|api-gateway" | awk '{printf "  %-20s CPU: %-8s Memory: %-8s\n", $1, $2, $3}'
 echo ""
 
-# Test 7: Check logs for errors
-echo -e "${YELLOW}Test 7: Recent Pod Logs (last 3 lines each)${NC}"
+# Test 8: Check logs for errors
+echo -e "${YELLOW}Test 8: Recent Pod Logs (last 3 lines each)${NC}"
 echo "=================================="
-for deployment in backend nats frontend postgres; do
+for deployment in auth questions api-gateway backend nats frontend postgres; do
     LATEST_LOG=$(kubectl -n node-learn logs deployment/$deployment --tail=1 2>/dev/null)
     if [ -n "$LATEST_LOG" ]; then
         echo -e "${GREEN}✓${NC} $deployment: operational"
@@ -110,15 +141,21 @@ echo ""
 
 # Final summary
 echo -e "${BLUE}===== Test Summary =====${NC}"
-echo -e "${GREEN}✓ Phase 1 infrastructure is operational${NC}"
+echo -e "${GREEN}✓ K8s infrastructure is operational${NC}"
 echo ""
 echo -e "${YELLOW}Infrastructure Components:${NC}"
 echo "  ✓ PostgreSQL (Database)"
 echo "  ✓ NATS (Message Broker)"
-echo "  ✓ Backend (API Server)"
+echo "  ✓ Auth Service (OAuth & Authentication)"
+echo "  ✓ Questions Service (Question CRUD)"
+echo "  ✓ API Gateway (Request Router)"
+echo "  ✓ Backend (Legacy API Server)"
 echo "  ✓ Frontend (Web UI)"
 echo ""
 echo -e "${YELLOW}Quick Access Commands:${NC}"
+echo "  Auth:      kubectl -n node-learn port-forward svc/auth 3001:3001"
+echo "  Questions: kubectl -n node-learn port-forward svc/questions 3002:3002"
+echo "  Gateway:   kubectl -n node-learn port-forward svc/api-gateway 3000:3000"
 echo "  Backend:   kubectl -n node-learn port-forward svc/backend 3000:3000"
 echo "  Frontend:  kubectl -n node-learn port-forward svc/frontend 4200:80"
 echo "  NATS:      kubectl -n node-learn port-forward svc/nats 4222:4222"

@@ -105,17 +105,17 @@ services:
   # ====== Question Microservice ======
   # Handles question retrieval - read-only endpoints
   # Status: Phase 3 - Extracted from monolith, ready for deployment
-  question-service:
-    container_name: node-learn-question-service
+  questions:
+    container_name: node-learn-questions
     build:
-      context: ./services/question-service
+      context: ./services/questions
       dockerfile: Dockerfile
     ports:
       - "3002:3002"
     environment:
       - NODE_ENV=production
       - PORT=3002
-      - SERVICE_ID=question-service
+      - SERVICE_ID=questions
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     depends_on:
       - postgres
@@ -130,7 +130,7 @@ services:
   # ====== API Gateway ======
   # Strangler proxy pattern: routes requests to microservices or falls back to monolith
   # /api/auth/* → auth:3001
-  # /api/questions GET → question-service:3002 ✅ Phase 3
+  # /api/questions GET → questions:3002 ✅ Phase 3
   # /api/admin/* → monolith:3000
   # Everything else → monolith:3000 (gradual migration)
   api-gateway:
@@ -148,15 +148,15 @@ services:
       - MONOLITH_URL=http://backend:3000
       - AUTH_SERVICE_URL=http://auth:3001
       - AUTH_SERVICE_REDIRECT_URL=http://localhost:3001
-      - QUESTION_SERVICE_URL=http://question-service:3002
-      - QUIZ_SERVICE_URL=http://quiz-service:3003
-      - ACHIEVEMENT_SERVICE_URL=http://achievement-service:3004
-      - LEADERBOARD_SERVICE_URL=http://leaderboard-service:3005
-      - ADMIN_SERVICE_URL=http://admin-service:3006
+      - QUESTION_SERVICE_URL=http://questions:3002
+      - QUIZ_SERVICE_URL=http://quiz:3003
+      - ACHIEVEMENT_SERVICE_URL=http://achievements:3004
+      - LEADERBOARD_SERVICE_URL=http://leaderboard:3005
+      - ADMIN_SERVICE_URL=http://admin:3006
     depends_on:
       - backend
       - auth
-      - question-service
+      - questions
       - nats
     restart: unless-stopped
     healthcheck:

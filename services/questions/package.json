@@ -1,5 +1,5 @@
 {
-  "name": "question-service",
+  "name": "questions",
   "version": "1.0.0",
   "description": "Question microservice for Node-Learn - handles question retrieval and management",
   "main": "dist/main.js",

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: question-service
+  name: questions
   namespace: node-learn
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: question-service
+      app: questions
   template:
     metadata:
       labels:
-        app: question-service
+        app: questions
     spec:
       containers:
-      - name: question-service
-        image: danielrajmon/node-learn-question-service:latest
+      - name: questions
+        image: danielrajmon/node-learn-questions:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3002
@@ -25,7 +25,7 @@ spec:
         - name: PORT
           value: "3002"
         - name: SERVICE_ID
-          value: "question-service"
+          value: "questions"
         - name: POSTGRES_HOST
           valueFrom:
             secretKeyRef:
@@ -78,12 +78,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: question-service
+  name: questions
   namespace: node-learn
 spec:
   type: ClusterIP
   selector:
-    app: question-service
+    app: questions
   ports:
   - protocol: TCP
     port: 3002

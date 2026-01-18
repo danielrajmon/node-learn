@@ -14,14 +14,14 @@ export class GatewayService {
 
   private serviceUrls: Record<string, string> = {
     'auth': process.env.AUTH_SERVICE_URL || 'http://auth:3001',
-    'question-service':
-      process.env.QUESTION_SERVICE_URL || 'http://question-service:3002',
-    'quiz-service': process.env.QUIZ_SERVICE_URL || 'http://quiz-service:3003',
-    'achievement-service':
-      process.env.ACHIEVEMENT_SERVICE_URL || 'http://achievement-service:3004',
-    'leaderboard-service':
-      process.env.LEADERBOARD_SERVICE_URL || 'http://leaderboard-service:3005',
-    'admin-service': process.env.ADMIN_SERVICE_URL || 'http://admin-service:3006',
+    'questions':
+      process.env.QUESTION_SERVICE_URL || 'http://questions:3002',
+    'quiz': process.env.QUIZ_SERVICE_URL || 'http://quiz:3003',
+    'achievements':
+      process.env.ACHIEVEMENT_SERVICE_URL || 'http://achievements:3004',
+    'leaderboard':
+      process.env.LEADERBOARD_SERVICE_URL || 'http://leaderboard:3005',
+    'admin': process.env.ADMIN_SERVICE_URL || 'http://admin:3006',
     monolith: process.env.MONOLITH_URL || 'http://backend:3000',
   };
 

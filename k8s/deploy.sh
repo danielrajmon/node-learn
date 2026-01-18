@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 # Configuration
 REGISTRY="danielrajmon"  # Docker Hub username
 BACKEND_IMAGE="${REGISTRY}/node-learn-backend:latest"
-AUTH_SERVICE_IMAGE="${REGISTRY}/node-learn-auth-service:latest"
+AUTH_IMAGE="${REGISTRY}/node-learn-auth:latest"
 FRONTEND_IMAGE="${REGISTRY}/node-learn-frontend:latest"
 IMPORT_QUESTIONS=true  # Set to false to skip import
 
@@ -66,10 +66,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Building auth-service image..."
-docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-auth-service:latest ./services/auth-service
+echo "Building auth image..."
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-auth:latest ./services/auth
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Failed to build auth-service image${NC}"
+    echo -e "${RED}Failed to build auth image${NC}"
     exit 1
 fi
 
@@ -100,9 +100,9 @@ echo "Tagging and pushing frontend image..."
 docker tag node-learn-frontend:latest ${FRONTEND_IMAGE}
 docker push ${FRONTEND_IMAGE}
 
-echo "Tagging and pushing auth-service image..."
-docker tag node-learn-auth-service:latest ${AUTH_SERVICE_IMAGE}
-docker push ${AUTH_SERVICE_IMAGE}
+echo "Tagging and pushing auth image..."
+docker tag node-learn-auth:latest ${AUTH_IMAGE}
+docker push ${AUTH_IMAGE}
 
 API_GATEWAY_IMAGE="${REGISTRY}/node-learn-api-gateway:latest"
 echo "Tagging and pushing api-gateway image..."
@@ -161,14 +161,14 @@ kubectl wait --for=condition=ready pod -l app=backend -n node-learn --timeout=12
 echo -e "${GREEN}✓ Backend deployed${NC}"
 echo ""
 
-# Step 8: Deploy auth-service
-echo -e "${YELLOW}Step 8: Deploying auth-service...${NC}"
+# Step 8: Deploy auth
+echo -e "${YELLOW}Step 8: Deploying auth...${NC}"
 kubectl apply -f k8s/auth-deployment.yaml
-echo "Forcing auth-service to restart and pull latest image..."
-kubectl rollout restart deployment/auth-service -n node-learn
-echo "Waiting for auth-service to be ready..."
-kubectl wait --for=condition=ready pod -l app=auth-service -n node-learn --timeout=120s
-echo -e "${GREEN}✓ Auth-service deployed${NC}"
+echo "Forcing auth to restart and pull latest image..."
+kubectl rollout restart deployment/auth -n node-learn
+echo "Waiting for auth to be ready..."
+kubectl wait --for=condition=ready pod -l app=auth -n node-learn --timeout=120s
+echo -e "${GREEN}✓ Auth deployed${NC}"
 echo ""
 
 # Step 10: Deploy api-gateway

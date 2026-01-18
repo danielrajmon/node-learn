@@ -80,7 +80,7 @@ spec:
               key: FRONTEND_URL
         livenessProbe:
           httpGet:
-            path: /api/auth/health
+            path: /auth/health
             port: 3001
           initialDelaySeconds: 40
           periodSeconds: 30
@@ -88,7 +88,7 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /api/auth/health
+            path: /auth/health
             port: 3001
           initialDelaySeconds: 20
           periodSeconds: 10
@@ -105,12 +105,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service
+  name: auth
   namespace: node-learn
 spec:
   type: ClusterIP
   selector:
-    app: auth-service
+    app: auth
   ports:
   - protocol: TCP
     port: 3001

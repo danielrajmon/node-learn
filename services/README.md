@@ -24,12 +24,12 @@ services/
 │   └── package.json
 │
 ├── auth/                     # (Phase 2) OAuth + JWT
-├── question-service/         # (Phase 3) Question CRUD
-├── quiz-service/             # (Phase 4) Answer submission + saga orchestrator
-├── achievement-service/      # (Phase 5) Badge system
-├── leaderboard-service/      # (Phase 6) Rankings
-├── admin-service/            # (Phase 7) Admin operations
-└── maintenance-service/      # (Phase 8) Background jobs
+├── questions/                # (Phase 3) Question CRUD
+├── quiz/                     # (Phase 4) Answer submission + saga orchestrator
+├── achievements/             # (Phase 5) Badge system
+├── leaderboard/              # (Phase 6) Rankings
+├── admin/                    # (Phase 7) Admin operations
+└── maintenance/              # (Phase 8) Background jobs
 ```
 
 ## Phases

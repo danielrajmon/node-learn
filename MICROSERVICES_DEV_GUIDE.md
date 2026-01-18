@@ -46,7 +46,7 @@ curl http://localhost:3000/health
 # Check NATS is running
 curl http://localhost:8222/healthz
 
-# Test auth-service (through gateway)
+# Test auth (through gateway)
 curl http://localhost:3000/api/auth/health
 
 # Test monolith backend (still works through gateway)
@@ -113,7 +113,7 @@ User Browser
 
 The **Auth Service** (port 3001) is now a separate NestJS microservice:
 
-- **Location:** `services/auth-service/`
+- **Location:** `services/auth/`
 - **Responsibilities:** 
   - User authentication (JWT tokens)
   - OAuth2 integration (Google)
@@ -138,7 +138,7 @@ curl -X GET http://localhost:3000/api/auth/profile \
 
 ### Architecture Improvements
 
-1. **Strangler Proxy:** API Gateway (port 3000) routes `/api/auth/*` to auth-service
+1. **Strangler Proxy:** API Gateway (port 3000) routes `/api/auth/*` to auth
 2. **Event Publishing:** Auth service publishes events to NATS when users log in
 3. **Service Discovery:** Services communicate via Docker/K8s service DNS
 4. **Shared Database:** Auth service shares PostgreSQL with monolith (transition phase)
@@ -147,7 +147,7 @@ curl -X GET http://localhost:3000/api/auth/profile \
 ### Docker Compose Setup
 
 ```yaml
-auth-service:
+auth:
   ports: ["3001:3001"]
   depends_on: [nats, postgres]
   env: JWT_SECRET, GOOGLE_*, DATABASE_URL, NATS_URL
@@ -157,12 +157,12 @@ auth-service:
 ### Kubernetes Deployment
 
 ```bash
-# Deploy auth-service to K8s
+# Deploy auth to K8s
 ./k8s/deploy.sh
 
 # Verify deployment
 kubectl get deployments -n node-learn
-kubectl logs -n node-learn deployment/auth-service
+kubectl logs -n node-learn deployment/auth
 ```
 
 ---
@@ -179,7 +179,7 @@ npm run logs
 docker-compose logs -f --timestamps
 
 # Follow specific service
-docker-compose logs -f auth-service
+docker-compose logs -f auth
 docker-compose logs -f backend
 docker-compose logs -f api-gateway
 docker-compose logs -f nats
@@ -201,16 +201,16 @@ docker-compose down
 docker-compose down -v
 
 # Restart specific service
-docker-compose restart auth-service
+docker-compose restart auth
 docker-compose restart api-gateway
 ```
 
 ### Rebuild Microservices
 
 ```bash
-# Rebuild auth-service after code changes
-docker-compose build auth-service
-docker-compose up -d auth-service
+# Rebuild auth after code changes
+docker-compose build auth
+docker-compose up -d auth
 
 # Rebuild API Gateway after code changes
 docker-compose build api-gateway
@@ -312,7 +312,7 @@ In another terminal, watch NATS:
 nats sub '>' --server=nats://localhost:4222
 
 # You should see:
-# - user.login event (when auth-service publishes it)
+# - user.login event (when auth publishes it)
 # - answer.submitted event (from monolith)
 # - achievement.earned event (if conditions met)
 # - leaderboard.entry.updated event
@@ -337,12 +337,12 @@ curl -X POST http://localhost:3000/api/auth/login \
 Use this checklist to verify that Phase 2 (Auth Service extraction) is working correctly:
 
 ### Container Health Checks ✅
-- [ ] `docker-compose ps` shows all containers healthy (auth-service, api-gateway, backend, nats, postgres, frontend)
+- [ ] `docker-compose ps` shows all containers healthy (auth, api-gateway, backend, nats, postgres, frontend)
 - [ ] `curl http://localhost:3001/api/auth/health` returns 200 (direct to service)
 - [ ] `curl http://localhost:3000/api/auth/health` returns 200 (through gateway)
 
 ### API Gateway Routing ✅
-- [ ] `curl http://localhost:3000/api/auth/health` → auth-service (3001)
+- [ ] `curl http://localhost:3000/api/auth/health` → auth (3001)
 - [ ] `curl http://localhost:3000/api/questions` → backend monolith (3000)
 - [ ] `curl http://localhost:3000/api/stats` → backend monolith (3000)
 - [ ] All requests include x-correlation-id header for tracing
@@ -366,8 +366,8 @@ Use this checklist to verify that Phase 2 (Auth Service extraction) is working c
 - [ ] Gateway properly handles service timeouts
 
 ### Kubernetes Deployment (if tested) ✅
-- [ ] `./k8s/deploy.sh` successfully builds and pushes auth-service image
-- [ ] `kubectl get deployments -n node-learn` shows auth-service running
+- [ ] `./k8s/deploy.sh` successfully builds and pushes auth image
+- [ ] `kubectl get deployments -n node-learn` shows auth running
 - [ ] Auth service pod can reach PostgreSQL and NATS via K8s DNS
 - [ ] Health checks pass: `kubectl get pods -n node-learn`
 
@@ -385,7 +385,7 @@ curl http://localhost:3000/health | jq
 curl http://localhost:3000/api/auth/health
 
 # Individual service health (internal only)
-docker exec node-learn-auth-service curl http://localhost:3001/api/auth/health
+docker exec node-learn-auth curl http://localhost:3001/auth/health
 docker exec node-learn-backend curl http://localhost:3000/api/health
 docker exec node-learn-api-gateway curl http://localhost:3000/health
 docker exec node-learn-nats curl http://localhost:8222/healthz
@@ -395,23 +395,23 @@ docker exec node-learn-nats curl http://localhost:8222/healthz
 
 ```bash
 # See why a service failed to start
-docker-compose logs auth-service
+docker-compose logs auth
 docker-compose logs api-gateway
 docker-compose logs backend
 docker-compose logs postgres
 
 # Real-time logs
-docker-compose logs -f auth-service
+docker-compose logs -f auth
 ```
 
 ### Execute Commands in Container
 
 ```bash
-# Connect to auth-service
-docker exec -it node-learn-auth-service sh
+# Connect to auth
+docker exec -it node-learn-auth sh
 
 # Check environment variables
-docker exec node-learn-auth-service env | grep -E "JWT|NATS"
+docker exec node-learn-auth env | grep -E "JWT|NATS"
 
 # NATS CLI inside container
 docker exec node-learn-nats nats sub '>'
@@ -449,7 +449,7 @@ SELECT * FROM events WHERE aggregate_id = 'user-id' ORDER BY created_at;
 SELECT * FROM events WHERE event_type LIKE '%.failed%';
 
 -- Events from service
-SELECT COUNT(*) FROM events WHERE service_id = 'quiz-service';
+SELECT COUNT(*) FROM events WHERE service_id = 'quiz';
 ```
 
 ### Database Per Service
@@ -561,7 +561,7 @@ docker-compose logs postgres
 
 ```bash
 # Check service logs for errors
-docker-compose logs quiz-service
+docker-compose logs quiz
 
 # Check NATS throughput
 curl http://localhost:8222/varz | jq '.connections'
@@ -610,10 +610,10 @@ nats sub 'answer.submitted' --server=nats://localhost:4222
 ### Phase 3: Extract Question Service (Planned)
 
 ```
-Location: services/question-service/
+Location: services/questions/
 Responsibility: GET /api/questions (read-only)
-Extraction Pattern: Same as auth-service
-Gateway Routing: GET /api/questions → question-service:3002
+Extraction Pattern: Same as auth
+Gateway Routing: GET /api/questions → questions:3002
 Database: Shared PostgreSQL (transition phase)
 Events: question.viewed, question.loaded
 ```
@@ -621,27 +621,27 @@ Events: question.viewed, question.loaded
 ### Phase 4: Extract Quiz Service (Planned)
 
 ```
-Location: services/quiz-service/
+Location: services/quiz/
 Responsibility: POST /api/stats (answer submission)
 Extraction Pattern: Saga orchestrator pattern
-Gateway Routing: POST /api/stats → quiz-service:3003
+Gateway Routing: POST /api/stats → quiz:3003
 Database: Shared PostgreSQL
 Events: answer.submitted, answer.evaluated, achievement.checked
 ```
 
 ### Phase 5-6: Extract Achievement & Leaderboard Services
 
-- Achievement Service: services/achievement-service/ (port 3004)
-- Leaderboard Service: services/leaderboard-service/ (port 3005)
+- Achievement Service: services/achievements/ (port 3004)
+- Leaderboard Service: services/leaderboard/ (port 3005)
 
 ### Phase 7: Database Per Service
 
 Once all services are extracted, migrate to independent databases:
-- postgres-auth (auth-service)
-- postgres-question (question-service)
-- postgres-quiz (quiz-service)
-- postgres-achievement (achievement-service)
-- postgres-leaderboard (leaderboard-service)
+- postgres-auth (auth)
+- postgres-question (questions)
+- postgres-quiz (quiz)
+- postgres-achievement (achievements)
+- postgres-leaderboard (leaderboard)
 - postgres-event-store (shared by all for event sourcing)
 
 See `MICROSERVICES_MIGRATION_PLAN.md` for full roadmap.
@@ -654,5 +654,5 @@ See `MICROSERVICES_MIGRATION_PLAN.md` for full roadmap.
 - **Event Inspection:** `nats sub '>'` (watch NATS topics)
 - **Database Queries:** `psql -h localhost -U postgres`
 - **Gateway Routing:** Check `services/api-gateway/src/gateway.controller.ts`
-- **Auth Service Code:** `services/auth-service/src/`
+- **Auth Service Code:** `services/auth/src/`
 - **Full Guide:** This file (`MICROSERVICES_DEV_GUIDE.md`)

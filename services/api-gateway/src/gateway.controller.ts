@@ -82,25 +82,25 @@ export class GatewayController {
 
     // Question Service - read-only endpoints (GET /questions)
     if (path.startsWith('/api/questions') && method === 'GET') {
-      return 'question-service';
+      return 'questions';
     }
 
     // Stats/Answer Service - answer submission, stats
-    // NOTE: Until quiz-service is extracted, route to monolith
+    // NOTE: Until quiz is extracted, route to monolith
     if (path.startsWith('/api/stats') || path.startsWith('/api/answer')) {
-      return 'monolith'; // TODO: change to 'quiz-service' once extracted
+      return 'monolith'; // TODO: change to 'quiz' once extracted
     }
 
     // Achievements Service - read achievements
-    // NOTE: Until achievement-service is extracted, route to monolith
+    // NOTE: Until achievements is extracted, route to monolith
     if (path.startsWith('/api/achievements')) {
-      return 'monolith'; // TODO: change to 'achievement-service' once extracted
+      return 'monolith'; // TODO: change to 'achievements' once extracted
     }
 
     // Leaderboard Service
-    // NOTE: Until leaderboard-service is extracted, route to monolith
+    // NOTE: Until leaderboard is extracted, route to monolith
     if (path.startsWith('/api/leaderboard')) {
-      return 'monolith'; // TODO: change to 'leaderboard-service' once extracted
+      return 'monolith'; // TODO: change to 'leaderboard' once extracted
     }
 
     // Admin endpoints - all admin operations in monolith

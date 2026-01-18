@@ -318,13 +318,13 @@ node-learn/
 │   │   ├── src/nats/         # NATS service
 │   │   └── migrations/       # Event store schema
 │   ├── api-gateway/          # Strangler proxy
-│   ├── auth-service/         # (Phase 2)
-│   ├── question-service/     # (Phase 3)
-│   ├── quiz-service/         # (Phase 4)
-│   ├── achievement-service/  # (Phase 5)
-│   ├── leaderboard-service/  # (Phase 6)
-│   ├── admin-service/        # (Phase 7)
-│   └── maintenance-service/  # (Phase 8)
+│   ├── auth/                 # (Phase 2)
+│   ├── questions/            # (Phase 3)
+│   ├── quiz/                   # (Phase 4)
+│   ├── achievements/          # (Phase 5)
+│   ├── leaderboard/           # (Phase 6)
+│   ├── admin/                 # (Phase 7)
+│   └── maintenance/           # (Phase 8)
 ├── k8s/                       # Kubernetes manifests
 │   ├── namespace.yaml
 │   ├── postgres-deployment.yaml

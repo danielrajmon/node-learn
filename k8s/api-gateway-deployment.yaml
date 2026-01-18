@@ -34,19 +34,19 @@ spec:
         - name: MONOLITH_URL
           value: "http://backend:3000"
         - name: AUTH_SERVICE_URL
-          value: "http://auth-service:3001"
+          value: "http://auth:3001"
         - name: AUTH_SERVICE_REDIRECT_URL
-          value: "http://auth-service:3001"
+          value: "http://auth:3001"
         - name: QUESTION_SERVICE_URL
-          value: "http://question-service:3002"
+          value: "http://questions:3002"
         - name: QUIZ_SERVICE_URL
-          value: "http://quiz-service:3003"
+          value: "http://quiz:3003"
         - name: ACHIEVEMENT_SERVICE_URL
-          value: "http://achievement-service:3004"
+          value: "http://achievements:3004"
         - name: LEADERBOARD_SERVICE_URL
-          value: "http://leaderboard-service:3005"
+          value: "http://leaderboard:3005"
         - name: ADMIN_SERVICE_URL
-          value: "http://admin-service:3006"
+          value: "http://admin:3006"
         resources:
           requests:
             memory: "128Mi"

@@ -4,8 +4,8 @@ backend/node_modules
 services/api-gateway/dist
 services/api-gateway/node_modules
 
-services/question-service/dist
-services/question-service/node_modules
+services/questions/dist
+services/questions/node_modules
 
 services/auth/dist
 services/auth/node_modules
