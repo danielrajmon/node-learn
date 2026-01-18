@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service
+  name: auth
   namespace: node-learn
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth-service
+      app: auth
   template:
     metadata:
       labels:
-        app: auth-service
+        app: auth
     spec:
       containers:
-      - name: auth-service
-        image: danielrajmon/node-learn-auth-service:latest
+      - name: auth
+        image: danielrajmon/node-learn-auth:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3001
@@ -25,7 +25,7 @@ spec:
         - name: PORT
           value: "3001"
         - name: SERVICE_ID
-          value: "auth-service"
+          value: "auth"
         - name: NATS_URL
           value: "nats://nats:4222"
         - name: JWT_SECRET

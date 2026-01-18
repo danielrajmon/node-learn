@@ -31,6 +31,13 @@ export class GatewayController {
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Correlation-ID');
 
+    // Remove restrictive CSP headers for OAuth routes (let auth service handle it)
+    if (path.includes('/auth/google')) {
+      res.removeHeader('Content-Security-Policy');
+      res.removeHeader('Content-Security-Policy-Report-Only');
+      res.removeHeader('X-Content-Security-Policy');
+    }
+
     // Handle OPTIONS (preflight) requests
     if (method === 'OPTIONS') {
       res.status(204).send();
@@ -46,10 +53,12 @@ export class GatewayController {
       this.logger.debug(`[${correlationId}] Routing to: ${target}`);
 
       // Forward request to target service
+      const isOAuth = path.includes('/auth/google');
       const response = await this.gatewayService.forwardRequest(
         req,
         target,
         correlationId as string,
+        isOAuth,
       );
 
       // Return response
@@ -68,7 +77,7 @@ export class GatewayController {
   private determineTarget(path: string, method: string): string {
     // Auth Service - all auth routes
     if (path.startsWith('/api/auth')) {
-      return 'auth-service';
+      return 'auth';
     }
 
     // Question Service - read-only endpoints (GET /questions)

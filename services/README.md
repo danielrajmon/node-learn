@@ -23,7 +23,7 @@ services/
 │   ├── Dockerfile
 │   └── package.json
 │
-├── auth-service/             # (Phase 2) OAuth + JWT
+├── auth/                     # (Phase 2) OAuth + JWT
 ├── question-service/         # (Phase 3) Question CRUD
 ├── quiz-service/             # (Phase 4) Answer submission + saga orchestrator
 ├── achievement-service/      # (Phase 5) Badge system
@@ -206,7 +206,7 @@ DATABASE_USER=postgres
 DATABASE_PASSWORD=password
 
 # Service
-SERVICE_ID=auth-service
+SERVICE_ID=auth
 PORT=3001
 NODE_ENV=development
 

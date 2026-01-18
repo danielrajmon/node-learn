@@ -13,7 +13,7 @@ export class GatewayService {
   private httpClient: AxiosInstance;
 
   private serviceUrls: Record<string, string> = {
-    'auth-service': process.env.AUTH_SERVICE_URL || 'http://auth-service:3001',
+    'auth': process.env.AUTH_SERVICE_URL || 'http://auth:3001',
     'question-service':
       process.env.QUESTION_SERVICE_URL || 'http://question-service:3002',
     'quiz-service': process.env.QUIZ_SERVICE_URL || 'http://quiz-service:3003',
@@ -29,6 +29,7 @@ export class GatewayService {
     this.httpClient = axios.create({
       timeout: 30000,
       validateStatus: () => true, // Don't throw on any status
+      maxRedirects: 0, // Don't follow redirects - let client handle them
     });
   }
 

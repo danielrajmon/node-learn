@@ -73,17 +73,17 @@ services:
   # ====== Auth Microservice ======
   # Handles user authentication, JWT tokens, OAuth
   # Status: Phase 2 - Extracted from monolith, ready for deployment
-  auth-service:
-    container_name: node-learn-auth-service
+  auth:
+    container_name: node-learn-auth
     build:
-      context: ./services/auth-service
+      context: ./services/auth
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - SERVICE_ID=auth-service
+      - SERVICE_ID=auth
       - NATS_URL=nats://nats:4222
       - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
@@ -96,7 +96,7 @@ services:
       - postgres
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/api/auth/health", "||", "exit", "1"]
+      test: ["CMD", "curl", "-f", "http://localhost:3001/auth/health", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -129,7 +129,7 @@ services:
 
   # ====== API Gateway ======
   # Strangler proxy pattern: routes requests to microservices or falls back to monolith
-  # /api/auth/* → auth-service:3001
+  # /api/auth/* → auth:3001
   # /api/questions GET → question-service:3002 ✅ Phase 3
   # /api/admin/* → monolith:3000
   # Everything else → monolith:3000 (gradual migration)
@@ -146,7 +146,7 @@ services:
       - SERVICE_ID=api-gateway
       - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
       - MONOLITH_URL=http://backend:3000
-      - AUTH_SERVICE_URL=http://auth-service:3001
+      - AUTH_SERVICE_URL=http://auth:3001
       - AUTH_SERVICE_REDIRECT_URL=http://localhost:3001
       - QUESTION_SERVICE_URL=http://question-service:3002
       - QUIZ_SERVICE_URL=http://quiz-service:3003
@@ -155,7 +155,7 @@ services:
       - ADMIN_SERVICE_URL=http://admin-service:3006
     depends_on:
       - backend
-      - auth-service
+      - auth
       - question-service
       - nats
     restart: unless-stopped
