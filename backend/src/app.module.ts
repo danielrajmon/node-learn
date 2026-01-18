@@ -11,14 +11,13 @@ import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { StatsModule } from './stats/stats.module';
 import { AdminModule } from './admin/admin.module';
-import { AuthModule } from './auth/auth.module';
 import { AchievementsModule } from './achievements/achievements.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { QuizModule } from './quiz/quiz.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { QuestionEntity } from './question/entities/question.entity';
 import { ChoiceEntity } from './question/entities/choice.entity';
-import { User } from './auth/entities/user.entity';
+import { User } from './shared/entities/user.entity';
 
 @Module({
   imports: [
@@ -36,7 +35,6 @@ import { User } from './auth/entities/user.entity';
       entities: [QuestionEntity, ChoiceEntity, User],
       synchronize: false, // Don't auto-create tables, we already have them
     }),
-    AuthModule,
     QuestionModule,
     AnswerModule,
     StatsModule,

@@ -2,8 +2,8 @@ import { Controller, Post, Get, Param, Body, UseGuards, Req } from '@nestjs/comm
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { StatsService } from './stats.service';
 import { RecordAnswerDto } from '../answer/dto/record-answer.dto';
-import { OptionalAuthGuard } from '../auth/guards/optional-auth.guard';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalAuthGuard } from '../shared/guards/optional-auth.guard';
+import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
 import { AchievementsService } from '../achievements/achievements.service';
 
 @ApiTags('stats')

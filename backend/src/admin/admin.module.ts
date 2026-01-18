@@ -4,7 +4,7 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { QuestionEntity } from '../question/entities/question.entity';
 import { ChoiceEntity } from '../question/entities/choice.entity';
-import { User } from '../auth/entities/user.entity';
+import { User } from '../shared/entities/user.entity';
 import { QuestionModule } from '../question/question.module';
 
 @Module({

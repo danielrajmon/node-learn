@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { GatewayController } from './gateway.controller';
@@ -18,4 +18,10 @@ import { CorrelationIdMiddleware } from './middleware/correlation-id.middleware'
   providers: [GatewayService, JwtStrategy, CorrelationIdMiddleware],
   exports: [GatewayService],
 })
-export class GatewayModule {}
+export class GatewayModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CorrelationIdMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

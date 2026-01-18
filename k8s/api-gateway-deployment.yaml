@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: node-learn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: danielrajmon/node-learn-api-gateway:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: SERVICE_ID
+          value: "api-gateway"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: JWT_SECRET
+        - name: MONOLITH_URL
+          value: "http://backend:3000"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:3001"
+        - name: AUTH_SERVICE_REDIRECT_URL
+          value: "http://auth-service:3001"
+        - name: QUESTION_SERVICE_URL
+          value: "http://question-service:3002"
+        - name: QUIZ_SERVICE_URL
+          value: "http://quiz-service:3003"
+        - name: ACHIEVEMENT_SERVICE_URL
+          value: "http://achievement-service:3004"
+        - name: LEADERBOARD_SERVICE_URL
+          value: "http://leaderboard-service:3005"
+        - name: ADMIN_SERVICE_URL
+          value: "http://admin-service:3006"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: node-learn
+spec:
+  type: ClusterIP
+  selector:
+    app: api-gateway
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -12,7 +12,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    PassportModule,
+    PassportModule.register({ session: true }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'dev-secret-key',
       signOptions: { expiresIn: '24h' },
@@ -22,4 +22,10 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
   providers: [AuthService, NatsService, JwtStrategy, GoogleStrategy, JwtAuthGuard],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule implements OnModuleInit {
+  onModuleInit() {
+    // Passport session serialization will be handled by NestJS PassportModule
+    // with @UseGuards(AuthGuard('google')) decorator
+  }
+}
+

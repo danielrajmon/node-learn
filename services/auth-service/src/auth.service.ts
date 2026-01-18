@@ -45,7 +45,6 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     googleId: string;
     email: string;
     name: string;
-    picture: string;
   }): Promise<User> {
     // TODO: Implement database lookup/creation in Phase 2
     // For now, return user object
@@ -54,7 +53,6 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
       googleId: profile.googleId,
       email: profile.email,
       name: profile.name,
-      picture: profile.picture,
       isAdmin: false,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -94,7 +92,6 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
         id: user.id,
         email: user.email,
         name: user.name,
-        picture: user.picture,
         isAdmin: user.isAdmin,
       },
     };

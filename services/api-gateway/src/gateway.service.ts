@@ -12,8 +12,7 @@ export class GatewayService {
   private logger = new Logger('GatewayService');
   private httpClient: AxiosInstance;
 
-  // Service URLs - from environment variables
-  private serviceUrls = {
+  private serviceUrls: Record<string, string> = {
     'auth-service': process.env.AUTH_SERVICE_URL || 'http://auth-service:3001',
     'question-service':
       process.env.QUESTION_SERVICE_URL || 'http://question-service:3002',
@@ -41,6 +40,7 @@ export class GatewayService {
     req: Request,
     target: string,
     correlationId: string,
+    isOAuth = false,
   ): Promise<{ status: number; headers: Record<string, any>; data: any }> {
     const serviceUrl = this.serviceUrls[target];
 
@@ -70,12 +70,13 @@ export class GatewayService {
 
       return {
         status: response.status,
-        headers: this.filterResponseHeaders(response.headers),
+        headers: this.filterResponseHeaders(response.headers, isOAuth),
         data: response.data,
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(
-        `[${correlationId}] Error forwarding to ${target}: ${error.message}`,
+        `[${correlationId}] Error forwarding to ${target}: ${errorMessage}`,
       );
       throw error;
     }
@@ -120,8 +121,9 @@ export class GatewayService {
   /**
    * Filter response headers
    * Remove sensitive/hop-by-hop headers
+   * For OAuth endpoints, remove restrictive CSP headers to allow Google OAuth page to work
    */
-  private filterResponseHeaders(headers: Record<string, any>): Record<string, any> {
+  private filterResponseHeaders(headers: Record<string, any>, isOAuth = false): Record<string, any> {
     const filtered = { ...headers };
     const removedHeaders = [
       'connection',
@@ -134,6 +136,13 @@ export class GatewayService {
     removedHeaders.forEach((header) => {
       delete filtered[header];
     });
+
+    // For OAuth endpoints, remove or relax CSP headers that prevent Google's OAuth page
+    if (isOAuth) {
+      delete filtered['content-security-policy'];
+      delete filtered['content-security-policy-report-only'];
+      delete filtered['x-content-security-policy'];
+    }
 
     return filtered;
   }

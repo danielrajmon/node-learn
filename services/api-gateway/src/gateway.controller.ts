@@ -24,7 +24,23 @@ export class GatewayController {
 
     this.logger.debug(`[${correlationId}] ${method} ${path}`);
 
+    // Add CORS headers to all responses
+    const origin = (req.headers.origin as string) || '*';
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Correlation-ID');
+
+    // Handle OPTIONS (preflight) requests
+    if (method === 'OPTIONS') {
+      res.status(204).send();
+      return;
+    }
+
     try {
+      // Non-OAuth routes are forwarded through the gateway
+      // (OAuth endpoints are routed directly via Ingress, bypassing gateway)
+
       // Determine which service to route to based on path
       const target = this.determineTarget(path, method);
       this.logger.debug(`[${correlationId}] Routing to: ${target}`);
@@ -39,8 +55,9 @@ export class GatewayController {
       // Return response
       res.status(response.status).set(response.headers).send(response.data);
     } catch (error) {
-      this.logger.error(`[${correlationId}] Error: ${error.message}`);
-      res.status(500).json({ error: 'Internal Server Error', details: error.message });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`[${correlationId}] Error: ${errorMessage}`);
+      res.status(500).json({ error: 'Internal Server Error', details: errorMessage });
     }
   }
 
@@ -55,33 +72,33 @@ export class GatewayController {
     }
 
     // Question Service - read-only endpoints (GET /questions)
+    // NOTE: Until question-service is extracted, route to monolith
     if (path.startsWith('/api/questions') && method === 'GET') {
-      return 'question-service';
+      return 'monolith'; // TODO: change to 'question-service' once extracted
     }
 
-    // Admin endpoints - question CRUD still in monolith
-    if (path.startsWith('/api/admin/questions')) {
-      return 'monolith';
-    }
-
-    // Quiz/Stats Service - answer submission, stats
+    // Stats/Answer Service - answer submission, stats
+    // NOTE: Until quiz-service is extracted, route to monolith
     if (path.startsWith('/api/stats') || path.startsWith('/api/answer')) {
-      return 'quiz-service';
+      return 'monolith'; // TODO: change to 'quiz-service' once extracted
     }
 
     // Achievements Service - read achievements
-    if (path.startsWith('/api/achievements') && method === 'GET') {
-      return 'achievement-service';
+    // NOTE: Until achievement-service is extracted, route to monolith
+    if (path.startsWith('/api/achievements')) {
+      return 'monolith'; // TODO: change to 'achievement-service' once extracted
     }
 
     // Leaderboard Service
+    // NOTE: Until leaderboard-service is extracted, route to monolith
     if (path.startsWith('/api/leaderboard')) {
-      return 'leaderboard-service';
+      return 'monolith'; // TODO: change to 'leaderboard-service' once extracted
     }
 
-    // Admin Service (for future use)
+    // Admin endpoints - all admin operations in monolith
+    // NOTE: Until individual admin/service services are extracted
     if (path.startsWith('/api/admin')) {
-      return 'admin-service';
+      return 'monolith'; // TODO: split to specific services once extracted
     }
 
     // Default to monolith (fallback)

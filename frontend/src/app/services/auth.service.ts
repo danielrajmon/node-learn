@@ -7,7 +7,6 @@ export interface User {
   id: number;
   email: string;
   name: string;
-  picture: string;
   isAdmin: boolean;
 }
 
@@ -34,7 +33,6 @@ export class AuthService {
         id: 1,
         email: 'guest@node-learn.local',
         name: 'Guest User',
-        picture: '',
         isAdmin: false
       };
       this.userSubject.next(guestUser);
@@ -69,6 +67,30 @@ export class AuthService {
     });
   }
 
+  handleCallbackAsync(token: string): Promise<void> {
+    localStorage.setItem('access_token', token);
+    
+    // Use relative URL to work in both Docker (port 80) and local dev (port 4200)
+    const apiUrl = window.location.port === '4200' 
+      ? 'http://localhost:3000/api/auth/profile'
+      : '/api/auth/profile';
+    
+    return new Promise((resolve, reject) => {
+      this.http.get<User>(apiUrl).subscribe({
+        next: (user) => {
+          localStorage.setItem('user', JSON.stringify(user));
+          this.userSubject.next(user);
+          resolve();
+        },
+        error: (error) => {
+          console.error('Failed to fetch user profile:', error);
+          this.logout();
+          reject(error);
+        }
+      });
+    });
+  }
+
   logout(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
@@ -77,7 +99,6 @@ export class AuthService {
       id: 1,
       email: 'guest@node-learn.local',
       name: 'Guest User',
-      picture: '',
       isAdmin: false
     };
     this.userSubject.next(guestUser);

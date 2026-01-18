@@ -101,7 +101,6 @@ export interface UserCreatedPayload {
   email: string;
   name: string;
   googleId?: string;
-  picture?: string;
   isAdmin: boolean;
   createdAt: Date;
 }

@@ -56,8 +56,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    ports: []
     environment:
       - NODE_ENV=production
       - SERVICE_ID=monolith
@@ -123,6 +122,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
       - MONOLITH_URL=http://backend:3000
       - AUTH_SERVICE_URL=http://auth-service:3001
+      - AUTH_SERVICE_REDIRECT_URL=http://localhost:3001
       - QUESTION_SERVICE_URL=http://question-service:3002
       - QUIZ_SERVICE_URL=http://quiz-service:3003
       - ACHIEVEMENT_SERVICE_URL=http://achievement-service:3004

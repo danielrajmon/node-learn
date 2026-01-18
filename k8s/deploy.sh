@@ -57,30 +57,37 @@ echo -e "${GREEN}✓ Connected to Kubernetes cluster${NC}"
 kubectl get nodes
 echo ""
 
-# Step 1: Build Docker images
-echo -e "${YELLOW}Step 1: Building Docker images...${NC}"
-echo "Building backend image for amd64..."
-docker buildx build --platform linux/amd64 -t node-learn-backend:latest ./backend
+# Step 1: Build Docker images (multi-platform for amd64 + arm64)
+echo -e "${YELLOW}Step 1: Building Docker images (multi-platform: amd64 + arm64)...${NC}"
+echo "Building backend image..."
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-backend:latest ./backend
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build backend image${NC}"
     exit 1
 fi
 
-echo "Building frontend image for amd64..."
-docker buildx build --platform linux/amd64 -t node-learn-frontend:latest ./frontend
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Failed to build frontend image${NC}"
-    exit 1
-fi
-
-echo "Building auth-service image for amd64..."
-docker buildx build --platform linux/amd64 -t node-learn-auth-service:latest ./services/auth-service
+echo "Building auth-service image..."
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-auth-service:latest ./services/auth-service
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build auth-service image${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}✓ Images built successfully${NC}"
+echo "Building api-gateway image..."
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-api-gateway:latest ./services/api-gateway
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build api-gateway image${NC}"
+    exit 1
+fi
+
+echo "Building frontend image..."
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-frontend:latest ./frontend
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build frontend image${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ Images built successfully (multi-platform)${NC}"
 echo ""
 
 # Step 2: Tag and push images (if using registry)
@@ -97,6 +104,11 @@ echo "Tagging and pushing auth-service image..."
 docker tag node-learn-auth-service:latest ${AUTH_SERVICE_IMAGE}
 docker push ${AUTH_SERVICE_IMAGE}
 
+API_GATEWAY_IMAGE="${REGISTRY}/node-learn-api-gateway:latest"
+echo "Tagging and pushing api-gateway image..."
+docker tag node-learn-api-gateway:latest ${API_GATEWAY_IMAGE}
+docker push ${API_GATEWAY_IMAGE}
+
 echo -e "${GREEN}✓ Images pushed successfully${NC}"
 echo ""
 
@@ -106,7 +118,15 @@ kubectl apply -f k8s/namespace.yaml
 echo -e "${GREEN}✓ Namespace created${NC}"
 echo ""
 
-# Step 4: Configure Traefik for HTTPS-only with static port
+# Step 4: Create app secret (JWT_SECRET)
+echo -e "${YELLOW}Step 4: Creating app secret...${NC}"
+kubectl create secret generic app-secret -n node-learn \
+  --from-literal=JWT_SECRET="my-secret-key-change-in-production-12345" \
+  --dry-run=client -o yaml | kubectl apply -f -
+echo -e "${GREEN}✓ App secret created${NC}"
+echo ""
+
+# Step 5: Configure Traefik for HTTPS-only with static port
 echo -e "${YELLOW}Step 4: Configuring Traefik service...${NC}"
 kubectl apply -f k8s/traefik-service-patch.yaml
 echo -e "${GREEN}✓ Traefik configured for HTTPS on port 61510${NC}"
@@ -151,8 +171,18 @@ kubectl wait --for=condition=ready pod -l app=auth-service -n node-learn --timeo
 echo -e "${GREEN}✓ Auth-service deployed${NC}"
 echo ""
 
-# Step 9: Deploy frontend
-echo -e "${YELLOW}Step 9: Deploying frontend...${NC}"
+# Step 10: Deploy api-gateway
+echo -e "${YELLOW}Step 10: Deploying api-gateway...${NC}"
+kubectl apply -f k8s/api-gateway-deployment.yaml
+echo "Forcing api-gateway to restart and pull latest image..."
+kubectl rollout restart deployment/api-gateway -n node-learn
+echo "Waiting for api-gateway to be ready..."
+kubectl wait --for=condition=ready pod -l app=api-gateway -n node-learn --timeout=120s
+echo -e "${GREEN}✓ API Gateway deployed${NC}"
+echo ""
+
+# Step 11: Deploy frontend
+echo -e "${YELLOW}Step 11: Deploying frontend...${NC}"
 kubectl apply -f k8s/frontend-deployment.yaml
 echo "Forcing frontend to restart and pull latest image..."
 kubectl rollout restart deployment/frontend -n node-learn
@@ -161,15 +191,15 @@ kubectl wait --for=condition=ready pod -l app=frontend -n node-learn --timeout=1
 echo -e "${GREEN}✓ Frontend deployed${NC}"
 echo ""
 
-# Step 8: Deploy ingress
-echo -e "${YELLOW}Step 10: Deploying ingress...${NC}"
+# Step 12: Deploy ingress
+echo -e "${YELLOW}Step 12: Deploying ingress...${NC}"
 kubectl apply -f k8s/ingress.yaml
 echo -e "${GREEN}✓ Ingress deployed${NC}"
 echo ""
 
-# Step 9: Import questions into the database
+# Step 13: Import questions into the database
 if [ "$IMPORT_QUESTIONS" = true ]; then
-    echo -e "${YELLOW}Step 11: Importing questions into the database...${NC}"
+    echo -e "${YELLOW}Step 13: Importing questions into the database...${NC}"
     # Delete existing job to force re-import
     kubectl delete job import-questions -n node-learn --ignore-not-found=true
     kubectl apply -f k8s/import-questions.yaml

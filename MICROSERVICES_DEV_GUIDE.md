@@ -1,7 +1,8 @@
 # Microservices Development Guide
 
 **Last Updated:** January 18, 2026  
-**Project:** Node-Learn Microservices Migration
+**Project:** Node-Learn Microservices Migration  
+**Phase Status:** Phase 2 Complete (Auth Service extracted, API Gateway operational)
 
 This guide covers setting up and developing with the new microservices architecture locally.
 
@@ -17,14 +18,17 @@ This guide covers setting up and developing with the new microservices architect
 ### 2. Start Everything
 
 ```bash
-# Build and start all services + dependencies
+# Build and start all services + dependencies in foreground with logs
+npm run start
+
+# (or run in background:)
 docker-compose up -d
 
 # Check status
 docker-compose ps
 
-# View logs
-docker-compose logs -f
+# View logs (when running in background)
+npm run logs
 ```
 
 **Wait for services to become healthy:**
@@ -37,13 +41,20 @@ docker-compose ps
 
 ```bash
 # Check API Gateway health
-curl http://localhost/health
+curl http://localhost:3000/health
 
 # Check NATS is running
 curl http://localhost:8222/healthz
 
-# Test monolith backend (should still work)
-curl http://localhost/api/questions
+# Test auth-service (through gateway)
+curl http://localhost:3000/api/auth/health
+
+# Test monolith backend (still works through gateway)
+curl http://localhost:3000/api/questions
+
+# Access Swagger documentation (API documentation UI)
+open http://localhost:3000/api/docs
+# or: curl http://localhost:3000/api/docs
 ```
 
 ---
@@ -54,14 +65,14 @@ curl http://localhost/api/questions
 
 | Service | Port | URL | Purpose |
 |---------|------|-----|---------|
-| **API Gateway** | 80 | http://localhost | Main entry point |
-| **Monolith** | 3000 | http://localhost:3000 | Fallback, legacy code |
-| **Auth Service** | 3001 | (internal) | OAuth + JWT |
-| **Question Service** | 3002 | (internal) | Question CRUD |
-| **Quiz Service** | 3003 | (internal) | Answer submission |
-| **Achievement Service** | 3004 | (internal) | Achievement unlocking |
-| **Leaderboard Service** | 3005 | (internal) | Rankings |
-| **Admin Service** | 3006 | (internal) | Admin operations |
+| **API Gateway** | 3000 | http://localhost:3000 | Main entry point (strangler proxy) |
+| **Monolith** | 3000 (internal) | http://backend:3000 | Fallback, legacy code |
+| **Auth Service** | 3001 | (internal) | OAuth + JWT - ✅ Phase 2 |
+| **Question Service** | 3002 | (internal) | Question CRUD (planned) |
+| **Quiz Service** | 3003 | (internal) | Answer submission (planned) |
+| **Achievement Service** | 3004 | (internal) | Achievement unlocking (planned) |
+| **Leaderboard Service** | 3005 | (internal) | Rankings (planned) |
+| **Admin Service** | 3006 | (internal) | Admin operations (planned) |
 | **NATS** | 4222 | nats://localhost | Message broker |
 | **NATS Monitor** | 8222 | http://localhost:8222 | Event inspection |
 | **PostgreSQL** | 5432 | localhost:5432 | Database |
@@ -74,19 +85,84 @@ User Browser
     ↓
 [Frontend: 4200] - Angular app
     ↓
-[API Gateway: 80] - Routes requests + adds correlation ID
+[API Gateway: 3000] - Strangler proxy routes requests + adds correlation ID
     ↓
-┌─────────────────────────────────────┐
-│  Service Routing (strangler pattern)│
-├─────────────────────────────────────┤
-│ GET  /api/questions    → Question Service
-│ POST /api/stats        → Quiz Service
-│ GET  /api/achievements → Achievement Service
-│ GET  /api/leaderboard  → Leaderboard Service
-│ ALL  /api/*            → Monolith (fallback)
-└─────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│  Service Routing (Phase 2: Auth Service extracted)  │
+├──────────────────────────────────────────────────────┤
+│ GET  /api/auth/*            → Auth Service (3001) ✅│
+│ GET  /api/questions         → Monolith (3000)      │
+│ POST /api/stats             → Monolith (3000)      │
+│ POST /api/answer            → Monolith (3000)      │
+│ GET  /api/achievements      → Monolith (3000)      │
+│ GET  /api/leaderboard       → Monolith (3000)      │
+│ ALL  /api/admin/*           → Monolith (3000)      │
+│ Everything else             → Monolith (3000)      │
+└──────────────────────────────────────────────────────┘
     ↓
 [PostgreSQL] + [NATS] + [Event Store]
+```
+
+**Strangler Pattern:** New services intercept specific routes while the monolith remains as a reliable fallback.
+
+---
+
+## Phase 2: Auth Service Extraction - Complete ✅
+
+### What Was Extracted
+
+The **Auth Service** (port 3001) is now a separate NestJS microservice:
+
+- **Location:** `services/auth-service/`
+- **Responsibilities:** 
+  - User authentication (JWT tokens)
+  - OAuth2 integration (Google)
+  - User profile management
+  - Event publishing (user.login events to NATS)
+- **Database:** Shared PostgreSQL (user credentials and profiles)
+- **Messaging:** Publishes `user.login` events to NATS broker
+
+### Testing Auth Service
+
+```bash
+# Health check
+curl http://localhost:3000/api/auth/health
+
+# Google OAuth flow (redirects to Google)
+curl -X GET http://localhost:3000/api/auth/google
+
+# Get authenticated user profile
+curl -X GET http://localhost:3000/api/auth/profile \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Architecture Improvements
+
+1. **Strangler Proxy:** API Gateway (port 3000) routes `/api/auth/*` to auth-service
+2. **Event Publishing:** Auth service publishes events to NATS when users log in
+3. **Service Discovery:** Services communicate via Docker/K8s service DNS
+4. **Shared Database:** Auth service shares PostgreSQL with monolith (transition phase)
+5. **NATS Integration:** Full event-driven architecture in place
+
+### Docker Compose Setup
+
+```yaml
+auth-service:
+  ports: ["3001:3001"]
+  depends_on: [nats, postgres]
+  env: JWT_SECRET, GOOGLE_*, DATABASE_URL, NATS_URL
+  health_check: GET /api/auth/health
+```
+
+### Kubernetes Deployment
+
+```bash
+# Deploy auth-service to K8s
+./k8s/deploy.sh
+
+# Verify deployment
+kubectl get deployments -n node-learn
+kubectl logs -n node-learn deployment/auth-service
 ```
 
 ---
@@ -96,10 +172,14 @@ User Browser
 ### View All Logs
 
 ```bash
-# Follow all service logs with timestamps
+# Follow all service logs with timestamps (recommended)
+npm run logs
+
+# Or manually with docker-compose
 docker-compose logs -f --timestamps
 
 # Follow specific service
+docker-compose logs -f auth-service
 docker-compose logs -f backend
 docker-compose logs -f api-gateway
 docker-compose logs -f nats
@@ -121,12 +201,17 @@ docker-compose down
 docker-compose down -v
 
 # Restart specific service
-docker-compose restart quiz-service
+docker-compose restart auth-service
+docker-compose restart api-gateway
 ```
 
-### Rebuild Services
+### Rebuild Microservices
 
 ```bash
+# Rebuild auth-service after code changes
+docker-compose build auth-service
+docker-compose up -d auth-service
+
 # Rebuild API Gateway after code changes
 docker-compose build api-gateway
 docker-compose up -d api-gateway
@@ -197,20 +282,19 @@ ORDER BY created_at DESC;
 ### 1. Authenticate User
 
 ```bash
-# Start OAuth flow
-curl -X GET "http://localhost/api/auth/google/callback?code=test-code" \
-  -H "Cookie: code=test-code" \
-  -v
+# Health check auth service (through gateway)
+curl http://localhost:3000/api/auth/health
 
-# Save the JWT token returned
-export JWT_TOKEN="your.jwt.token.here"
+# Get user profile (requires JWT)
+curl -X GET http://localhost:3000/api/auth/profile \
+  -H "Authorization: Bearer $JWT_TOKEN"
 ```
 
-### 2. Submit Answer (Triggers Saga)
+### 2. Submit Answer (Still Routed to Monolith)
 
 ```bash
-# This publishes answer.submitted event
-curl -X POST "http://localhost/api/stats/record" \
+# This goes to monolith (not yet extracted)
+curl -X POST "http://localhost:3000/api/stats/record" \
   -H "Authorization: Bearer $JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -228,25 +312,64 @@ In another terminal, watch NATS:
 nats sub '>' --server=nats://localhost:4222
 
 # You should see:
-# - answer.submitted event
+# - user.login event (when auth-service publishes it)
+# - answer.submitted event (from monolith)
 # - achievement.earned event (if conditions met)
 # - leaderboard.entry.updated event
 ```
 
-### 4. Verify State Changes
+### 4. Verify Auth Service Events
 
 ```bash
-# Check if achievement was earned
-curl -X GET "http://localhost/api/achievements/earned" \
-  -H "Authorization: Bearer $JWT_TOKEN"
+# Watch auth service events specifically
+nats sub 'user.*' --server=nats://localhost:4222
 
-# Check leaderboard updated
-curl -X GET "http://localhost/api/leaderboard/quiz-modes/1"
-
-# Check user stats
-curl -X GET "http://localhost/api/stats/user" \
-  -H "Authorization: Bearer $JWT_TOKEN"
+# Make a login request and watch for user.login events
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "password"}'
 ```
+
+---
+
+## Phase 2 Integration Testing Checklist
+
+Use this checklist to verify that Phase 2 (Auth Service extraction) is working correctly:
+
+### Container Health Checks ✅
+- [ ] `docker-compose ps` shows all containers healthy (auth-service, api-gateway, backend, nats, postgres, frontend)
+- [ ] `curl http://localhost:3001/api/auth/health` returns 200 (direct to service)
+- [ ] `curl http://localhost:3000/api/auth/health` returns 200 (through gateway)
+
+### API Gateway Routing ✅
+- [ ] `curl http://localhost:3000/api/auth/health` → auth-service (3001)
+- [ ] `curl http://localhost:3000/api/questions` → backend monolith (3000)
+- [ ] `curl http://localhost:3000/api/stats` → backend monolith (3000)
+- [ ] All requests include x-correlation-id header for tracing
+
+### Event Publishing ✅
+- [ ] Auth service connects to NATS on startup (check logs: "Connected to NATS")
+- [ ] `nats sub 'user.*'` shows subscriptions active
+- [ ] After login/authentication, `user.login` events appear in NATS stream
+- [ ] Events contain proper metadata (id, timestamp, correlationId, serviceId)
+
+### Service Communication ✅
+- [ ] Auth service can resolve `postgres:5432` (internal DNS)
+- [ ] Auth service can resolve `nats:4222` (internal DNS)
+- [ ] Auth service retrieves user data from PostgreSQL
+- [ ] Auth service publishes events to NATS broker
+
+### Error Handling ✅
+- [ ] Invalid auth requests return proper error responses
+- [ ] Service logs show correlation IDs for debugging
+- [ ] Failed NATS connections don't crash the service
+- [ ] Gateway properly handles service timeouts
+
+### Kubernetes Deployment (if tested) ✅
+- [ ] `./k8s/deploy.sh` successfully builds and pushes auth-service image
+- [ ] `kubectl get deployments -n node-learn` shows auth-service running
+- [ ] Auth service pod can reach PostgreSQL and NATS via K8s DNS
+- [ ] Health checks pass: `kubectl get pods -n node-learn`
 
 ---
 
@@ -256,10 +379,15 @@ curl -X GET "http://localhost/api/stats/user" \
 
 ```bash
 # Gateway health
-curl http://localhost/health | jq
+curl http://localhost:3000/health | jq
+
+# Auth service health (through gateway)
+curl http://localhost:3000/api/auth/health
 
 # Individual service health (internal only)
-docker exec node-learn-backend curl http://localhost:3000/health
+docker exec node-learn-auth-service curl http://localhost:3001/api/auth/health
+docker exec node-learn-backend curl http://localhost:3000/api/health
+docker exec node-learn-api-gateway curl http://localhost:3000/health
 docker exec node-learn-nats curl http://localhost:8222/healthz
 ```
 
@@ -267,43 +395,39 @@ docker exec node-learn-nats curl http://localhost:8222/healthz
 
 ```bash
 # See why a service failed to start
-docker-compose logs backend
+docker-compose logs auth-service
 docker-compose logs api-gateway
+docker-compose logs backend
 docker-compose logs postgres
 
 # Real-time logs
-docker-compose logs -f quiz-service
+docker-compose logs -f auth-service
 ```
 
 ### Execute Commands in Container
 
 ```bash
-# Connect to running service
-docker exec -it node-learn-backend sh
+# Connect to auth-service
+docker exec -it node-learn-auth-service sh
 
 # Check environment variables
-docker exec node-learn-backend env | grep SERVICE
-
-# Run database migrations
-docker exec node-learn-backend npm run typeorm migration:run
+docker exec node-learn-auth-service env | grep -E "JWT|NATS"
 
 # NATS CLI inside container
-docker exec node-learn-nats nats sub '>' 
+docker exec node-learn-nats nats sub '>'
 ```
 
 ### Test Service Directly (Bypass Gateway)
 
 ```bash
-# Skip gateway, test monolith directly
+# Test auth service directly (port 3001)
+curl http://localhost:3001/api/auth/health
+
+# Test through gateway (port 3000)
+curl http://localhost:3000/api/auth/health
+
+# Test monolith directly
 curl http://localhost:3000/api/questions
-
-# Test auth service directly
-curl http://localhost:3001/api/auth/status
-
-# Test quiz service
-curl -X POST http://localhost:3003/api/stats/record \
-  -H "Content-Type: application/json" \
-  -d '{"questionId": 1, "isCorrect": true}'
 ```
 
 ---
@@ -473,11 +597,52 @@ nats sub 'answer.submitted' --server=nats://localhost:4222
 
 ## Next Steps
 
-- Phase 2: Extract Auth Service
-- Phase 3: Extract Question Service  
-- Phase 4: Extract Quiz Service with saga orchestrator
-- Phase 5: Extract Achievement Service
-- Phase 6: Extract Leaderboard Service
+### Phase 2 Completed ✅
+
+- ✅ Auth Service extracted as standalone microservice
+- ✅ API Gateway with strangler proxy pattern operational
+- ✅ NATS event broker integrated
+- ✅ Docker Compose orchestration working
+- ✅ K8s deployment configured (k8s/auth-deployment.yaml)
+- ✅ Event publishing (user.login events to NATS)
+- ✅ Service health checks and logging
+
+### Phase 3: Extract Question Service (Planned)
+
+```
+Location: services/question-service/
+Responsibility: GET /api/questions (read-only)
+Extraction Pattern: Same as auth-service
+Gateway Routing: GET /api/questions → question-service:3002
+Database: Shared PostgreSQL (transition phase)
+Events: question.viewed, question.loaded
+```
+
+### Phase 4: Extract Quiz Service (Planned)
+
+```
+Location: services/quiz-service/
+Responsibility: POST /api/stats (answer submission)
+Extraction Pattern: Saga orchestrator pattern
+Gateway Routing: POST /api/stats → quiz-service:3003
+Database: Shared PostgreSQL
+Events: answer.submitted, answer.evaluated, achievement.checked
+```
+
+### Phase 5-6: Extract Achievement & Leaderboard Services
+
+- Achievement Service: services/achievement-service/ (port 3004)
+- Leaderboard Service: services/leaderboard-service/ (port 3005)
+
+### Phase 7: Database Per Service
+
+Once all services are extracted, migrate to independent databases:
+- postgres-auth (auth-service)
+- postgres-question (question-service)
+- postgres-quiz (quiz-service)
+- postgres-achievement (achievement-service)
+- postgres-leaderboard (leaderboard-service)
+- postgres-event-store (shared by all for event sourcing)
 
 See `MICROSERVICES_MIGRATION_PLAN.md` for full roadmap.
 
@@ -485,7 +650,9 @@ See `MICROSERVICES_MIGRATION_PLAN.md` for full roadmap.
 
 ## Getting Help
 
-- Check service logs: `docker-compose logs <service>`
-- Inspect events: `nats sub '>'`
-- Query database: `psql -h localhost -U postgres`
-- View this guide: `MICROSERVICES_DEV_GUIDE.md`
+- **Service Logs:** `npm run logs` or `docker-compose logs -f <service>`
+- **Event Inspection:** `nats sub '>'` (watch NATS topics)
+- **Database Queries:** `psql -h localhost -U postgres`
+- **Gateway Routing:** Check `services/api-gateway/src/gateway.controller.ts`
+- **Auth Service Code:** `services/auth-service/src/`
+- **Full Guide:** This file (`MICROSERVICES_DEV_GUIDE.md`)

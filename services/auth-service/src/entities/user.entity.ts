@@ -4,7 +4,6 @@ export class User {
   googleId: string;
   email: string;
   name: string;
-  picture?: string;
   isAdmin: boolean;
   createdAt: Date;
   updatedAt: Date;

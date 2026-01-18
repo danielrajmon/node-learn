@@ -1,6 +1,9 @@
 backend/dist
 backend/node_modules
 
+services/api-gateway/dist
+services/api-gateway/node_modules
+
 services/auth-service/dist
 services/auth-service/node_modules
 

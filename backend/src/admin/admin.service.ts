@@ -7,7 +7,7 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { QuestionService } from '../question/question.service';
 import { QuestionFilters } from '../question/interfaces/question.interface';
 import { QuestionDto } from '../question/dto/question.dto';
-import { User } from '../auth/entities/user.entity';
+import { User } from '../shared/entities/user.entity';
 
 @Injectable()
 export class AdminService {
