@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Full-stack quiz application with NestJS backend and Angular frontend",
   "scripts": {
-    "start": "docker-compose up -d && echo '✓ Services running on: http://localhost:3000'",
+    "start": "docker-compose up",
     "stop": "docker-compose down",
     "logs": "docker-compose logs -f --timestamps",
     "dev": "./scripts/dev.sh",

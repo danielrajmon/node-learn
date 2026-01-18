@@ -71,6 +71,38 @@ services:
       retries: 3
       start_period: 40s  # Grace period for TypeScript compilation
 
+  # ====== Auth Microservice ======
+  # Handles user authentication, JWT tokens, OAuth
+  # Status: Phase 2 - Extracted from monolith, ready for deployment
+  auth-service:
+    container_name: node-learn-auth-service
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - SERVICE_ID=auth-service
+      - NATS_URL=nats://nats:4222
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-http://localhost:3000/api/auth/google/callback}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:4200}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      - nats
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/auth/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   # api-gateway:
   #   container_name: node-learn-api-gateway
   #   build:
