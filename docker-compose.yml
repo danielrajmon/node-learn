@@ -103,35 +103,42 @@ services:
       retries: 3
       start_period: 40s
 
-  # api-gateway:
-  #   container_name: node-learn-api-gateway
-  #   build:
-  #     context: ./services/api-gateway
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "80:3000"
-  #   environment:
-  #     - NODE_ENV=production
-  #     - PORT=3000
-  #     - SERVICE_ID=api-gateway
-  #     - JWT_SECRET=${JWT_SECRET}
-  #     - MONOLITH_URL=http://backend:3000
-  #     - AUTH_SERVICE_URL=http://auth-service:3001
-  #     - QUESTION_SERVICE_URL=http://question-service:3002
-  #     - QUIZ_SERVICE_URL=http://quiz-service:3003
-  #     - ACHIEVEMENT_SERVICE_URL=http://achievement-service:3004
-  #     - LEADERBOARD_SERVICE_URL=http://leaderboard-service:3005
-  #     - ADMIN_SERVICE_URL=http://admin-service:3006
-  #   depends_on:
-  #     - backend
-  #     - nats
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 40s
+  # ====== API Gateway ======
+  # Strangler proxy pattern: routes requests to microservices or falls back to monolith
+  # /api/auth/* → auth-service:3001
+  # /api/questions GET → question-service (future)
+  # /api/admin/* → monolith:3000
+  # Everything else → monolith:3000 (gradual migration)
+  api-gateway:
+    container_name: node-learn-api-gateway
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Public API endpoint
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SERVICE_ID=api-gateway
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
+      - MONOLITH_URL=http://backend:3000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - QUESTION_SERVICE_URL=http://question-service:3002
+      - QUIZ_SERVICE_URL=http://quiz-service:3003
+      - ACHIEVEMENT_SERVICE_URL=http://achievement-service:3004
+      - LEADERBOARD_SERVICE_URL=http://leaderboard-service:3005
+      - ADMIN_SERVICE_URL=http://admin-service:3006
+    depends_on:
+      - backend
+      - auth-service
+      - nats
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ====== Angular Frontend ======
   # User-facing web application (standalone components architecture)
@@ -147,7 +154,7 @@ services:
     ports:
       - "4200:80"  # Nginx serves Angular app on :80, exposed as :4200 locally
     depends_on:
-      - backend
+      - api-gateway
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/", "||", "exit", "1"]
