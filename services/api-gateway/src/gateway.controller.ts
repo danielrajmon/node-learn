@@ -73,39 +73,43 @@ export class GatewayController {
   /**
    * Determine which service to route to based on the request path
    * Uses strangler pattern: new services first, fallback to monolith
+   *
+   * NOTE: Traefik strips /api prefix before routing to gateway,
+   * so paths here do NOT have /api prefix (e.g., /questions not /api/questions)
    */
   private determineTarget(path: string, method: string): string {
     // Auth Service - all auth routes
-    if (path.startsWith('/api/auth')) {
+    // (Auth is routed directly by Traefik and doesn't reach gateway)
+    if (path.startsWith('/auth')) {
       return 'auth';
     }
 
-    // Question Service - read-only endpoints (GET /questions)
-    if (path.startsWith('/api/questions') && method === 'GET') {
+    // Questions Service - read-only endpoints (GET /questions)
+    if (path.startsWith('/questions') && method === 'GET') {
       return 'questions';
     }
 
     // Stats/Answer Service - answer submission, stats
     // NOTE: Until quiz is extracted, route to monolith
-    if (path.startsWith('/api/stats') || path.startsWith('/api/answer')) {
+    if (path.startsWith('/stats') || path.startsWith('/answer')) {
       return 'monolith'; // TODO: change to 'quiz' once extracted
     }
 
     // Achievements Service - read achievements
     // NOTE: Until achievements is extracted, route to monolith
-    if (path.startsWith('/api/achievements')) {
+    if (path.startsWith('/achievements')) {
       return 'monolith'; // TODO: change to 'achievements' once extracted
     }
 
     // Leaderboard Service
     // NOTE: Until leaderboard is extracted, route to monolith
-    if (path.startsWith('/api/leaderboard')) {
+    if (path.startsWith('/leaderboard')) {
       return 'monolith'; // TODO: change to 'leaderboard' once extracted
     }
 
     // Admin endpoints - all admin operations in monolith
     // NOTE: Until individual admin/service services are extracted
-    if (path.startsWith('/api/admin')) {
+    if (path.startsWith('/admin')) {
       return 'monolith'; // TODO: split to specific services once extracted
     }
 

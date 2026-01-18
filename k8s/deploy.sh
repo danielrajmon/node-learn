@@ -10,6 +10,7 @@ NC='\033[0m' # No Color
 REGISTRY="danielrajmon"  # Docker Hub username
 BACKEND_IMAGE="${REGISTRY}/node-learn-backend:latest"
 AUTH_IMAGE="${REGISTRY}/node-learn-auth:latest"
+QUESTIONS_IMAGE="${REGISTRY}/node-learn-questions:latest"
 FRONTEND_IMAGE="${REGISTRY}/node-learn-frontend:latest"
 IMPORT_QUESTIONS=true  # Set to false to skip import
 
@@ -73,6 +74,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "Building questions image..."
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-questions:latest ./services/questions
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build questions image${NC}"
+    exit 1
+fi
+
 echo "Building api-gateway image..."
 docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-api-gateway:latest ./services/api-gateway
 if [ $? -ne 0 ]; then
@@ -103,6 +111,10 @@ docker push ${FRONTEND_IMAGE}
 echo "Tagging and pushing auth image..."
 docker tag node-learn-auth:latest ${AUTH_IMAGE}
 docker push ${AUTH_IMAGE}
+
+echo "Tagging and pushing questions image..."
+docker tag node-learn-questions:latest ${QUESTIONS_IMAGE}
+docker push ${QUESTIONS_IMAGE}
 
 API_GATEWAY_IMAGE="${REGISTRY}/node-learn-api-gateway:latest"
 echo "Tagging and pushing api-gateway image..."
@@ -169,6 +181,16 @@ kubectl rollout restart deployment/auth -n node-learn
 echo "Waiting for auth to be ready..."
 kubectl wait --for=condition=ready pod -l app=auth -n node-learn --timeout=120s
 echo -e "${GREEN}✓ Auth deployed${NC}"
+echo ""
+
+# Step 9: Deploy questions
+echo -e "${YELLOW}Step 9: Deploying questions...${NC}"
+kubectl apply -f k8s/question-deployment.yaml
+echo "Forcing questions to restart and pull latest image..."
+kubectl rollout restart deployment/questions -n node-learn
+echo "Waiting for questions to be ready..."
+kubectl wait --for=condition=ready pod -l app=questions -n node-learn --timeout=120s
+echo -e "${GREEN}✓ Questions deployed${NC}"
 echo ""
 
 # Step 10: Deploy api-gateway

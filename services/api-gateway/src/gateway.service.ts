@@ -49,10 +49,20 @@ export class GatewayService {
       throw new Error(`Unknown service target: ${target}`);
     }
 
-    // For microservices, strip the /api prefix from the path
+    // Handle path based on target service
     let path = req.path;
-    if (target !== 'monolith' && path.startsWith('/api')) {
-      path = path.slice(4); // Remove '/api'
+    if (target !== 'monolith') {
+      // For microservices, strip the /api prefix from the path
+      // (they handle their own routing without prefix)
+      if (path.startsWith('/api')) {
+        path = path.slice(4); // Remove '/api'
+      }
+    } else {
+      // For monolith (backend), add /api prefix if not already present
+      // (backend has setGlobalPrefix('api') expecting routes like /api/stats)
+      if (!path.startsWith('/api')) {
+        path = `/api${path}`;
+      }
     }
 
     const url = `${serviceUrl}${path}`;
