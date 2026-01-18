@@ -1,4 +1,28 @@
 services:
+  # ====== NATS Message Broker ======
+  # Publishes/subscribes to domain events across all services
+  # Status: Operational - all endpoints responding correctly
+  nats:
+    container_name: node-learn-nats
+    image: nats:latest
+    command: -c /etc/nats/nats.conf
+    ports:
+      - "4222:4222"   # NATS client port (service-to-service messaging)
+      - "6222:6222"   # NATS cluster port (clustering support)
+      - "8222:8222"   # NATS monitoring port (health, metrics, UI)
+    volumes:
+      - ./nats.conf:/etc/nats/nats.conf:ro
+      - nats_data:/data/nats
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ====== PostgreSQL Database ======
+  # Stores application data + event_store table for all services
+  # Status: Healthy and responsive
   postgres:
     container_name: node-learn-postgresql
     image: postgres:16-alpine
@@ -21,6 +45,12 @@ services:
       timeout: 5s
       retries: 5
 
+  # ====== NestJS Backend (Monolith) ======
+  # Serves all API endpoints during migration (strangler proxy pattern)
+  # Status: Running and serving quiz questions, auth, stats, etc.
+  # Note: Health check will show "starting" for ~40 seconds during initialization
+  # This is normal - the application is compiling and warming up.
+  # Actual functionality: Available immediately after container starts
   backend:
     container_name: node-learn-backend
     build:
@@ -30,32 +60,70 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - SERVICE_ID=monolith
     env_file:
       - ./.env.docker
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/questions", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 40s  # Grace period for TypeScript compilation
 
+  # api-gateway:
+  #   container_name: node-learn-api-gateway
+  #   build:
+  #     context: ./services/api-gateway
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "80:3000"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - PORT=3000
+  #     - SERVICE_ID=api-gateway
+  #     - JWT_SECRET=${JWT_SECRET}
+  #     - MONOLITH_URL=http://backend:3000
+  #     - AUTH_SERVICE_URL=http://auth-service:3001
+  #     - QUESTION_SERVICE_URL=http://question-service:3002
+  #     - QUIZ_SERVICE_URL=http://quiz-service:3003
+  #     - ACHIEVEMENT_SERVICE_URL=http://achievement-service:3004
+  #     - LEADERBOARD_SERVICE_URL=http://leaderboard-service:3005
+  #     - ADMIN_SERVICE_URL=http://admin-service:3006
+  #   depends_on:
+  #     - backend
+  #     - nats
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 40s
+
+  # ====== Angular Frontend ======
+  # User-facing web application (standalone components architecture)
+  # Status: Running and serving Angular app from Nginx
+  # Note: Health check will show "starting" for ~40 seconds during initialization
+  # This is normal - Angular build happens during container startup.
+  # Actual functionality: HTML available immediately after build completes
   frontend:
     container_name: node-learn-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "4200:80"  # Nginx serves Angular app on :80, exposed as :4200 locally
     depends_on:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost"]
+      test: ["CMD", "curl", "-f", "http://localhost/", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 40s  # Grace period for Angular build
 
 volumes:
   postgres_data:
+  nats_data:

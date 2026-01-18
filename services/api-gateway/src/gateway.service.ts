@@ -1,0 +1,164 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { Request } from 'express';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+
+/**
+ * Gateway Service
+ * Handles forwarding requests to backend services
+ * Manages routing and response transformation
+ */
+@Injectable()
+export class GatewayService {
+  private logger = new Logger('GatewayService');
+  private httpClient: AxiosInstance;
+
+  // Service URLs - from environment variables
+  private serviceUrls = {
+    'auth-service': process.env.AUTH_SERVICE_URL || 'http://auth-service:3001',
+    'question-service':
+      process.env.QUESTION_SERVICE_URL || 'http://question-service:3002',
+    'quiz-service': process.env.QUIZ_SERVICE_URL || 'http://quiz-service:3003',
+    'achievement-service':
+      process.env.ACHIEVEMENT_SERVICE_URL || 'http://achievement-service:3004',
+    'leaderboard-service':
+      process.env.LEADERBOARD_SERVICE_URL || 'http://leaderboard-service:3005',
+    'admin-service': process.env.ADMIN_SERVICE_URL || 'http://admin-service:3006',
+    monolith: process.env.MONOLITH_URL || 'http://backend:3000',
+  };
+
+  constructor() {
+    this.httpClient = axios.create({
+      timeout: 30000,
+      validateStatus: () => true, // Don't throw on any status
+    });
+  }
+
+  /**
+   * Forward request to target service
+   * Preserves headers, body, and adds correlation tracking
+   */
+  async forwardRequest(
+    req: Request,
+    target: string,
+    correlationId: string,
+  ): Promise<{ status: number; headers: Record<string, any>; data: any }> {
+    const serviceUrl = this.serviceUrls[target];
+
+    if (!serviceUrl) {
+      throw new Error(`Unknown service target: ${target}`);
+    }
+
+    const url = `${serviceUrl}${req.path}`;
+    const query = req.url.split('?')[1];
+    const fullUrl = query ? `${url}?${query}` : url;
+
+    const config: AxiosRequestConfig = {
+      method: req.method as any,
+      url: fullUrl,
+      headers: this.prepareHeaders(req, correlationId, target),
+      data: this.prepareBody(req),
+    };
+
+    this.logger.debug(`Forwarding [${correlationId}] ${req.method} ${fullUrl} → ${target}`);
+
+    try {
+      const response = await this.httpClient.request(config);
+
+      this.logger.debug(
+        `[${correlationId}] Response from ${target}: ${response.status}`,
+      );
+
+      return {
+        status: response.status,
+        headers: this.filterResponseHeaders(response.headers),
+        data: response.data,
+      };
+    } catch (error) {
+      this.logger.error(
+        `[${correlationId}] Error forwarding to ${target}: ${error.message}`,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Prepare headers for forwarding
+   * Keep important headers, add correlation ID, remove hop-by-hop headers
+   */
+  private prepareHeaders(
+    req: Request,
+    correlationId: string,
+    target: string,
+  ): Record<string, any> {
+    const headers = {
+      ...req.headers,
+    };
+
+    // Remove hop-by-hop headers
+    delete headers['host'];
+    delete headers['connection'];
+    delete headers['content-length'];
+
+    // Add/update correlation ID for tracing
+    headers['x-correlation-id'] = correlationId;
+    headers['x-forwarded-by'] = 'api-gateway';
+    headers['x-forwarded-proto'] = req.protocol;
+
+    return headers;
+  }
+
+  /**
+   * Prepare request body
+   */
+  private prepareBody(req: Request): any {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return undefined;
+    }
+    return req.body;
+  }
+
+  /**
+   * Filter response headers
+   * Remove sensitive/hop-by-hop headers
+   */
+  private filterResponseHeaders(headers: Record<string, any>): Record<string, any> {
+    const filtered = { ...headers };
+    const removedHeaders = [
+      'connection',
+      'content-encoding',
+      'content-length',
+      'transfer-encoding',
+      'keep-alive',
+    ];
+
+    removedHeaders.forEach((header) => {
+      delete filtered[header];
+    });
+
+    return filtered;
+  }
+
+  /**
+   * Health check endpoint
+   */
+  async health(): Promise<{ status: string; services: Record<string, string> }> {
+    const serviceHealth: Record<string, string> = {};
+
+    for (const [serviceName, url] of Object.entries(this.serviceUrls)) {
+      try {
+        const response = await this.httpClient.get(`${url}/health`, {
+          timeout: 5000,
+        });
+        serviceHealth[serviceName] =
+          response.status === 200 ? 'healthy' : 'unhealthy';
+      } catch {
+        serviceHealth[serviceName] = 'unreachable';
+      }
+    }
+
+    return {
+      status: 'gateway-ok',
+      services: serviceHealth,
+    };
+  }
+}

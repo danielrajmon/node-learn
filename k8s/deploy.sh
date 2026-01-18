@@ -110,8 +110,16 @@ kubectl wait --for=condition=ready pod -l app=postgres -n node-learn --timeout=1
 echo -e "${GREEN}✓ PostgreSQL deployed${NC}"
 echo ""
 
-# Step 6: Deploy backend
-echo -e "${YELLOW}Step 6: Deploying backend...${NC}"
+# Step 6: Deploy NATS
+echo -e "${YELLOW}Step 6: Deploying NATS...${NC}"
+kubectl apply -f k8s/nats-deployment.yaml
+echo "Waiting for NATS to be ready..."
+kubectl wait --for=condition=ready pod -l app=nats -n node-learn --timeout=120s
+echo -e "${GREEN}✓ NATS deployed${NC}"
+echo ""
+
+# Step 7: Deploy backend
+echo -e "${YELLOW}Step 7: Deploying backend...${NC}"
 kubectl apply -f k8s/backend-config.yaml
 kubectl apply -f k8s/backend-deployment.yaml
 echo "Forcing backend to restart and pull latest image..."
@@ -122,7 +130,7 @@ echo -e "${GREEN}✓ Backend deployed${NC}"
 echo ""
 
 # Step 7: Deploy frontend
-echo -e "${YELLOW}Step 7: Deploying frontend...${NC}"
+echo -e "${YELLOW}Step 8: Deploying frontend...${NC}"
 kubectl apply -f k8s/frontend-deployment.yaml
 echo "Forcing frontend to restart and pull latest image..."
 kubectl rollout restart deployment/frontend -n node-learn
@@ -132,14 +140,14 @@ echo -e "${GREEN}✓ Frontend deployed${NC}"
 echo ""
 
 # Step 8: Deploy ingress
-echo -e "${YELLOW}Step 8: Deploying ingress...${NC}"
+echo -e "${YELLOW}Step 9: Deploying ingress...${NC}"
 kubectl apply -f k8s/ingress.yaml
 echo -e "${GREEN}✓ Ingress deployed${NC}"
 echo ""
 
 # Step 9: Import questions into the database
 if [ "$IMPORT_QUESTIONS" = true ]; then
-    echo -e "${YELLOW}Step 9: Importing questions into the database...${NC}"
+    echo -e "${YELLOW}Step 10: Importing questions into the database...${NC}"
     # Delete existing job to force re-import
     kubectl delete job import-questions -n node-learn --ignore-not-found=true
     kubectl apply -f k8s/import-questions.yaml
