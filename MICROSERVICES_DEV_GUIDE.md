@@ -2,7 +2,7 @@
 
 **Last Updated:** January 18, 2026  
 **Project:** Node-Learn Microservices Migration  
-**Phase Status:** Phase 2 Complete (Auth Service extracted, API Gateway operational)
+**Phase Status:** Phase 3 Complete (Auth & Questions Services extracted, deployed to K8s)
 
 This guide covers setting up and developing with the new microservices architecture locally.
 
@@ -67,8 +67,8 @@ open http://localhost:3000/api/docs
 |---------|------|-----|---------|
 | **API Gateway** | 3000 | http://localhost:3000 | Main entry point (strangler proxy) |
 | **Monolith** | 3000 (internal) | http://backend:3000 | Fallback, legacy code |
-| **Auth Service** | 3001 | (internal) | OAuth + JWT - ✅ Phase 2 |
-| **Question Service** | 3002 | (internal) | Question CRUD (planned) |
+| **Auth** | 3001 | (internal) | OAuth + JWT - ✅ Phase 2 |
+| **Questions** | 3002 | (internal) | Question CRUD - ✅ Phase 3 |
 | **Quiz Service** | 3003 | (internal) | Answer submission (planned) |
 | **Achievement Service** | 3004 | (internal) | Achievement unlocking (planned) |
 | **Leaderboard Service** | 3005 | (internal) | Rankings (planned) |
@@ -88,10 +88,10 @@ User Browser
 [API Gateway: 3000] - Strangler proxy routes requests + adds correlation ID
     ↓
 ┌──────────────────────────────────────────────────────┐
-│  Service Routing (Phase 2: Auth Service extracted)  │
+│  Service Routing (Phase 3: Auth + Questions)        │
 ├──────────────────────────────────────────────────────┤
-│ GET  /api/auth/*            → Auth Service (3001) ✅│
-│ GET  /api/questions         → Monolith (3000)      │
+│ GET  /api/auth/*            → Auth (3001)         ✅│
+│ GET  /api/questions/*       → Questions (3002)    ✅│
 │ POST /api/stats             → Monolith (3000)      │
 │ POST /api/answer            → Monolith (3000)      │
 │ GET  /api/achievements      → Monolith (3000)      │
@@ -164,6 +164,60 @@ auth:
 kubectl get deployments -n node-learn
 kubectl logs -n node-learn deployment/auth
 ```
+
+---
+
+## Phase 3: Questions Service Extraction - Complete ✅
+
+### What Was Extracted
+
+The **Questions Service** (port 3002) is now a separate NestJS microservice:
+
+- **Location:** `services/questions/`
+- **Responsibilities:** 
+  - Read-only question data (GET endpoints)
+  - Question retrieval by ID
+  - Random question selection
+  - Question listing and filtering
+- **Database:** Shared PostgreSQL (read-only access to questions table)
+- **Gateway Routing:** `GET /api/questions/*` routes to questions:3002
+
+### Testing Questions Service
+
+```bash
+# Health check (through gateway)
+curl http://localhost:3000/api/questions/health
+
+# Get all questions
+curl http://localhost:3000/api/questions | jq length
+
+# Get random question
+curl http://localhost:3000/api/questions/random | jq '.id'
+
+# Get specific question
+curl http://localhost:3000/api/questions/1 | jq '.question'
+```
+
+### Kubernetes Deployment
+
+```bash
+# Deploy questions service to K8s
+./k8s/deploy.sh
+
+# Verify deployment
+kubectl get deployments -n node-learn | grep questions
+kubectl logs -n node-learn deployment/questions
+
+# Test in K8s
+curl https://huvinas.myqnapcloud.com:61510/api/questions | jq length
+```
+
+### Architecture Notes
+
+1. **Strangler Pattern:** Gateway routes `/api/questions/*` (GET only) to questions service
+2. **Service Discovery:** Questions service resolves via DNS (`questions:3002` in Docker, `questions.node-learn.svc.cluster.local` in K8s)
+3. **Path Handling:** Traefik strips `/api` prefix in K8s; gateway handles routing correctly
+4. **Monolith Fallback:** Non-migrated endpoints still route to backend monolith
 
 ---
 
@@ -332,20 +386,24 @@ curl -X POST http://localhost:3000/api/auth/login \
 
 ---
 
-## Phase 2 Integration Testing Checklist
+## Phase 2 & 3 Integration Testing Checklist
 
-Use this checklist to verify that Phase 2 (Auth Service extraction) is working correctly:
+Use this checklist to verify that Phase 2 (Auth) and Phase 3 (Questions) extractions are working correctly:
 
 ### Container Health Checks ✅
-- [ ] `docker-compose ps` shows all containers healthy (auth, api-gateway, backend, nats, postgres, frontend)
-- [ ] `curl http://localhost:3001/api/auth/health` returns 200 (direct to service)
-- [ ] `curl http://localhost:3000/api/auth/health` returns 200 (through gateway)
+- [x] `docker-compose ps` shows all containers healthy (auth, questions, api-gateway, backend, nats, postgres, frontend)
+- [x] `curl http://localhost:3001/auth/health` returns 200 (auth direct)
+- [x] `curl http://localhost:3002/questions/health` returns 200 (questions direct)
+- [x] `curl http://localhost:3000/api/auth/health` returns 200 (through gateway)
+- [x] `curl http://localhost:3000/api/questions` returns questions array (through gateway)
 
 ### API Gateway Routing ✅
-- [ ] `curl http://localhost:3000/api/auth/health` → auth (3001)
-- [ ] `curl http://localhost:3000/api/questions` → backend monolith (3000)
-- [ ] `curl http://localhost:3000/api/stats` → backend monolith (3000)
-- [ ] All requests include x-correlation-id header for tracing
+- [x] `curl http://localhost:3000/api/auth/health` → auth (3001)
+- [x] `curl http://localhost:3000/api/questions` → questions (3002)
+- [x] `curl http://localhost:3000/api/stats/user/123` → backend monolith (adds /api prefix)
+- [x] `curl http://localhost:3000/api/achievements` → backend monolith
+- [x] `curl http://localhost:3000/api/leaderboard/mode/1` → backend monolith
+- [x] All requests include x-correlation-id header for tracing
 
 ### Event Publishing ✅
 - [ ] Auth service connects to NATS on startup (check logs: "Connected to NATS")
@@ -354,22 +412,31 @@ Use this checklist to verify that Phase 2 (Auth Service extraction) is working c
 - [ ] Events contain proper metadata (id, timestamp, correlationId, serviceId)
 
 ### Service Communication ✅
-- [ ] Auth service can resolve `postgres:5432` (internal DNS)
-- [ ] Auth service can resolve `nats:4222` (internal DNS)
-- [ ] Auth service retrieves user data from PostgreSQL
-- [ ] Auth service publishes events to NATS broker
+- [x] Auth service can resolve `postgres:5432` (internal DNS)
+- [x] Auth service can resolve `nats:4222` (internal DNS)
+- [x] Auth service retrieves user data from PostgreSQL
+- [x] Auth service publishes events to NATS broker
+- [x] Questions service can resolve `postgres:5432` (internal DNS)
+- [x] Questions service reads question data from PostgreSQL
 
 ### Error Handling ✅
-- [ ] Invalid auth requests return proper error responses
-- [ ] Service logs show correlation IDs for debugging
-- [ ] Failed NATS connections don't crash the service
-- [ ] Gateway properly handles service timeouts
+- [x] Invalid auth requests return proper error responses
+- [x] Invalid question IDs return 404 errors
+- [x] Service logs show correlation IDs for debugging
+- [x] Failed NATS connections don't crash the service
+- [x] Gateway properly handles service timeouts
 
-### Kubernetes Deployment (if tested) ✅
-- [ ] `./k8s/deploy.sh` successfully builds and pushes auth image
-- [ ] `kubectl get deployments -n node-learn` shows auth running
-- [ ] Auth service pod can reach PostgreSQL and NATS via K8s DNS
-- [ ] Health checks pass: `kubectl get pods -n node-learn`
+### Kubernetes Deployment ✅
+- [x] `./k8s/deploy.sh` successfully builds and pushes auth & questions images
+- [x] `kubectl get deployments -n node-learn` shows auth & questions running
+- [x] Auth & Questions pods can reach PostgreSQL and NATS via K8s DNS
+- [x] Health checks pass: `kubectl get pods -n node-learn`
+- [x] Ingress routing configured: Traefik strips `/api`, gateway handles routing
+- [x] Questions endpoint working: `curl https://huvinas.myqnapcloud.com:61510/api/questions`
+- [x] Monolith fallback working: unmigrated services route to backend correctly
+- [x] Ingress routing configured: Traefik strips `/api`, gateway handles routing
+- [x] Questions endpoint working: `curl https://huvinas.myqnapcloud.com:61510/api/questions`
+- [x] Monolith fallback working: unmigrated services route to backend correctly
 
 ---
 
@@ -603,20 +670,20 @@ nats sub 'answer.submitted' --server=nats://localhost:4222
 - ✅ API Gateway with strangler proxy pattern operational
 - ✅ NATS event broker integrated
 - ✅ Docker Compose orchestration working
-- ✅ K8s deployment configured (k8s/auth-deployment.yaml)
+- ✅ K8s deployment configured and deployed
 - ✅ Event publishing (user.login events to NATS)
 - ✅ Service health checks and logging
 
-### Phase 3: Extract Question Service (Planned)
+### Phase 3 Completed ✅
 
-```
-Location: services/questions/
-Responsibility: GET /api/questions (read-only)
-Extraction Pattern: Same as auth
-Gateway Routing: GET /api/questions → questions:3002
-Database: Shared PostgreSQL (transition phase)
-Events: question.viewed, question.loaded
-```
+- ✅ Questions Service extracted as standalone microservice
+- ✅ Gateway routing updated for questions endpoints
+- ✅ Docker Compose configuration added
+- ✅ K8s deployment configured and deployed (k8s/question-deployment.yaml)
+- ✅ Read-only access to questions table
+- ✅ Service discovery working in both Docker and K8s
+- ✅ Path routing fixed (Traefik `/api` prefix handling)
+- ✅ Monolith routing fixed (gateway adds `/api` prefix for backend)
 
 ### Phase 4: Extract Quiz Service (Planned)
 
