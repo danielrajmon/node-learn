@@ -15,7 +15,7 @@ services:
       - nats_data:/data/nats
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8222/healthz"]
+      test: ["CMD", "nats-server", "--version"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -64,7 +64,13 @@ services:
       - ./.env.docker
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/questions", "||", "exit", "1"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3000/api').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -96,7 +102,13 @@ services:
       - postgres
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/auth/health", "||", "exit", "1"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3001/auth/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -121,7 +133,50 @@ services:
       - postgres
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3002/docs", "||", "exit", "1"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3002/questions/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ====== Quiz Microservice ======
+  # Handles answer submission and evaluation using Saga pattern
+  # Status: Phase 4 - Extracted from monolith
+  quiz:
+    container_name: node-learn-quiz
+    build:
+      context: ./services/quiz
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - SERVICE_ID=quiz
+      - NATS_URL=nats://nats:4222
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      - nats
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3003/quiz/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -131,6 +186,8 @@ services:
   # Strangler proxy pattern: routes requests to microservices or falls back to monolith
   # /api/auth/* → auth:3001
   # /api/questions GET → questions:3002 ✅ Phase 3
+  # /api/answer POST → quiz:3003 ✅ Phase 4
+  # /api/stats POST → quiz:3003 ✅ Phase 4
   # /api/admin/* → monolith:3000
   # Everything else → monolith:3000 (gradual migration)
   api-gateway:
@@ -157,10 +214,17 @@ services:
       - backend
       - auth
       - questions
+      - quiz
       - nats
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health", "||", "exit", "1"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -183,7 +247,7 @@ services:
       - api-gateway
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/", "||", "exit", "1"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"]
       interval: 30s
       timeout: 10s
       retries: 3

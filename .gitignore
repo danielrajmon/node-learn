@@ -10,6 +10,9 @@ services/auth/node_modules
 services/questions/dist
 services/questions/node_modules
 
+services/quiz/dist
+services/quiz/node_modules
+
 k8s/postgres-secret.yaml
 
 .env

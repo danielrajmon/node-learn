@@ -15,7 +15,6 @@ import { StatsModule } from './stats/stats.module';
 import { AdminModule } from './admin/admin.module';
 import { AchievementsModule } from './achievements/achievements.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
-import { QuizModule } from './quiz/quiz.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { QuestionEntity } from './shared/entities/question.entity';
 import { ChoiceEntity } from './shared/entities/choice.entity';
@@ -47,7 +46,6 @@ import { User } from './shared/entities/user.entity';
     AchievementsModule,
     AdminModule,
     MaintenanceModule,
-    QuizModule,
     LeaderboardModule,
   ],
   controllers: [AppController],

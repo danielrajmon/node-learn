@@ -1,4 +1,4 @@
-import { Controller, All, Req, Res, Logger } from '@nestjs/common';
+import { Controller, All, Req, Res, Logger, Get } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { GatewayService } from './gateway.service';
 
@@ -12,6 +12,14 @@ export class GatewayController {
   private logger = new Logger('GatewayController');
 
   constructor(private gatewayService: GatewayService) {}
+
+  /**
+   * Health check endpoint for K8s liveness/readiness probes
+   */
+  @Get('health')
+  health() {
+    return { status: 'ok', service: 'api-gateway', timestamp: new Date().toISOString() };
+  }
 
   /**
    * Catch-all route - route to appropriate service based on path
@@ -74,42 +82,51 @@ export class GatewayController {
    * Determine which service to route to based on the request path
    * Uses strangler pattern: new services first, fallback to monolith
    *
-   * NOTE: Traefik strips /api prefix before routing to gateway,
-   * so paths here do NOT have /api prefix (e.g., /questions not /api/questions)
+   * NOTE: In K8s, Traefik strips /api prefix before routing to gateway.
+   * In Docker Compose, requests come with /api prefix directly.
+   * This function handles both cases.
    */
   private determineTarget(path: string, method: string): string {
+    // Normalize path - remove /api if present for consistent routing logic
+    const normalizedPath = path.startsWith('/api') ? path.slice(4) : path;
+
     // Auth Service - all auth routes
-    // (Auth is routed directly by Traefik and doesn't reach gateway)
-    if (path.startsWith('/auth')) {
+    // (Auth is routed directly by Traefik in K8s and doesn't reach gateway)
+    if (normalizedPath.startsWith('/auth')) {
       return 'auth';
     }
 
     // Questions Service - read-only endpoints (GET /questions)
-    if (path.startsWith('/questions') && method === 'GET') {
+    if (normalizedPath.startsWith('/questions') && method === 'GET') {
       return 'questions';
     }
 
-    // Stats/Answer Service - answer submission, stats
-    // NOTE: Until quiz is extracted, route to monolith
-    if (path.startsWith('/stats') || path.startsWith('/answer')) {
-      return 'monolith'; // TODO: change to 'quiz' once extracted
+    // Quiz Service - quiz modes, answer submission and stats
+    if (normalizedPath.startsWith('/quiz')) {
+      return 'quiz';
+    }
+    if (normalizedPath.startsWith('/answer') && method === 'POST') {
+      return 'quiz';
+    }
+    if (normalizedPath.startsWith('/stats')) {
+      return 'monolith';  // Stats endpoints are still in monolith
     }
 
     // Achievements Service - read achievements
     // NOTE: Until achievements is extracted, route to monolith
-    if (path.startsWith('/achievements')) {
+    if (normalizedPath.startsWith('/achievements')) {
       return 'monolith'; // TODO: change to 'achievements' once extracted
     }
 
     // Leaderboard Service
     // NOTE: Until leaderboard is extracted, route to monolith
-    if (path.startsWith('/leaderboard')) {
+    if (normalizedPath.startsWith('/leaderboard')) {
       return 'monolith'; // TODO: change to 'leaderboard' once extracted
     }
 
     // Admin endpoints - all admin operations in monolith
     // NOTE: Until individual admin/service services are extracted
-    if (path.startsWith('/admin')) {
+    if (normalizedPath.startsWith('/admin')) {
       return 'monolith'; // TODO: split to specific services once extracted
     }
 

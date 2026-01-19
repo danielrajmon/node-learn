@@ -15,6 +15,11 @@ export class QuestionController {
 
   constructor(private readonly questionService: QuestionService) {}
 
+  @Get('health')
+  health() {
+    return { status: 'ok', service: 'questions', timestamp: new Date().toISOString() };
+  }
+
   @Get()
   async findAll(
     @Query('search') search?: string,
