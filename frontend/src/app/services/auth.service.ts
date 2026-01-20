@@ -19,6 +19,26 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {
     this.loadUserFromStorage();
+    // If a token exists, refresh the user profile to avoid stale user data
+    const token = this.getToken();
+    if (token) {
+      const apiUrl = window.location.port === '4200'
+        ? 'http://localhost:3000/api/auth/profile'
+        : '/api/auth/profile';
+      this.http.get<User>(apiUrl).subscribe({
+        next: (user) => {
+          localStorage.setItem('user', JSON.stringify(user));
+          this.userSubject.next(user);
+        },
+        error: (err) => {
+          // Only logout on explicit 401 from auth; otherwise keep current state
+          if (err?.status === 401) {
+            this.logout();
+          }
+          // else ignore transient/profile load errors on startup
+        }
+      });
+    }
   }
 
   private loadUserFromStorage(): void {
@@ -84,7 +104,9 @@ export class AuthService {
         },
         error: (error) => {
           console.error('Failed to fetch user profile:', error);
-          this.logout();
+          if (error?.status === 401) {
+            this.logout();
+          }
           reject(error);
         }
       });

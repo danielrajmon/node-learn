@@ -13,8 +13,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
     return next(cloned).pipe(
       catchError((error) => {
-        // If 401 Unauthorized, token is expired or invalid
-        if (error.status === 401) {
+        // Only auto-logout on 401 from auth endpoints to avoid
+        // logging out due to unrelated service responses
+        const url = (error?.url || req.url) as string;
+        if (error.status === 401 && url.includes('/api/auth/')) {
           authService.logout();
         }
         return throwError(() => error);
