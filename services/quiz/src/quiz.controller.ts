@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Get, Logger, Param } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 
 export interface RecordAnswerDto {

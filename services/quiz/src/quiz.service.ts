@@ -112,4 +112,119 @@ export class QuizService {
     const result = await this.db.query(query, []);
     return result.rows;
   }
+
+  /**
+   * Get correct answer and choices for a question
+   */
+  async getAnswer(questionId: number): Promise<any> {
+    const query = `
+      SELECT
+        q.id as questionId,
+        c.id as correctChoiceId,
+        c.choice_text as answer,
+        (SELECT json_agg(json_build_object('id', id, 'choice_text', choice_text))
+         FROM choices WHERE question_id = q.id) as choices
+      FROM questions q
+      JOIN choices c ON q.id = c.question_id AND c.is_good = true
+      WHERE q.id = $1
+      LIMIT 1
+    `;
+    
+    const result = await this.db.query(query, [questionId]);
+    const row = result.rows[0];
+    
+    if (!row) {
+      return { questionId, answer: null, choices: [] };
+    }
+
+    return {
+      questionId: row.questionId,
+      answer: row.answer,
+      choices: row.choices || [],
+    };
+  }
+
+  /**
+   * Get user statistics
+   */
+  async getUserStats(userId: number): Promise<any> {
+    const overallQuery = `
+      SELECT
+        SUM(correct_count + incorrect_count) as total_attempts,
+        SUM(correct_count) as correct_answers,
+        SUM(incorrect_count) as wrong_answers,
+        ROUND(100.0 * SUM(correct_count) / 
+              NULLIF(SUM(correct_count + incorrect_count), 0), 2) as accuracy_percentage
+      FROM user_question_stats
+      WHERE user_id = $1
+    `;
+    
+    const questionsQuery = `
+      SELECT
+        q.id as question_id,
+        q.question,
+        q.topic,
+        q.difficulty,
+        uqs.correct_count,
+        uqs.incorrect_count,
+        ROUND(100.0 * uqs.correct_count / 
+              NULLIF(uqs.correct_count + uqs.incorrect_count, 0), 2) as accuracy_percentage
+      FROM user_question_stats uqs
+      JOIN questions q ON uqs.question_id = q.id
+      WHERE uqs.user_id = $1
+      ORDER BY q.id
+    `;
+    
+    const overallResult = await this.db.query(overallQuery, [userId]);
+    const questionsResult = await this.db.query(questionsQuery, [userId]);
+    
+    const overallRow = overallResult.rows[0];
+    
+    if (!overallRow || !overallRow.total_attempts) {
+      return {
+        overall: {
+          totalCorrect: 0,
+          totalIncorrect: 0,
+          totalAttempts: 0,
+          overallAccuracy: '0.00',
+        },
+        questions: [],
+      };
+    }
+
+    // Convert snake_case to camelCase for frontend compatibility
+    return {
+      overall: {
+        totalCorrect: parseInt(overallRow.correct_answers) || 0,
+        totalIncorrect: parseInt(overallRow.wrong_answers) || 0,
+        totalAttempts: parseInt(overallRow.total_attempts) || 0,
+        overallAccuracy: overallRow.accuracy_percentage || '0.00',
+      },
+      questions: questionsResult.rows.map((row: any) => ({
+        id: row.question_id,
+        question_id: row.question_id,
+        question: row.question,
+        topic: row.topic || '',
+        difficulty: row.difficulty || 'medium',
+        correct_count: row.correct_count,
+        incorrect_count: row.incorrect_count,
+        accuracy_percentage: row.accuracy_percentage || '0.00',
+      })),
+    };
+  }
+
+  /**
+   * Get user wrong questions (questions where incorrect_count > 0)
+   */
+  async getUserWrongQuestions(userId: number): Promise<number[]> {
+    const query = `
+      SELECT question_id
+      FROM user_question_stats
+      WHERE user_id = $1 AND incorrect_count > 0
+      ORDER BY question_id
+    `;
+    
+    const result = await this.db.query(query, [userId]);
+    return result.rows.map((row: any) => row.question_id);
+  }
 }
