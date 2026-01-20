@@ -105,17 +105,21 @@ export class GatewayController {
     if (normalizedPath.startsWith('/quiz')) {
       return 'quiz';
     }
+    // Answer endpoints go to quiz service
+    if (normalizedPath.startsWith('/answers')) {
+      return 'quiz';
+    }
     if (normalizedPath.startsWith('/answer') && method === 'POST') {
       return 'quiz';
     }
+    // All stats endpoints now go to quiz service
     if (normalizedPath.startsWith('/stats')) {
-      return 'monolith';  // Stats endpoints are still in monolith
+      return 'quiz';
     }
 
     // Achievements Service - read achievements
-    // NOTE: Until achievements is extracted, route to monolith
     if (normalizedPath.startsWith('/achievements')) {
-      return 'monolith'; // TODO: change to 'achievements' once extracted
+      return 'achievements';
     }
 
     // Leaderboard Service

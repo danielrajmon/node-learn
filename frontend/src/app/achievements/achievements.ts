@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AchievementsService, UserAchievement } from '../services/achievements.service';
 import { AuthService } from '../services/auth.service';
@@ -10,10 +10,11 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './achievements.html',
   styleUrls: ['./achievements.css']
 })
-export class AchievementsComponent implements OnInit {
+export class AchievementsComponent implements OnInit, OnDestroy {
   achievements: UserAchievement[] = [];
   loading = true;
   error: string | null = null;
+  private userSub: any;
 
   constructor(
     private achievementsService: AchievementsService,
@@ -22,18 +23,29 @@ export class AchievementsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadAchievements();
+    // React to user changes so we reload achievements after login/logout
+    this.userSub = this.authService.user$.subscribe(user => {
+      if (user) {
+        this.loading = true;
+        this.error = null;
+        this.loadAchievementsForUser(user.id);
+      } else {
+        this.achievements = [];
+        this.loading = false;
+        this.error = 'Failed to load user';
+        this.cdr.markForCheck();
+      }
+    });
   }
 
-  loadAchievements(): void {
-    const user = this.authService.getCurrentUser();
-    if (!user) {
-      this.error = 'Failed to load user';
-      this.loading = false;
-      return;
+  ngOnDestroy(): void {
+    if (this.userSub) {
+      this.userSub.unsubscribe?.();
     }
+  }
 
-    this.achievementsService.getUserAchievements(user.id).subscribe({
+  private loadAchievementsForUser(userId: number): void {
+    this.achievementsService.getUserAchievements(userId).subscribe({
       next: (data) => {
         this.achievements = data;
         this.loading = false;

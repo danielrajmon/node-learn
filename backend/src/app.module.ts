@@ -10,10 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtStrategy } from './shared/strategies/jwt.strategy';
-import { AnswerModule } from './answer/answer.module';
-import { StatsModule } from './stats/stats.module';
 import { AdminModule } from './admin/admin.module';
-import { AchievementsModule } from './achievements/achievements.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { QuestionEntity } from './shared/entities/question.entity';
@@ -41,9 +38,6 @@ import { User } from './shared/entities/user.entity';
       entities: [QuestionEntity, ChoiceEntity, User],
       synchronize: false, // Don't auto-create tables, we already have them
     }),
-    AnswerModule,
-    StatsModule,
-    AchievementsModule,
     AdminModule,
     MaintenanceModule,
     LeaderboardModule,

@@ -182,12 +182,48 @@ services:
       retries: 3
       start_period: 40s
 
+  # ====== Achievements Microservice ======
+  # Handles achievement tracking and unlocking
+  # Status: Phase 5 - Extracted from monolith, ready for deployment
+  achievements:
+    container_name: node-learn-achievements
+    build:
+      context: ./services/achievements
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=production
+      - PORT=3004
+      - SERVICE_ID=achievements
+      - NATS_URL=nats://nats:4222
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      - postgres
+      - nats
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3004/achievements/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   # ====== API Gateway ======
   # Strangler proxy pattern: routes requests to microservices or falls back to monolith
   # /api/auth/* → auth:3001
   # /api/questions GET → questions:3002 ✅ Phase 3
+  # /api/quiz/* → quiz:3003 ✅ Phase 4
   # /api/answer POST → quiz:3003 ✅ Phase 4
-  # /api/stats POST → quiz:3003 ✅ Phase 4
+  # /api/achievements → achievements:3004 ✅ Phase 5
+  # /api/stats → monolith:3000
+  # /api/leaderboard → monolith:3000 (Phase 6)
   # /api/admin/* → monolith:3000
   # Everything else → monolith:3000 (gradual migration)
   api-gateway:
@@ -215,6 +251,7 @@ services:
       - auth
       - questions
       - quiz
+      - achievements
       - nats
     restart: unless-stopped
     healthcheck:

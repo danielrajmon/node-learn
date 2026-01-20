@@ -2,7 +2,7 @@
 
 **Last Updated:** January 20, 2026  
 **Project:** Node-Learn Microservices Migration  
-**Phase Status:** Phase 4 Complete (Quiz extracted); Phase 5 In-Progress (Achievements); Phase 6 Planned (Leaderboard)
+**Phase Status:** Phase 5 Complete (Achievements extracted); Phase 6 Planned (Leaderboard)
 
 This guide covers setting up and developing with the new microservices architecture locally.
 
@@ -70,7 +70,7 @@ open http://localhost:3000/api/docs
 | **Auth** | 3001 | (internal) | OAuth + JWT - ✅ Phase 2 |
 | **Questions** | 3002 | (internal) | Question CRUD - ✅ Phase 3 |
 | **Quiz Service** | 3003 | (internal) | Answer submission + quiz modes ✅ |
-| **Achievement Service** | 3004 | (internal) | Achievement unlocking (next) |
+| **Achievement Service** | 3004 | (internal) | Achievement unlocking ✅ |
 | **Leaderboard Service** | 3005 | (internal) | Rankings (next) |
 | **Admin Service** | 3006 | (internal) | Admin operations (planned) |
 | **NATS** | 4222 | nats://localhost | Message broker |
@@ -87,19 +87,19 @@ User Browser
     ↓
 [API Gateway: 3000] - Strangler proxy routes requests + adds correlation ID
     ↓
-┌───────────────────────────────────────────────────────────┐
-│  Service Routing (Phase 4: Auth + Questions + Quiz)       │
-├───────────────────────────────────────────────────────────┤
-│ GET  /api/auth/*               → Auth (3001)            ✅│
-│ GET  /api/questions/*          → Questions (3002)       ✅│
-│ GET  /api/quiz/*               → Quiz (3003)            ✅│
-│ POST /api/answer               → Quiz (3003)            ✅│
-│ POST /api/stats/record         → Quiz (3003)            ✅│
-│ GET  /api/achievements         → Monolith (3000)         │
-│ GET  /api/leaderboard          → Monolith (3000)         │
-│ ALL  /api/admin/*              → Monolith (3000)         │
-│ Everything else                → Monolith (3000)         │
-└───────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────┐
+│  Service Routing (Phase 5: Auth + Questions + Quiz + Achievements) │
+├───────────────────────────────────────────────────────────────────┤
+│ GET  /api/auth/*               → Auth (3001)                    ✅│
+│ GET  /api/questions/*          → Questions (3002)               ✅│
+│ GET  /api/quiz/*               → Quiz (3003)                    ✅│
+│ POST /api/answer               → Quiz (3003)                    ✅│
+│ POST /api/stats/record         → Quiz (3003)                    ✅│
+│ GET  /api/achievements         → Achievements (3004)            ✅│
+│ GET  /api/leaderboard          → Monolith (3000)                 │
+│ ALL  /api/admin/*              → Monolith (3000)                 │
+│ Everything else                → Monolith (3000)                 │
+└───────────────────────────────────────────────────────────────────┘
     ↓
 [PostgreSQL] + [NATS] + [Event Store]
 ```
@@ -232,7 +232,7 @@ curl https://huvinas.myqnapcloud.com:61510/api/questions | jq length
 
 ---
 
-## Phase 5: Achievements Extraction — In Progress 🚧
+## Phase 5: Achievements Extraction - Complete ✅
 
 ### Scope
 - Carve out achievement evaluation from the monolith.
@@ -736,10 +736,11 @@ nats sub 'answer.submitted' --server=nats://localhost:4222
 - Gateway routes `/api/quiz/*` and `/api/answer` to quiz (port 3003); probes use `/quiz/health` (K8s + Compose aligned).
 - Events: emits answer/quiz events; consumes NATS for future saga steps.
 
-### Phase 5 In Progress 🚧 (Achievements)
+### Phase 5 Completed ✅ (Achievements)
 
-- Achievement Service: `services/achievements/` (port 3004) — to be scaffolded; listens to quiz events, emits `achievement.*`.
-- Gateway wiring: plan `/api/achievements/*` → achievements:3004 with matching health endpoints.
+- Achievement Service: `services/achievements/` (port 3004) — NATS subscriber for quiz events, emits `achievement.*`.
+- Gateway wiring: `/api/achievements/*` → achievements:3004 with `/achievements/health` probes.
+- Events: listens to `answer.submitted`, ready to implement achievement logic.
 
 ### Phase 6 Planned (Leaderboard)
 
