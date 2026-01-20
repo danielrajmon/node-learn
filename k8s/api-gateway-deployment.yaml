@@ -44,9 +44,9 @@ spec:
         - name: ACHIEVEMENT_SERVICE_URL
           value: "http://achievements:3004"
         - name: LEADERBOARD_SERVICE_URL
-          value: "http://leaderboard:3005"
+          value: "http://leaderboard:3006"
         - name: ADMIN_SERVICE_URL
-          value: "http://admin:3006"
+          value: "http://admin:3007"
         resources:
           requests:
             memory: "128Mi"

@@ -123,9 +123,8 @@ export class GatewayController {
     }
 
     // Leaderboard Service
-    // NOTE: Until leaderboard is extracted, route to monolith
     if (normalizedPath.startsWith('/leaderboard')) {
-      return 'monolith'; // TODO: change to 'leaderboard' once extracted
+      return 'leaderboard';
     }
 
     // Admin endpoints - all admin operations in monolith

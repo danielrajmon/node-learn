@@ -20,8 +20,8 @@ export class GatewayService {
     'achievements':
       process.env.ACHIEVEMENT_SERVICE_URL || 'http://achievements:3004',
     'leaderboard':
-      process.env.LEADERBOARD_SERVICE_URL || 'http://leaderboard:3005',
-    'admin': process.env.ADMIN_SERVICE_URL || 'http://admin:3006',
+      process.env.LEADERBOARD_SERVICE_URL || 'http://leaderboard:3006',
+    'admin': process.env.ADMIN_SERVICE_URL || 'http://admin:3007',
     monolith: process.env.MONOLITH_URL || 'http://backend:3000',
   };
 

@@ -205,6 +205,13 @@ dev_health() {
     log_error "Achievements Service: unreachable"
   fi
   
+  # Leaderboard Service
+  if curl -s http://localhost:3006/leaderboard/health > /dev/null 2>&1; then
+    log_success "Leaderboard Service: http://localhost:3006/leaderboard/health"
+  else
+    log_error "Leaderboard Service: unreachable"
+  fi
+  
   echo ""
   log_info "API Endpoints (via Gateway):"
   

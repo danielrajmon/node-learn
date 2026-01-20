@@ -12,7 +12,6 @@ import { AppService } from './app.service';
 import { JwtStrategy } from './shared/strategies/jwt.strategy';
 import { AdminModule } from './admin/admin.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
-import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { QuestionEntity } from './shared/entities/question.entity';
 import { ChoiceEntity } from './shared/entities/choice.entity';
 import { User } from './shared/entities/user.entity';
@@ -40,7 +39,6 @@ import { User } from './shared/entities/user.entity';
     }),
     AdminModule,
     MaintenanceModule,
-    LeaderboardModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

@@ -1,14 +1,29 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Logger } from '@nestjs/common';
 import { LeaderboardService } from './leaderboard.service';
 
 @Controller('leaderboard')
 export class LeaderboardController {
+  private logger = new Logger('LeaderboardController');
+
   constructor(private readonly leaderboardService: LeaderboardService) {}
+
+  @Get('health')
+  health() {
+    return { status: 'ok', service: 'leaderboard', timestamp: new Date().toISOString() };
+  }
 
   @Post('update')
   async updateLeaderboard(
-    @Body() body: { modeId: string; userId: number; correctAnswers: number; totalQuestions: number; streak: number; username: string }
+    @Body() body: { 
+      modeId: string; 
+      userId: number; 
+      correctAnswers: number; 
+      totalQuestions: number; 
+      streak: number; 
+      username: string 
+    }
   ): Promise<{ success: boolean }> {
+    this.logger.debug(`Updating leaderboard: mode=${body.modeId}, user=${body.userId}, correct=${body.correctAnswers}`);
     await this.leaderboardService.updateLeaderboard(
       body.modeId,
       body.userId,
@@ -22,6 +37,7 @@ export class LeaderboardController {
 
   @Get('mode/:modeId')
   async getLeaderboard(@Param('modeId') modeId: string) {
+    this.logger.debug(`Fetching leaderboard for mode: ${modeId}`);
     return this.leaderboardService.getLeaderboard(modeId);
   }
 }
