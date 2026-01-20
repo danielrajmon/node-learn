@@ -8,6 +8,7 @@ import { NatsService } from './nats/nats.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { DbService } from './db/db.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, NatsService, JwtStrategy, GoogleStrategy, JwtAuthGuard],
+  providers: [AuthService, NatsService, JwtStrategy, GoogleStrategy, JwtAuthGuard, DbService],
   exports: [AuthService],
 })
 export class AuthModule implements OnModuleInit {

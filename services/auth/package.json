@@ -19,6 +19,7 @@
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "pg": "^8.11.3",
     "bcrypt": "^5.1.0",
     "express-session": "^1.18.2",
     "nats": "^2.12.0",

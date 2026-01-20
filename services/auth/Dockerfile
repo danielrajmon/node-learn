@@ -14,7 +14,7 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Remove dev dependencies and build artifacts
+# Remove dev dependencies and keep only production packages
 RUN npm ci --only=production && npm cache clean --force
 
 # Expose port

@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { NatsService } from './nats/nats.service';
 import { User } from './entities/user.entity';
+import { DbService } from './db/db.service';
 
 export interface JwtPayload {
   sub: number;
@@ -17,6 +18,7 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     private jwtService: JwtService,
     private configService: ConfigService,
     private natsService: NatsService,
+    private db: DbService,
   ) {}
 
   async onModuleInit() {
@@ -45,17 +47,38 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     googleId: string;
     email: string;
     name: string;
+    picture?: string | null;
   }): Promise<User> {
-    // TODO: Implement database lookup/creation in Phase 2
-    // For now, return user object
-    const user = {
-      id: 1,
-      googleId: profile.googleId,
-      email: profile.email,
-      name: profile.name,
-      isAdmin: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    // Look up by Google ID first
+    let row = await this.db.findUserByGoogleId(profile.googleId);
+
+    // If not found, try by email and backfill google_id if needed
+    if (!row) {
+      const byEmail = await this.db.findUserByEmail(profile.email);
+      if (byEmail) {
+        await this.db.updateGoogleIdIfMissing(byEmail.id, profile.googleId);
+        row = { ...byEmail, google_id: profile.googleId } as any;
+      }
+    }
+
+    // If still not found, create new user
+    if (!row) {
+      row = await this.db.createUser({
+        googleId: profile.googleId,
+        email: profile.email,
+        name: profile.name,
+        picture: profile.picture ?? null,
+      });
+    }
+
+    const user: User = {
+      id: row.id,
+      googleId: row.google_id,
+      email: row.email,
+      name: row.name,
+      isAdmin: row.is_admin,
+      createdAt: new Date(row.created_at),
+      updatedAt: new Date(row.updated_at),
     };
 
     // Publish user.login event to NATS
@@ -98,7 +121,16 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
   }
 
   async findById(id: number): Promise<User | null> {
-    // TODO: Implement database lookup in Phase 2
-    return null;
+    const row = await this.db.findUserById(id);
+    if (!row) return null;
+    return {
+      id: row.id,
+      googleId: row.google_id,
+      email: row.email,
+      name: row.name,
+      isAdmin: row.is_admin,
+      createdAt: new Date(row.created_at),
+      updatedAt: new Date(row.updated_at),
+    };
   }
 }
