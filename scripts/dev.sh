@@ -134,20 +134,30 @@ dev_health() {
   docker-compose ps
   
   echo ""
-  log_info "Detailed health:"
+  log_info "Core Infrastructure:"
   
-  # API Gateway (Phase 2+)
-  if curl -s http://localhost/health > /dev/null 2>&1; then
-    log_success "API Gateway: http://localhost/health"
+  # Database
+  if docker exec node-learn-postgresql pg_isready -U postgres > /dev/null 2>&1; then
+    log_success "PostgreSQL: Ready (localhost:5432)"
   else
-    log_info "API Gateway: Not deployed (Phase 2+)"
+    log_error "PostgreSQL: Not ready"
   fi
   
-  # Backend (Monolith)
-  if curl -s http://localhost:3000/api/questions > /dev/null 2>&1; then
-    log_success "Backend: http://localhost:3000/api/questions"
+  # NATS
+  if curl -s http://localhost:8222/healthz > /dev/null 2>&1; then
+    log_success "NATS: Healthy (localhost:8222)"
   else
-    log_error "Backend: unreachable"
+    log_error "NATS: unreachable"
+  fi
+  
+  echo ""
+  log_info "API Gateway & Frontend:"
+  
+  # API Gateway
+  if curl -s http://localhost:3000/health > /dev/null 2>&1; then
+    log_success "API Gateway: http://localhost:3000/health"
+  else
+    log_error "API Gateway: unreachable"
   fi
   
   # Frontend
@@ -157,24 +167,65 @@ dev_health() {
     log_error "Frontend: unreachable"
   fi
   
-  # NATS
-  if curl -s http://localhost:8222/healthz > /dev/null 2>&1; then
-    log_success "NATS: http://localhost:8222/healthz"
+  echo ""
+  log_info "Backend Services:"
+  
+  # Backend (Monolith)
+  if curl -s http://localhost:3000/api/admin/health > /dev/null 2>&1; then
+    log_success "Backend Monolith: http://localhost:3000/api/admin/health"
   else
-    log_error "NATS: unreachable"
+    log_error "Backend Monolith: unreachable"
   fi
   
-  # Database
-  if docker exec node-learn-postgresql pg_isready -U postgres > /dev/null 2>&1; then
-    log_success "PostgreSQL: Ready"
+  # Auth Service
+  if curl -s http://localhost:3001/health > /dev/null 2>&1; then
+    log_success "Auth Service: http://localhost:3001/health"
   else
-    log_error "PostgreSQL: Not ready"
+    log_error "Auth Service: unreachable"
+  fi
+  
+  # Questions Service
+  if curl -s http://localhost:3002/health > /dev/null 2>&1; then
+    log_success "Questions Service: http://localhost:3002/health"
+  else
+    log_error "Questions Service: unreachable"
+  fi
+  
+  # Quiz Service
+  if curl -s http://localhost:3003/health > /dev/null 2>&1; then
+    log_success "Quiz Service: http://localhost:3003/health"
+  else
+    log_error "Quiz Service: unreachable"
+  fi
+  
+  # Achievements Service
+  if curl -s http://localhost:3004/health > /dev/null 2>&1; then
+    log_success "Achievements Service: http://localhost:3004/health"
+  else
+    log_error "Achievements Service: unreachable"
+  fi
+  
+  echo ""
+  log_info "API Endpoints (via Gateway):"
+  
+  # Test gateway routing to quiz service for answers
+  if curl -s http://localhost:3000/api/answers/1 > /dev/null 2>&1; then
+    log_success "Quiz Answers: GET /api/answers/:id"
+  else
+    log_warning "Quiz Answers: GET /api/answers/:id (no data)"
+  fi
+  
+  # Test gateway routing for stats
+  if curl -s http://localhost:3000/api/stats/user/1 > /dev/null 2>&1; then
+    log_success "Stats: GET /api/stats/user/:userId"
+  else
+    log_warning "Stats: GET /api/stats/user/:userId (no data)"
   fi
   
   echo ""
   log_info "Access endpoints:"
   echo "   - Frontend: http://localhost:4200"
-  echo "   - Backend API: http://localhost:3000"
+  echo "   - API Gateway: http://localhost:3000"
   echo "   - NATS Monitor: http://localhost:8222"
   echo "   - Database: localhost:5432"
 }
