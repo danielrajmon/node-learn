@@ -1,8 +1,8 @@
 # Microservices Development Guide
 
-**Last Updated:** January 18, 2026  
+**Last Updated:** January 20, 2026  
 **Project:** Node-Learn Microservices Migration  
-**Phase Status:** Phase 3 Complete (Auth & Questions Services extracted, deployed to K8s)
+**Phase Status:** Phase 4 Complete (Quiz extracted); Phase 5 In-Progress (Achievements); Phase 6 Planned (Leaderboard)
 
 This guide covers setting up and developing with the new microservices architecture locally.
 
@@ -69,9 +69,9 @@ open http://localhost:3000/api/docs
 | **Monolith** | 3000 (internal) | http://backend:3000 | Fallback, legacy code |
 | **Auth** | 3001 | (internal) | OAuth + JWT - ✅ Phase 2 |
 | **Questions** | 3002 | (internal) | Question CRUD - ✅ Phase 3 |
-| **Quiz Service** | 3003 | (internal) | Answer submission (planned) |
-| **Achievement Service** | 3004 | (internal) | Achievement unlocking (planned) |
-| **Leaderboard Service** | 3005 | (internal) | Rankings (planned) |
+| **Quiz Service** | 3003 | (internal) | Answer submission + quiz modes ✅ |
+| **Achievement Service** | 3004 | (internal) | Achievement unlocking (next) |
+| **Leaderboard Service** | 3005 | (internal) | Rankings (next) |
 | **Admin Service** | 3006 | (internal) | Admin operations (planned) |
 | **NATS** | 4222 | nats://localhost | Message broker |
 | **NATS Monitor** | 8222 | http://localhost:8222 | Event inspection |
@@ -87,18 +87,19 @@ User Browser
     ↓
 [API Gateway: 3000] - Strangler proxy routes requests + adds correlation ID
     ↓
-┌──────────────────────────────────────────────────────┐
-│  Service Routing (Phase 3: Auth + Questions)        │
-├──────────────────────────────────────────────────────┤
-│ GET  /api/auth/*            → Auth (3001)         ✅│
-│ GET  /api/questions/*       → Questions (3002)    ✅│
-│ POST /api/stats             → Monolith (3000)      │
-│ POST /api/answer            → Monolith (3000)      │
-│ GET  /api/achievements      → Monolith (3000)      │
-│ GET  /api/leaderboard       → Monolith (3000)      │
-│ ALL  /api/admin/*           → Monolith (3000)      │
-│ Everything else             → Monolith (3000)      │
-└──────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│  Service Routing (Phase 4: Auth + Questions + Quiz)       │
+├───────────────────────────────────────────────────────────┤
+│ GET  /api/auth/*               → Auth (3001)            ✅│
+│ GET  /api/questions/*          → Questions (3002)       ✅│
+│ GET  /api/quiz/*               → Quiz (3003)            ✅│
+│ POST /api/answer               → Quiz (3003)            ✅│
+│ POST /api/stats/record         → Quiz (3003)            ✅│
+│ GET  /api/achievements         → Monolith (3000)         │
+│ GET  /api/leaderboard          → Monolith (3000)         │
+│ ALL  /api/admin/*              → Monolith (3000)         │
+│ Everything else                → Monolith (3000)         │
+└───────────────────────────────────────────────────────────┘
     ↓
 [PostgreSQL] + [NATS] + [Event Store]
 ```
@@ -218,6 +219,50 @@ curl https://huvinas.myqnapcloud.com:61510/api/questions | jq length
 2. **Service Discovery:** Questions service resolves via DNS (`questions:3002` in Docker, `questions.node-learn.svc.cluster.local` in K8s)
 3. **Path Handling:** Traefik strips `/api` prefix in K8s; gateway handles routing correctly
 4. **Monolith Fallback:** Non-migrated endpoints still route to backend monolith
+
+---
+
+## Phase 4: Quiz Service Extraction - Complete ✅
+
+### Summary
+- Quiz service extracted to `services/quiz/` with `/quiz/health`, `/quiz/modes`, `/quiz/answer`, `/quiz/stats/record`.
+- Gateway routes `/api/quiz/*`, `/api/answer`, and `/api/stats/record` to quiz (3003).
+- Liveness/readiness probes use `/quiz/health` (Compose + K8s aligned).
+- Emits quiz events; ready to consume NATS for saga coordination.
+
+---
+
+## Phase 5: Achievements Extraction — In Progress 🚧
+
+### Scope
+- Carve out achievement evaluation from the monolith.
+- Expose REST read endpoints for achievements via the gateway.
+- Consume quiz events to trigger achievement checks.
+
+### Target Routing (Gateway)
+- `GET /api/achievements/*` → achievements service (3004)
+- Quiz flows already route through quiz service (3003); keep `/quiz/health` for probes.
+
+### Data Ownership
+- Move achievement tables into their own schema or database.
+- Provide migrations in `services/achievements/migrations`.
+
+### Event Contract
+- Listen to quiz events (e.g., `answer.submitted`, `quiz.completed`).
+- Emit `achievement.earned`, `achievement.check_failed` (schemas in `services/shared/src/events/types.ts`).
+
+### Initial Increment (recommended order)
+1) **Achievements service skeleton**: Nest app with `/achievements/health`, `/achievements` (list/user filter), `/achievements/:id`. Add NATS subscriber for quiz events.
+2) **Gateway wiring**: Add routes `/api/achievements/*` with healthchecks.
+3) **DB + migrations**: Define achievement rules storage and user-achievement join; add migration scripts.
+4) **Events & idempotency**: Ensure handlers are idempotent; include correlation IDs and event versioning.
+5) **Observability**: Add structured logs and basic metrics (HTTP latency, DB timings) to achievements service.
+
+### Operational Notes
+- Quiz service health endpoint is `/quiz/health`; Kubernetes probes should target that path (updated).
+- When deploying new services, add liveness/readiness probes that match the service’s controller prefix.
+- `k8s/deploy.sh` applies manifests but does not rebuild images; rebuild/tag/push images before deploy.
+- Leaderboard extraction moves to Phase 6 (separate service and plan).
 
 ---
 
@@ -685,21 +730,21 @@ nats sub 'answer.submitted' --server=nats://localhost:4222
 - ✅ Path routing fixed (Traefik `/api` prefix handling)
 - ✅ Monolith routing fixed (gateway adds `/api` prefix for backend)
 
-### Phase 4: Extract Quiz Service (Planned)
+### Phase 4 Completed ✅ (Quiz Service)
 
-```
-Location: services/quiz/
-Responsibility: POST /api/stats (answer submission)
-Extraction Pattern: Saga orchestrator pattern
-Gateway Routing: POST /api/stats → quiz:3003
-Database: Shared PostgreSQL
-Events: answer.submitted, answer.evaluated, achievement.checked
-```
+- Quiz service live at `services/quiz/` with `/quiz/health`, `/quiz/modes`, `/quiz/answer` routing through gateway.
+- Gateway routes `/api/quiz/*` and `/api/answer` to quiz (port 3003); probes use `/quiz/health` (K8s + Compose aligned).
+- Events: emits answer/quiz events; consumes NATS for future saga steps.
 
-### Phase 5-6: Extract Achievement & Leaderboard Services
+### Phase 5 In Progress 🚧 (Achievements)
 
-- Achievement Service: services/achievements/ (port 3004)
-- Leaderboard Service: services/leaderboard/ (port 3005)
+- Achievement Service: `services/achievements/` (port 3004) — to be scaffolded; listens to quiz events, emits `achievement.*`.
+- Gateway wiring: plan `/api/achievements/*` → achievements:3004 with matching health endpoints.
+
+### Phase 6 Planned (Leaderboard)
+
+- Leaderboard Service: `services/leaderboard/` (port 3005) — to be scaffolded; listens to quiz events, emits `leaderboard.entry.updated`.
+- Gateway wiring: plan `/api/leaderboard/*` → leaderboard:3005 with matching health endpoints.
 
 ### Phase 7: Database Per Service
 
