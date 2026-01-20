@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DatabaseService } from './database.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { NatsService } from './nats.service';
+import { QuestionEntity } from './entities/question.entity';
+import { ChoiceEntity } from './entities/choice.entity';
+import { UserQuestionStatsEntity } from './entities/user-question-stats.entity';
+import { QuizModeEntity } from './entities/quiz-mode.entity';
 import { RecordAnswerDto } from './quiz.controller';
 
 @Injectable()
@@ -8,7 +13,14 @@ export class QuizService {
   private logger = new Logger('QuizService');
 
   constructor(
-    private db: DatabaseService,
+    @InjectRepository(QuestionEntity)
+    private questionRepository: Repository<QuestionEntity>,
+    @InjectRepository(ChoiceEntity)
+    private choiceRepository: Repository<ChoiceEntity>,
+    @InjectRepository(UserQuestionStatsEntity)
+    private statsRepository: Repository<UserQuestionStatsEntity>,
+    @InjectRepository(QuizModeEntity)
+    private quizModeRepository: Repository<QuizModeEntity>,
     private nats: NatsService,
   ) {}
 
@@ -87,19 +99,21 @@ export class QuizService {
    * Record answer stats in database
    */
   private async recordStats(dto: RecordAnswerDto, correlationId: string) {
-    const query = `
-      INSERT INTO user_question_stats (user_id, question_id, correct_count, incorrect_count)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (user_id, question_id)
-      DO UPDATE SET
-        correct_count = user_question_stats.correct_count + $3,
-        incorrect_count = user_question_stats.incorrect_count + $4
-    `;
-
     const correctCount = dto.isCorrect ? 1 : 0;
     const incorrectCount = dto.isCorrect ? 0 : 1;
 
-    await this.db.query(query, [dto.userId, dto.questionId, correctCount, incorrectCount]);
+    await this.statsRepository.upsert(
+      {
+        userId: Number(dto.userId),
+        questionId: Number(dto.questionId),
+        correctCount,
+        incorrectCount,
+      } as Partial<UserQuestionStatsEntity>,
+      {
+        conflictPaths: ['userId', 'questionId'],
+        skipUpdateIfNoValuesChanged: true,
+      }
+    );
     
     this.logger.debug(`[${correlationId}] Stats recorded in database`);
   }
@@ -107,40 +121,39 @@ export class QuizService {
   /**
    * Get quiz modes from database
    */
+  /**
+   * Get quiz modes from database
+   */
   async getQuizModes() {
-    const query = 'SELECT id, name, description, filters FROM quiz_modes ORDER BY id';
-    const result = await this.db.query(query, []);
-    return result.rows;
+    const modes = await this.quizModeRepository.find({
+      order: { id: 'ASC' }
+    });
+    return modes.map(mode => ({
+      id: mode.id.toString(),
+      name: mode.name,
+      description: mode.description,
+      filters: mode.filters || {}
+    }));
   }
 
   /**
    * Get correct answer and choices for a question
    */
   async getAnswer(questionId: number): Promise<any> {
-    const query = `
-      SELECT
-        q.id as questionId,
-        c.id as correctChoiceId,
-        c.choice_text as answer,
-        (SELECT json_agg(json_build_object('id', id, 'choice_text', choice_text))
-         FROM choices WHERE question_id = q.id) as choices
-      FROM questions q
-      JOIN choices c ON q.id = c.question_id AND c.is_good = true
-      WHERE q.id = $1
-      LIMIT 1
-    `;
-    
-    const result = await this.db.query(query, [questionId]);
-    const row = result.rows[0];
-    
-    if (!row) {
-      return { questionId, answer: null, choices: [] };
+    const question = await this.questionRepository.findOne({
+      where: { id: questionId },
+      relations: ['choices'],
+    });
+
+    if (!question) {
+      return { questionId, answer: null, choices: [], matchKeywords: [] };
     }
 
     return {
-      questionId: row.questionId,
-      answer: row.answer,
-      choices: row.choices || [],
+      questionId: question.id,
+      answer: question.answer || '',
+      choices: question.choices || [],
+      matchKeywords: question.matchKeywords || [],
     };
   }
 
@@ -148,39 +161,12 @@ export class QuizService {
    * Get user statistics
    */
   async getUserStats(userId: number): Promise<any> {
-    const overallQuery = `
-      SELECT
-        SUM(correct_count + incorrect_count) as total_attempts,
-        SUM(correct_count) as correct_answers,
-        SUM(incorrect_count) as wrong_answers,
-        ROUND(100.0 * SUM(correct_count) / 
-              NULLIF(SUM(correct_count + incorrect_count), 0), 2) as accuracy_percentage
-      FROM user_question_stats
-      WHERE user_id = $1
-    `;
-    
-    const questionsQuery = `
-      SELECT
-        q.id as question_id,
-        q.question,
-        q.topic,
-        q.difficulty,
-        uqs.correct_count,
-        uqs.incorrect_count,
-        ROUND(100.0 * uqs.correct_count / 
-              NULLIF(uqs.correct_count + uqs.incorrect_count, 0), 2) as accuracy_percentage
-      FROM user_question_stats uqs
-      JOIN questions q ON uqs.question_id = q.id
-      WHERE uqs.user_id = $1
-      ORDER BY q.id
-    `;
-    
-    const overallResult = await this.db.query(overallQuery, [userId]);
-    const questionsResult = await this.db.query(questionsQuery, [userId]);
-    
-    const overallRow = overallResult.rows[0];
-    
-    if (!overallRow || !overallRow.total_attempts) {
+    const stats = await this.statsRepository.find({
+      where: { userId },
+      relations: ['question'],
+    });
+
+    if (stats.length === 0) {
       return {
         overall: {
           totalCorrect: 0,
@@ -192,24 +178,34 @@ export class QuizService {
       };
     }
 
-    // Convert snake_case to camelCase for frontend compatibility
+    const totalAttempts = stats.reduce((sum, s) => sum + s.correctCount + s.incorrectCount, 0);
+    const totalCorrect = stats.reduce((sum, s) => sum + s.correctCount, 0);
+    const totalIncorrect = stats.reduce((sum, s) => sum + s.incorrectCount, 0);
+    const overallAccuracy = totalAttempts > 0 
+      ? (100.0 * totalCorrect / totalAttempts).toFixed(2)
+      : '0.00';
+
+    const questions = stats.map(s => ({
+      id: s.question.id,
+      question_id: s.question.id,
+      question: s.question.question,
+      topic: s.question.topic || '',
+      difficulty: s.question.difficulty || 'medium',
+      correct_count: s.correctCount,
+      incorrect_count: s.incorrectCount,
+      accuracy_percentage: (s.correctCount + s.incorrectCount > 0
+        ? (100.0 * s.correctCount / (s.correctCount + s.incorrectCount)).toFixed(2)
+        : '0.00'),
+    }));
+
     return {
       overall: {
-        totalCorrect: parseInt(overallRow.correct_answers) || 0,
-        totalIncorrect: parseInt(overallRow.wrong_answers) || 0,
-        totalAttempts: parseInt(overallRow.total_attempts) || 0,
-        overallAccuracy: overallRow.accuracy_percentage || '0.00',
+        totalCorrect,
+        totalIncorrect,
+        totalAttempts,
+        overallAccuracy,
       },
-      questions: questionsResult.rows.map((row: any) => ({
-        id: row.question_id,
-        question_id: row.question_id,
-        question: row.question,
-        topic: row.topic || '',
-        difficulty: row.difficulty || 'medium',
-        correct_count: row.correct_count,
-        incorrect_count: row.incorrect_count,
-        accuracy_percentage: row.accuracy_percentage || '0.00',
-      })),
+      questions,
     };
   }
 
@@ -217,14 +213,13 @@ export class QuizService {
    * Get user wrong questions (questions where incorrect_count > 0)
    */
   async getUserWrongQuestions(userId: number): Promise<number[]> {
-    const query = `
-      SELECT question_id
-      FROM user_question_stats
-      WHERE user_id = $1 AND incorrect_count > 0
-      ORDER BY question_id
-    `;
-    
-    const result = await this.db.query(query, [userId]);
-    return result.rows.map((row: any) => row.question_id);
+    const stats = await this.statsRepository.find({
+      where: { userId },
+    });
+
+    return stats
+      .filter(s => s.incorrectCount > 0)
+      .map(s => s.questionId)
+      .sort();
   }
 }
