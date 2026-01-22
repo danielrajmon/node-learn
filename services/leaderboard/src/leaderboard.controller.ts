@@ -40,4 +40,10 @@ export class LeaderboardController {
     this.logger.debug(`Fetching leaderboard for mode: ${modeId}`);
     return this.leaderboardService.getLeaderboard(modeId);
   }
+
+  @Get('user/:userId')
+  async getUserLeaderboardPosition(@Param('userId') userId: string) {
+    this.logger.debug(`Fetching leaderboard position for user: ${userId}`);
+    return this.leaderboardService.getUserLeaderboardPosition(Number(userId));
+  }
 }

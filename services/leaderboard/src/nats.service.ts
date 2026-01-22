@@ -1,10 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { connect, NatsConnection, JSONCodec } from 'nats';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { connect, NatsConnection } from 'nats';
 
 @Injectable()
-export class NatsService {
+export class NatsService implements OnModuleInit {
   private nc: NatsConnection;
-  private codec = JSONCodec();
   private logger = new Logger('NatsService');
 
   async onModuleInit() {
@@ -13,29 +12,48 @@ export class NatsService {
       this.nc = await connect({ servers: natsUrl });
       this.logger.log(`Connected to NATS at ${natsUrl}`);
 
-      // Subscribe to leaderboard update events
-      this.subscribeToLeaderboardUpdates();
+      // Subscribe to quiz events to update leaderboard
+      this.subscribeToQuizEvents();
     } catch (error) {
       this.logger.error('Failed to connect to NATS:', error);
     }
   }
 
-  private async subscribeToLeaderboardUpdates() {
-    const sub = this.nc.subscribe('leaderboard.update');
-    this.logger.log('Subscribed to leaderboard.update');
+  private subscribeToQuizEvents() {
+    // Subscribe to answer.submitted events from quiz service
+    const sub = this.nc.subscribe('answer.submitted');
+    this.logger.log('Subscribed to answer.submitted events');
 
-    for await (const msg of sub) {
-      try {
-        const data = this.codec.decode(msg.data) as any;
-        this.logger.debug(`Received leaderboard.update event:`, data);
-        // Event will be handled by the controller
-      } catch (error) {
-        this.logger.error('Error processing leaderboard.update:', error);
+    (async () => {
+      for await (const msg of sub) {
+        try {
+          const event = JSON.parse(new TextDecoder().decode(msg.data));
+          this.logger.debug(`Received quiz event: ${msg.subject}`, event);
+          // Event is consumed by leaderboard update logic
+          // Actual updates handled via POST /leaderboard/update endpoint
+        } catch (error) {
+          this.logger.error('Error processing NATS message:', error);
+        }
       }
-    }
+    })();
   }
 
-  async publish(subject: string, data: any) {
-    this.nc.publish(subject, this.codec.encode(data));
+  async publishEvent(eventType: string, payload: any) {
+    if (!this.nc) {
+      this.logger.warn('NATS not connected, skipping event publish');
+      return;
+    }
+    try {
+      const event = {
+        ...payload,
+        eventType,
+        timestamp: new Date().toISOString(),
+        serviceId: 'leaderboard',
+      };
+      this.nc.publish(eventType, new TextEncoder().encode(JSON.stringify(event)));
+      this.logger.debug(`Published event: ${eventType}`, event);
+    } catch (error) {
+      this.logger.error('Error publishing event:', error);
+    }
   }
 }

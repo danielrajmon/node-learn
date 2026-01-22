@@ -198,4 +198,23 @@ export class LeaderboardService {
 
     return result;
   }
+
+  async getUserLeaderboardPosition(userId: number) {
+    const entries = await this.leaderboardRepository.find({
+      where: { userId },
+      relations: ['user'],
+      order: { quizModeId: 'ASC' }
+    });
+
+    return entries.map(entry => ({
+      quiz_mode_id: entry.quizModeId.toString(),
+      position: entry.position,
+      user_id: entry.userId,
+      correct_answers: entry.correctAnswers,
+      total_questions: entry.totalQuestions,
+      streak: entry.streak,
+      achieved_at: entry.achievedAt,
+      username: entry.user?.name
+    }));
+  }
 }

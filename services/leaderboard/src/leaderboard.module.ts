@@ -32,6 +32,7 @@ import { UserEntity } from './entities/user.entity';
     TypeOrmModule.forFeature([LeaderboardEntity, UserEntity]),
   ],
   controllers: [LeaderboardController],
-  providers: [LeaderboardService, NatsService],
+  providers: [NatsService, LeaderboardService],
+  exports: [NatsService, LeaderboardService],
 })
 export class LeaderboardModule {}
