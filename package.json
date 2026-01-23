@@ -30,7 +30,8 @@
     "build:quiz": "docker-compose build quiz",
     "build:achievements": "docker-compose build achievements",
     "build:leaderboard": "docker-compose build leaderboard",
-    "build:admin": "docker-compose build admin"
+    "build:admin": "docker-compose build admin",
+    "clean": "find . -type d -name 'dist' -o -name 'node_modules' | xargs rm -rf"
   },
   "repository": {
     "type": "git",
