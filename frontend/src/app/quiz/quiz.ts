@@ -429,7 +429,7 @@ export class Quiz implements OnInit, OnDestroy {
             userId,
             this.correctAnswers,
             this.questionsAnswered,
-            this.correctAnswers,  // Use correctAnswers instead of streak for leaderboard ranking
+            this.correctAnswers,  // Use correctAnswers as the leaderboard ranking metric
             username
           ).subscribe({
             next: () => {

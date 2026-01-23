@@ -8,7 +8,7 @@ export interface LeaderboardEntry {
   user_id: number;
   correct_answers: number;
   total_questions: number;
-  streak: number;
+  correct_answers_count: number;
   achieved_at: string;
   username: string;
 }

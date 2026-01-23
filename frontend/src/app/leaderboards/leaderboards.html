@@ -16,7 +16,7 @@
           <div class="column username">Username</div>
           <div class="column points">Points</div>
           <div class="column questions">Questions</div>
-          <div class="column streak">Streak</div>
+          <div class="column correct-answers-count">Session Correct</div>
           <div class="column date">Achieved</div>
         </div>
         
@@ -28,7 +28,7 @@
           <div class="column username">{{ entry.username }}</div>
           <div class="column points">{{ entry.correct_answers }}</div>
           <div class="column questions">{{ entry.total_questions }}</div>
-          <div class="column streak">{{ entry.streak }}</div>
+          <div class="column correct-answers-count">{{ entry.correct_answers_count }}</div>
           <div class="column date">{{ entry.achieved_at | date: 'shortDate' }}</div>
         </div>
       </div>

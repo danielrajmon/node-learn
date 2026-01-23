@@ -45,7 +45,7 @@ export class LeaderboardService {
         { 
           correctAnswers, 
           totalQuestions, 
-          streak: correctAnswersCount, 
+          correctAnswersCount, 
           achievedAt: new Date() 
         }
       );
@@ -53,7 +53,7 @@ export class LeaderboardService {
       // User doesn't exist yet - get current top 6
       const topEntries = await this.leaderboardRepository.find({
         where: { quizModeId: modeIdNum },
-        order: { correctAnswers: 'DESC', streak: 'DESC' },
+        order: { correctAnswers: 'DESC', correctAnswersCount: 'DESC' },
         take: 6
       });
 
@@ -78,7 +78,7 @@ export class LeaderboardService {
           userId,
           correctAnswers,
           totalQuestions,
-          streak,
+          correctAnswersCount,
           achievedAt: new Date()
         });
       } else {
@@ -98,7 +98,7 @@ export class LeaderboardService {
             userId,
             correctAnswers,
             totalQuestions,
-            streak: correctAnswersCount,
+            correctAnswersCount,
             achievedAt: new Date()
           });
         }
@@ -113,7 +113,7 @@ export class LeaderboardService {
     // Get all entries sorted by correct_answers DESC, correct_answers_count DESC
     const entries = await this.leaderboardRepository.find({
       where: { quizModeId: modeId },
-      order: { correctAnswers: 'DESC', streak: 'DESC' },
+      order: { correctAnswers: 'DESC', correctAnswersCount: 'DESC' },
       take: 6
     });
 
@@ -129,7 +129,7 @@ export class LeaderboardService {
         userId: entries[i].userId,
         correctAnswers: entries[i].correctAnswers,
         totalQuestions: entries[i].totalQuestions,
-        streak: entries[i].streak,
+        correctAnswersCount: entries[i].correctAnswersCount,
         achievedAt: new Date()
       });
     }
@@ -150,7 +150,7 @@ export class LeaderboardService {
       user_id: entry.userId,
       correct_answers: entry.correctAnswers,
       total_questions: entry.totalQuestions,
-      correct_answers_count: entry.streak,
+      correct_answers_count: entry.correctAnswersCount,
       achieved_at: entry.achievedAt,
       username: entry.user?.name
     }));
@@ -212,7 +212,7 @@ export class LeaderboardService {
       user_id: entry.userId,
       correct_answers: entry.correctAnswers,
       total_questions: entry.totalQuestions,
-      correct_answers_count: entry.streak,
+      correct_answers_count: entry.correctAnswersCount,
       achieved_at: entry.achievedAt,
       username: entry.user?.name
     }));

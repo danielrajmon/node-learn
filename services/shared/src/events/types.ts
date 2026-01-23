@@ -42,7 +42,7 @@ export interface AnswerSubmittedPayload {
   questionId: string;
   userAnswer: string; // User's response
   isCorrect: boolean;
-  streak: number; // Current correct answer streak
+  correctAnswersCount: number; // Current session correct answers
   quizModeId?: string;
   attemptedAt: Date;
 }
@@ -68,7 +68,7 @@ export interface LeaderboardEntryUpdatedPayload {
   position: number; // 1-6
   correctAnswers: number;
   totalQuestions: number;
-  streak: number;
+  correctAnswersCount: number;
   updatedAt: Date;
 }
 

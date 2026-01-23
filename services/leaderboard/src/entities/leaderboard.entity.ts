@@ -18,8 +18,8 @@ export class LeaderboardEntity {
   @Column({ name: 'total_questions', type: 'integer' })
   totalQuestions: number;
 
-  @Column({ name: 'streak', type: 'integer' })
-  streak: number;
+  @Column({ name: 'correct_answers_count', type: 'integer' })
+  correctAnswersCount: number;
 
   @Column({ name: 'achieved_at', type: 'timestamp' })
   achievedAt: Date;

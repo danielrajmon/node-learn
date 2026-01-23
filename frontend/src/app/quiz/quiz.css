@@ -132,7 +132,7 @@
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
-.streak-display {
+.correct-answers-display {
   font-weight: 600;
   color: #e74c3c;
   padding: 0.5rem 1rem;
@@ -141,7 +141,7 @@
   border: 2px solid #e74c3c;
 }
 
-.leaderboard-streak {
+.leaderboard-correct-answers {
   position: fixed;
   top: 1rem;
   right: 1rem;

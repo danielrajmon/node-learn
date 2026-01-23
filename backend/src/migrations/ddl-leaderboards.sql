@@ -6,7 +6,7 @@ CREATE TABLE leaderboards (
   user_id INTEGER NOT NULL,
   correct_answers INTEGER NOT NULL,
   total_questions INTEGER NOT NULL,
-  streak INTEGER NOT NULL,
+  correct_answers_count INTEGER NOT NULL,
   achieved_at TIMESTAMP NOT NULL,
   PRIMARY KEY (quiz_mode_id, position),
   FOREIGN KEY (quiz_mode_id) REFERENCES quiz_modes(id),
