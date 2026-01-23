@@ -5,6 +5,11 @@ import { AuthGuard } from '@nestjs/passport';
 @Injectable()
 class OptionalAuthGuard extends AuthGuard('jwt') {
   handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
+    // If there's an error or no user, return undefined (not false)
+    // This allows the controller to check for req.user existence
+    if (err || !user) {
+      return undefined;
+    }
     return user;
   }
 }
