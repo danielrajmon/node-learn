@@ -31,8 +31,6 @@ spec:
             secretKeyRef:
               name: app-secret
               key: JWT_SECRET
-        - name: MONOLITH_URL
-          value: "http://backend:3000"
         - name: AUTH_SERVICE_URL
           value: "http://auth:3001"
         - name: AUTH_SERVICE_REDIRECT_URL

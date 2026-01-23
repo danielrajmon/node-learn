@@ -6,7 +6,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MIGRATIONS_DIR="$SCRIPT_DIR/../backend/src/migrations"
+MIGRATIONS_DIR="$SCRIPT_DIR/../scripts"
 
 echo "🔄 Syncing data from Kubernetes to Docker..."
 echo ""

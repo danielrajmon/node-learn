@@ -45,37 +45,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ====== NestJS Backend (Monolith) ======
-  # Serves all API endpoints during migration (strangler proxy pattern)
-  # Status: Running and serving quiz questions, auth, stats, etc.
-  # Note: Health check will show "starting" for ~40 seconds during initialization
-  # This is normal - the application is compiling and warming up.
-  # Actual functionality: Available immediately after container starts
-  backend:
-    container_name: node-learn-backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports: []
-    environment:
-      - NODE_ENV=production
-      - SERVICE_ID=monolith
-    env_file:
-      - ./.env.docker
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://localhost:3000/api').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s  # Grace period for TypeScript compilation
-
   # ====== Auth Microservice ======
   # Handles user authentication, JWT tokens, OAuth
   # Status: Phase 2 - Extracted from monolith, ready for deployment
@@ -331,15 +300,14 @@ services:
       start_period: 40s
 
   # ====== API Gateway ======
-  # Strangler proxy pattern: routes requests to microservices or falls back to monolith
+  # Routes requests to microservices
   # /api/auth/* → auth:3001
-  # /api/questions GET → questions:3002 ✅ Phase 3
-  # /api/quiz/* → quiz:3003 ✅ Phase 4
-  # /api/answer POST → quiz:3003 ✅ Phase 4
-  # /api/achievements → achievements:3004 ✅ Phase 5
-  # /api/leaderboard → leaderboard:3005 ✅ Phase 6
-  # /api/admin/* → admin:3007 ✅ Phase 7
-  # Everything else → monolith:3000 (gradual migration)
+  # /api/questions GET → questions:3002
+  # /api/quiz/* → quiz:3003
+  # /api/answer POST → quiz:3003
+  # /api/achievements → achievements:3004
+  # /api/leaderboard → leaderboard:3005
+  # /api/admin/* → admin:3007
   api-gateway:
     container_name: node-learn-api-gateway
     build:
@@ -352,7 +320,6 @@ services:
       - PORT=3000
       - SERVICE_ID=api-gateway
       - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
-      - MONOLITH_URL=http://backend:3000
       - AUTH_SERVICE_URL=http://auth:3001
       - AUTH_SERVICE_REDIRECT_URL=http://localhost:3001
       - QUESTION_SERVICE_URL=http://questions:3002
@@ -363,7 +330,6 @@ services:
     env_file:
       - ./.env.docker
     depends_on:
-      - backend
       - auth
       - questions
       - quiz

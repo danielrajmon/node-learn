@@ -68,26 +68,6 @@ kill $PF_QUESTIONS 2>/dev/null
 wait $PF_QUESTIONS 2>/dev/null
 echo ""
 
-# Test 3: Backend API Connectivity
-echo -e "${YELLOW}Test 3: Backend API Connectivity${NC}"
-echo "=================================="
-# Start port-forward in background
-kubectl -n node-learn port-forward svc/backend 3000:3000 >/dev/null 2>&1 &
-PF_PID=$!
-sleep 2
-
-# Test health endpoint
-HEALTH=$(curl -s http://localhost:3000/api 2>/dev/null)
-if [ -n "$HEALTH" ]; then
-    echo -e "${GREEN}✓ Backend health endpoint responding${NC}"
-else
-    echo -e "${RED}✗ Backend health endpoint not responding${NC}"
-fi
-
-kill $PF_PID 2>/dev/null
-wait $PF_PID 2>/dev/null
-echo ""
-
 # Test 4: NATS Service Status
 echo -e "${YELLOW}Test 4: NATS Service Status${NC}"
 echo "=================================="

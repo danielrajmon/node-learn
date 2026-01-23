@@ -4,8 +4,7 @@ import { GatewayService } from './gateway.service';
 
 /**
  * API Gateway Controller
- * Routes all incoming requests to appropriate microservice or fallback to monolith
- * Uses strangler pattern to gradually migrate services
+ * Routes all incoming requests to appropriate microservices
  */
 @Controller()
 export class GatewayController {
@@ -58,6 +57,14 @@ export class GatewayController {
 
       // Determine which service to route to based on path
       const target = this.determineTarget(path, method);
+      
+      // If no target found, return 404
+      if (!target) {
+        this.logger.warn(`[${correlationId}] No service found for: ${method} ${path}`);
+        res.status(404).json({ error: 'Not Found', message: `No service handles ${method} ${path}` });
+        return;
+      }
+      
       this.logger.debug(`[${correlationId}] Routing to: ${target}`);
 
       // Forward request to target service
@@ -80,13 +87,12 @@ export class GatewayController {
 
   /**
    * Determine which service to route to based on the request path
-   * Uses strangler pattern: new services first, fallback to monolith
    *
    * NOTE: In K8s, Traefik strips /api prefix before routing to gateway.
    * In Docker Compose, requests come with /api prefix directly.
    * This function handles both cases.
    */
-  private determineTarget(path: string, method: string): string {
+  private determineTarget(path: string, method: string): string | null {
     // Normalize path - remove /api if present for consistent routing logic
     const normalizedPath = path.startsWith('/api') ? path.slice(4) : path;
 
@@ -132,7 +138,7 @@ export class GatewayController {
       return 'admin';
     }
 
-    // Default to monolith (fallback)
-    return 'monolith';
+    // No matching service - return null for 404
+    return null;
   }
 }

@@ -8,7 +8,6 @@ NC='\033[0m' # No Color
 
 # Configuration
 REGISTRY="danielrajmon"  # Docker Hub username
-BACKEND_IMAGE="${REGISTRY}/node-learn-backend:latest"
 AUTH_IMAGE="${REGISTRY}/node-learn-auth:latest"
 QUESTIONS_IMAGE="${REGISTRY}/node-learn-questions:latest"
 QUIZ_IMAGE="${REGISTRY}/node-learn-quiz:latest"
@@ -64,12 +63,6 @@ echo ""
 
 # Step 1: Build Docker images (multi-platform for amd64 + arm64)
 echo -e "${YELLOW}Step 1: Building Docker images (multi-platform: amd64 + arm64)...${NC}"
-echo "Building backend image..."
-docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-backend:latest ./backend
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Failed to build backend image${NC}"
-    exit 1
-fi
 
 echo "Building auth image..."
 docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-auth:latest ./services/auth
@@ -132,9 +125,6 @@ echo ""
 
 # Step 2: Tag and push images (if using registry)
 echo -e "${YELLOW}Step 2: Pushing images to registry...${NC}"
-echo "Tagging and pushing backend image..."
-docker tag node-learn-backend:latest ${BACKEND_IMAGE}
-docker push ${BACKEND_IMAGE}
 
 echo "Tagging and pushing frontend image..."
 docker tag node-learn-frontend:latest ${FRONTEND_IMAGE}
@@ -210,19 +200,8 @@ kubectl wait --for=condition=ready pod -l app=nats -n node-learn --timeout=120s
 echo -e "${GREEN}✓ NATS deployed${NC}"
 echo ""
 
-# Step 7: Deploy backend
-echo -e "${YELLOW}Step 7: Deploying backend...${NC}"
-kubectl apply -f k8s/backend-config.yaml
-kubectl apply -f k8s/backend-deployment.yaml
-echo "Forcing backend to restart and pull latest image..."
-kubectl rollout restart deployment/backend -n node-learn
-echo "Waiting for backend to be ready..."
-kubectl wait --for=condition=ready pod -l app=backend -n node-learn --timeout=120s
-echo -e "${GREEN}✓ Backend deployed${NC}"
-echo ""
-
-# Step 8: Deploy auth
-echo -e "${YELLOW}Step 8: Deploying auth...${NC}"
+# Step 7: Deploy auth
+echo -e "${YELLOW}Step 7: Deploying auth...${NC}"
 kubectl apply -f k8s/auth-deployment.yaml
 echo "Forcing auth to restart and pull latest image..."
 kubectl rollout restart deployment/auth -n node-learn
@@ -231,8 +210,8 @@ kubectl wait --for=condition=ready pod -l app=auth -n node-learn --timeout=120s
 echo -e "${GREEN}✓ Auth deployed${NC}"
 echo ""
 
-# Step 9: Deploy questions
-echo -e "${YELLOW}Step 9: Deploying questions...${NC}"
+# Step 8: Deploy questions
+echo -e "${YELLOW}Step 8: Deploying questions...${NC}"
 kubectl apply -f k8s/question-deployment.yaml
 echo "Forcing questions to restart and pull latest image..."
 kubectl rollout restart deployment/questions -n node-learn
@@ -241,8 +220,8 @@ kubectl wait --for=condition=ready pod -l app=questions -n node-learn --timeout=
 echo -e "${GREEN}✓ Questions deployed${NC}"
 echo ""
 
-# Step 10: Deploy quiz
-echo -e "${YELLOW}Step 10: Deploying quiz...${NC}"
+# Step 9: Deploy quiz
+echo -e "${YELLOW}Step 9: Deploying quiz...${NC}"
 kubectl apply -f k8s/quiz-deployment.yaml
 echo "Forcing quiz to restart and pull latest image..."
 kubectl rollout restart deployment/quiz -n node-learn
@@ -251,8 +230,8 @@ kubectl wait --for=condition=ready pod -l app=quiz -n node-learn --timeout=120s
 echo -e "${GREEN}✓ Quiz deployed${NC}"
 echo ""
 
-# Step 11: Deploy achievements
-echo -e "${YELLOW}Step 11: Deploying achievements...${NC}"
+# Step 10: Deploy achievements
+echo -e "${YELLOW}Step 10: Deploying achievements...${NC}"
 kubectl apply -f k8s/achievements-deployment.yaml
 echo "Forcing achievements to restart and pull latest image..."
 kubectl rollout restart deployment/achievements -n node-learn
@@ -261,8 +240,8 @@ kubectl wait --for=condition=ready pod -l app=achievements -n node-learn --timeo
 echo -e "${GREEN}✓ Achievements deployed${NC}"
 echo ""
 
-# Step 12: Deploy leaderboard
-echo -e "${YELLOW}Step 12: Deploying leaderboard...${NC}"
+# Step 11: Deploy leaderboard
+echo -e "${YELLOW}Step 11: Deploying leaderboard...${NC}"
 kubectl apply -f k8s/leaderboard-deployment.yaml
 echo "Forcing leaderboard to restart and pull latest image..."
 kubectl rollout restart deployment/leaderboard -n node-learn
@@ -271,8 +250,8 @@ kubectl wait --for=condition=ready pod -l app=leaderboard -n node-learn --timeou
 echo -e "${GREEN}✓ Leaderboard deployed${NC}"
 echo ""
 
-# Step 13: Deploy admin
-echo -e "${YELLOW}Step 13: Deploying admin...${NC}"
+# Step 12: Deploy admin
+echo -e "${YELLOW}Step 12: Deploying admin...${NC}"
 kubectl apply -f k8s/admin-deployment.yaml
 echo "Forcing admin to restart and pull latest image..."
 kubectl rollout restart deployment/admin -n node-learn
@@ -281,8 +260,8 @@ kubectl wait --for=condition=ready pod -l app=admin -n node-learn --timeout=120s
 echo -e "${GREEN}✓ Admin deployed${NC}"
 echo ""
 
-# Step 14: Deploy api-gateway
-echo -e "${YELLOW}Step 14: Deploying api-gateway...${NC}"
+# Step 13: Deploy api-gateway
+echo -e "${YELLOW}Step 13: Deploying api-gateway...${NC}"
 kubectl apply -f k8s/api-gateway-deployment.yaml
 echo "Forcing api-gateway to restart and pull latest image..."
 kubectl rollout restart deployment/api-gateway -n node-learn
@@ -291,8 +270,8 @@ kubectl wait --for=condition=ready pod -l app=api-gateway -n node-learn --timeou
 echo -e "${GREEN}✓ API Gateway deployed${NC}"
 echo ""
 
-# Step 15: Deploy frontend
-echo -e "${YELLOW}Step 15: Deploying frontend...${NC}"
+# Step 14: Deploy frontend
+echo -e "${YELLOW}Step 14: Deploying frontend...${NC}"
 kubectl apply -f k8s/frontend-deployment.yaml
 echo "Forcing frontend to restart and pull latest image..."
 kubectl rollout restart deployment/frontend -n node-learn
@@ -301,15 +280,15 @@ kubectl wait --for=condition=ready pod -l app=frontend -n node-learn --timeout=1
 echo -e "${GREEN}✓ Frontend deployed${NC}"
 echo ""
 
-# Step 16: Deploy ingress
-echo -e "${YELLOW}Step 16: Deploying ingress...${NC}"
+# Step 15: Deploy ingress
+echo -e "${YELLOW}Step 15: Deploying ingress...${NC}"
 kubectl apply -f k8s/ingress.yaml
 echo -e "${GREEN}✓ Ingress deployed${NC}"
 echo ""
 
-# Step 17: Import questions into the database
+# Step 16: Import questions into the database
 if [ "$IMPORT_QUESTIONS" = true ]; then
-    echo -e "${YELLOW}Step 17: Importing questions into the database...${NC}"
+    echo -e "${YELLOW}Step 16: Importing questions into the database...${NC}"
     # Delete existing job to force re-import
     kubectl delete job import-questions -n node-learn --ignore-not-found=true
     kubectl apply -f k8s/import-questions.yaml
