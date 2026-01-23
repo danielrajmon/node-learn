@@ -127,10 +127,9 @@ export class GatewayController {
       return 'leaderboard';
     }
 
-    // Admin endpoints - all admin operations in monolith
-    // NOTE: Until individual admin/service services are extracted
+    // Admin Service - admin operations (question CRUD, user management)
     if (normalizedPath.startsWith('/admin')) {
-      return 'monolith'; // TODO: split to specific services once extracted
+      return 'admin';
     }
 
     // Default to monolith (fallback)

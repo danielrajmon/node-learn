@@ -10,7 +10,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtStrategy } from './shared/strategies/jwt.strategy';
-import { AdminModule } from './admin/admin.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { QuestionEntity } from './shared/entities/question.entity';
 import { ChoiceEntity } from './shared/entities/choice.entity';
@@ -37,7 +36,6 @@ import { User } from './shared/entities/user.entity';
       entities: [QuestionEntity, ChoiceEntity, User],
       synchronize: false, // Don't auto-create tables, we already have them
     }),
-    AdminModule,
     MaintenanceModule,
   ],
   controllers: [AppController],

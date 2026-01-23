@@ -14,6 +14,7 @@ QUESTIONS_IMAGE="${REGISTRY}/node-learn-questions:latest"
 QUIZ_IMAGE="${REGISTRY}/node-learn-quiz:latest"
 ACHIEVEMENTS_IMAGE="${REGISTRY}/node-learn-achievements:latest"
 LEADERBOARD_IMAGE="${REGISTRY}/node-learn-leaderboard:latest"
+ADMIN_IMAGE="${REGISTRY}/node-learn-admin:latest"
 FRONTEND_IMAGE="${REGISTRY}/node-learn-frontend:latest"
 IMPORT_QUESTIONS=true  # Set to false to skip import
 
@@ -105,6 +106,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "Building admin image..."
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-admin:latest ./services/admin
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build admin image${NC}"
+    exit 1
+fi
+
 echo "Building api-gateway image..."
 docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-api-gateway:latest ./services/api-gateway
 if [ $? -ne 0 ]; then
@@ -151,6 +159,10 @@ docker push ${ACHIEVEMENTS_IMAGE}
 echo "Tagging and pushing leaderboard image..."
 docker tag node-learn-leaderboard:latest ${LEADERBOARD_IMAGE}
 docker push ${LEADERBOARD_IMAGE}
+
+echo "Tagging and pushing admin image..."
+docker tag node-learn-admin:latest ${ADMIN_IMAGE}
+docker push ${ADMIN_IMAGE}
 
 API_GATEWAY_IMAGE="${REGISTRY}/node-learn-api-gateway:latest"
 echo "Tagging and pushing api-gateway image..."
@@ -259,8 +271,18 @@ kubectl wait --for=condition=ready pod -l app=leaderboard -n node-learn --timeou
 echo -e "${GREEN}✓ Leaderboard deployed${NC}"
 echo ""
 
-# Step 13: Deploy api-gateway
-echo -e "${YELLOW}Step 12: Deploying api-gateway...${NC}"
+# Step 13: Deploy admin
+echo -e "${YELLOW}Step 13: Deploying admin...${NC}"
+kubectl apply -f k8s/admin-deployment.yaml
+echo "Forcing admin to restart and pull latest image..."
+kubectl rollout restart deployment/admin -n node-learn
+echo "Waiting for admin to be ready..."
+kubectl wait --for=condition=ready pod -l app=admin -n node-learn --timeout=120s
+echo -e "${GREEN}✓ Admin deployed${NC}"
+echo ""
+
+# Step 14: Deploy api-gateway
+echo -e "${YELLOW}Step 14: Deploying api-gateway...${NC}"
 kubectl apply -f k8s/api-gateway-deployment.yaml
 echo "Forcing api-gateway to restart and pull latest image..."
 kubectl rollout restart deployment/api-gateway -n node-learn
@@ -269,8 +291,8 @@ kubectl wait --for=condition=ready pod -l app=api-gateway -n node-learn --timeou
 echo -e "${GREEN}✓ API Gateway deployed${NC}"
 echo ""
 
-# Step 14: Deploy frontend
-echo -e "${YELLOW}Step 14: Deploying frontend...${NC}"
+# Step 15: Deploy frontend
+echo -e "${YELLOW}Step 15: Deploying frontend...${NC}"
 kubectl apply -f k8s/frontend-deployment.yaml
 echo "Forcing frontend to restart and pull latest image..."
 kubectl rollout restart deployment/frontend -n node-learn
@@ -279,15 +301,15 @@ kubectl wait --for=condition=ready pod -l app=frontend -n node-learn --timeout=1
 echo -e "${GREEN}✓ Frontend deployed${NC}"
 echo ""
 
-# Step 15: Deploy ingress
-echo -e "${YELLOW}Step 15: Deploying ingress...${NC}"
+# Step 16: Deploy ingress
+echo -e "${YELLOW}Step 16: Deploying ingress...${NC}"
 kubectl apply -f k8s/ingress.yaml
 echo -e "${GREEN}✓ Ingress deployed${NC}"
 echo ""
 
-# Step 16: Import questions into the database
+# Step 17: Import questions into the database
 if [ "$IMPORT_QUESTIONS" = true ]; then
-    echo -e "${YELLOW}Step 16: Importing questions into the database...${NC}"
+    echo -e "${YELLOW}Step 17: Importing questions into the database...${NC}"
     # Delete existing job to force re-import
     kubectl delete job import-questions -n node-learn --ignore-not-found=true
     kubectl apply -f k8s/import-questions.yaml

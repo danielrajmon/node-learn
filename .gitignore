@@ -4,6 +4,9 @@ backend/node_modules
 services/achievements/dist
 services/achievements/node_modules
 
+services/admin/dist
+services/admin/node_modules
+
 services/api-gateway/dist
 services/api-gateway/node_modules
 

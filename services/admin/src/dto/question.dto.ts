@@ -5,16 +5,13 @@ export class QuestionDto {
   questionType: 'single_choice' | 'multiple_choice' | 'text_input';
   practical: boolean;
   question: string;
-  answer?: string | null;
-  quiz?: string | null;
-  matchKeywords?: string[] | null;
+  answer: string | null;
+  quiz: string | null;
+  matchKeywords: string[] | null;
   difficulty: 'easy' | 'medium' | 'hard';
   topic: string;
   isActive: boolean;
-  choices?: ChoiceDto[];
-  keywordCount?: number;
-  created_at?: string;
-  updated_at?: string;
+  choices: ChoiceDto[];
 }
 
 export interface QuestionFilters {

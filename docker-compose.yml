@@ -258,6 +258,41 @@ services:
       retries: 3
       start_period: 40s
 
+  # ====== Admin Microservice ======
+  # Handles admin operations (question CRUD, user management)
+  # Status: Phase 7 - Extracted from monolith
+  admin:
+    container_name: node-learn-admin
+    build:
+      context: ./services/admin
+      dockerfile: Dockerfile
+    ports:
+      - "3007:3007"
+    environment:
+      - NODE_ENV=production
+      - PORT=3007
+      - SERVICE_ID=admin
+      - NATS_URL=nats://nats:4222
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    env_file:
+      - ./.env.docker
+    depends_on:
+      - postgres
+      - nats
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3007/admin/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   # ====== API Gateway ======
   # Strangler proxy pattern: routes requests to microservices or falls back to monolith
   # /api/auth/* → auth:3001
@@ -266,7 +301,7 @@ services:
   # /api/answer POST → quiz:3003 ✅ Phase 4
   # /api/achievements → achievements:3004 ✅ Phase 5
   # /api/leaderboard → leaderboard:3005 ✅ Phase 6
-  # /api/admin/* → monolith:3000
+  # /api/admin/* → admin:3007 ✅ Phase 7
   # Everything else → monolith:3000 (gradual migration)
   api-gateway:
     container_name: node-learn-api-gateway
@@ -296,6 +331,8 @@ services:
       - questions
       - quiz
       - achievements
+      - leaderboard
+      - admin
       - nats
     restart: unless-stopped
     healthcheck:
