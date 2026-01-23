@@ -6,7 +6,7 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(LeaderboardModule);
   
-  const port = process.env.PORT || 3006;
+  const port = process.env.PORT || 3005;
   await app.listen(port);
   logger.log(`🏆 Leaderboard Service running on port ${port}`);
 }

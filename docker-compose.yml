@@ -232,10 +232,10 @@ services:
       context: ./services/leaderboard
       dockerfile: Dockerfile
     ports:
-      - "3006:3006"
+      - "3005:3005"
     environment:
       - NODE_ENV=production
-      - PORT=3006
+      - PORT=3005
       - SERVICE_ID=leaderboard
       - NATS_URL=nats://nats:4222
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
@@ -251,7 +251,7 @@ services:
           "CMD",
           "node",
           "-e",
-          "fetch('http://localhost:3006/leaderboard/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "fetch('http://localhost:3005/leaderboard/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 30s
       timeout: 10s
@@ -265,8 +265,7 @@ services:
   # /api/quiz/* → quiz:3003 ✅ Phase 4
   # /api/answer POST → quiz:3003 ✅ Phase 4
   # /api/achievements → achievements:3004 ✅ Phase 5
-  # /api/stats → monolith:3000
-  # /api/leaderboard → monolith:3000 (Phase 6)
+  # /api/leaderboard → leaderboard:3005 ✅ Phase 6
   # /api/admin/* → monolith:3000
   # Everything else → monolith:3000 (gradual migration)
   api-gateway:
@@ -287,7 +286,7 @@ services:
       - QUESTION_SERVICE_URL=http://questions:3002
       - QUIZ_SERVICE_URL=http://quiz:3003
       - ACHIEVEMENT_SERVICE_URL=http://achievements:3004
-      - LEADERBOARD_SERVICE_URL=http://leaderboard:3006
+      - LEADERBOARD_SERVICE_URL=http://leaderboard:3005
       - ADMIN_SERVICE_URL=http://admin:3007
     env_file:
       - ./.env.docker

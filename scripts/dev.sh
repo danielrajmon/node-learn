@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Dev environment management scripts for Node-Learn Microservices
 # Usage: ./scripts/dev-up.sh, ./scripts/dev-down.sh, etc.
 
@@ -206,8 +205,8 @@ dev_health() {
   fi
   
   # Leaderboard Service
-  if curl -s http://localhost:3006/leaderboard/health > /dev/null 2>&1; then
-    log_success "Leaderboard Service: http://localhost:3006/leaderboard/health"
+    if curl -s http://localhost:3005/leaderboard/health > /dev/null 2>&1; then
+      log_success "Leaderboard Service: http://localhost:3005/leaderboard/health"
   else
     log_error "Leaderboard Service: unreachable"
   fi
@@ -287,7 +286,7 @@ Examples:
   $0 shell postgres
   $0 health
 
-For more info, see: MICROSERVICES_DEV_GUIDE.md
+For more info, see: MICROSERVICES_MIGRATION_PLAN.md
 EOF
 }
 

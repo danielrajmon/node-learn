@@ -86,7 +86,7 @@ services/
 
 ## Local Development
 
-See [MICROSERVICES_DEV_GUIDE.md](../MICROSERVICES_DEV_GUIDE.md) for detailed setup.
+Use `./scripts/dev.sh` for local setup, logs, and health checks.
 
 ### Quick Start
 
@@ -269,4 +269,4 @@ See [MICROSERVICES_MIGRATION_PLAN.md](../MICROSERVICES_MIGRATION_PLAN.md) for fu
 
 ---
 
-**Questions?** See [MICROSERVICES_DEV_GUIDE.md](../MICROSERVICES_DEV_GUIDE.md) for detailed setup, testing, and troubleshooting.
+**Questions?** Check `MICROSERVICES_MIGRATION_PLAN.md` for the roadmap and `scripts/dev.sh` for local commands (logs, health, rebuilds).

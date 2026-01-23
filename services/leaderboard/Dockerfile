@@ -19,7 +19,7 @@ RUN npm run build
 RUN npm ci --only=production
 
 # Expose port
-EXPOSE 3006
+EXPOSE 3005
 
 # Start application
 CMD ["npm", "run", "start:prod"]

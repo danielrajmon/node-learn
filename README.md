@@ -136,7 +136,7 @@ curl -X POST http://localhost:3000/api/stats/record \
 
 ### Troubleshooting
 
-See [MICROSERVICES_DEV_GUIDE.md](MICROSERVICES_DEV_GUIDE.md) for detailed debugging, testing, and common issues.
+Use the helper scripts in `scripts/dev.sh` for logs, health checks, and rebuilds.
 
 ## Kubernetes Deployment
 
@@ -334,7 +334,6 @@ node-learn/
 ├── scripts/
 │   └── dev.sh                # Development helper
 ├── MICROSERVICES_MIGRATION_PLAN.md
-├── MICROSERVICES_DEV_GUIDE.md
 ├── PHASE_1_COMPLETE.md
 ├── docker-compose.yml
 └── README.md
@@ -376,8 +375,8 @@ danielrajmon
 ## Resources
 
 - [MICROSERVICES_MIGRATION_PLAN.md](MICROSERVICES_MIGRATION_PLAN.md) - Full roadmap
-- [MICROSERVICES_DEV_GUIDE.md](MICROSERVICES_DEV_GUIDE.md) - Local development
 - [PHASE_1_COMPLETE.md](PHASE_1_COMPLETE.md) - Infrastructure summary
 - [services/README.md](services/README.md) - Microservices overview
+- [scripts/dev.sh](scripts/dev.sh) - Dev scripts (up/down/logs/health)
 - [NATS Documentation](https://docs.nats.io/)
 - [NestJS Docs](https://docs.nestjs.com/)
