@@ -29,7 +29,7 @@
     <a routerLink="/stats" routerLinkActive="active" (click)="closeMobileMenu()">Stats</a>
     <a routerLink="/achievements" routerLinkActive="active" (click)="closeMobileMenu()">Achievements</a>
     <a routerLink="/leaderboards" routerLinkActive="active" (click)="closeMobileMenu()">Leaderboards</a>
-    <a routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Admin</a>
+    <a *ngIf="isAdmin()" routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Admin</a>
     <a *ngIf="user && !isGuestUser()" (click)="logout()" class="logout-link">Logout</a>
   </nav>
 </header>

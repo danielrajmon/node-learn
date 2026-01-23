@@ -33,6 +33,11 @@ spec:
           value: "admin"
         - name: NATS_URL
           value: "nats://nats:4222"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: JWT_SECRET
         - name: POSTGRES_HOST
           value: "postgres"
         - name: POSTGRES_PORT

@@ -5,3 +5,4 @@ metadata:
   namespace: node-learn
 data:
   NODE_ENV: "production"
+  JWT_SECRET: "your-secret-key-change-in-production"

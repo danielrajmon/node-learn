@@ -10,6 +10,7 @@ import { AchievementsComponent } from './achievements/achievements';
 import { StatsComponent } from './stats/stats';
 import { LeaderboardsComponent } from './leaderboards/leaderboards';
 import { UnsavedChangesGuard } from './guards/unsaved-changes.guard';
+import { AuthGuard, AdminGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -20,7 +21,7 @@ export const routes: Routes = [
   { path: 'leaderboards', component: LeaderboardsComponent },
   { path: 'achievements', component: AchievementsComponent },
   { path: 'stats', component: StatsComponent },
-  { path: 'admin', component: AdminComponent },
+  { path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'auth/callback', component: AuthCallbackComponent },
   { path: '**', redirectTo: '' }

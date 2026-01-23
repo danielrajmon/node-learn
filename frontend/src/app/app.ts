@@ -46,4 +46,7 @@ export class App {
   isGuestUser(): boolean {
     return this.user?.id === 1 && this.user?.email === 'guest@node-learn.local';
   }
-}
+
+  isAdmin(): boolean {
+    return this.user?.isAdmin ?? false;
+  }}
