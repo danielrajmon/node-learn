@@ -1,5 +1,13 @@
-import { Controller, Get, Logger, Param } from '@nestjs/common';
+import { Controller, Get, Post, Logger, Param, Body } from '@nestjs/common';
 import { QuizService } from './quiz.service';
+
+export interface RecordAnswerDto {
+  userId: string;
+  questionId: number;
+  selectedChoiceId: number;
+  quizModeId: number;
+  isCorrect: boolean;
+}
 
 @Controller('stats')
 export class StatsController {
@@ -25,5 +33,21 @@ export class StatsController {
   async getUserWrongQuestions(@Param('userId') userId: string) {
     this.logger.debug(`Fetching wrong questions for user ${userId}`);
     return this.quizService.getUserWrongQuestions(+userId);
+  }
+
+  /**
+   * Record answer and get achievements
+   * POST /stats/record
+   */
+  @Post('record')
+  async recordAnswer(@Body() dto: RecordAnswerDto) {
+    this.logger.debug(`Recording answer for user ${dto.userId}, question ${dto.questionId}`);
+    const result = await this.quizService.recordAnswer(dto);
+    
+    return {
+      success: true,
+      awardedAchievements: result.awardedAchievements || [],
+      leaderboardUpdated: result.leaderboardUpdated || false,
+    };
   }
 }

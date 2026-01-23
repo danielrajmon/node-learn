@@ -24,7 +24,7 @@ export class LeaderboardService {
     userId: number,
     correctAnswers: number,
     totalQuestions: number,
-    streak: number,
+    correctAnswersCount: number,
     username: string
   ): Observable<{ success: boolean }> {
     return this.http.post<{ success: boolean }>('/api/leaderboard/update', {
@@ -32,7 +32,7 @@ export class LeaderboardService {
       userId,
       correctAnswers,
       totalQuestions,
-      streak,
+      correctAnswersCount,
       username
     });
   }

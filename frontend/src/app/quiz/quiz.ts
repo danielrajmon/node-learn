@@ -43,7 +43,6 @@ export class Quiz implements OnInit, OnDestroy {
   showModeSelection = true;
   showLeaderboardToggle = true;
   leaderboardMode = true;
-  streak = 0;
 
   questions: Question[] = [];
   currentQuestionIndex = 0;
@@ -173,7 +172,6 @@ export class Quiz implements OnInit, OnDestroy {
     this.questions = [];
     this.currentQuestion = null;
     this.leaderboardMode = false;
-    this.streak = 0;
     this.questionsAnswered = 0;
   }
 
@@ -181,7 +179,6 @@ export class Quiz implements OnInit, OnDestroy {
     this.selectedMode = mode;
     this.showModeSelection = false;
     this.showLeaderboardToggle = mode.id !== 'missed'; // Don't show leaderboard toggle for missed mode
-    this.streak = 0;
     this.loadQuiz();
   }
 
@@ -432,7 +429,7 @@ export class Quiz implements OnInit, OnDestroy {
             userId,
             this.correctAnswers,
             this.questionsAnswered,
-            this.streak,
+            this.correctAnswers,  // Use correctAnswers instead of streak for leaderboard ranking
             username
           ).subscribe({
             next: () => {
@@ -638,14 +635,6 @@ export class Quiz implements OnInit, OnDestroy {
       
       this.feedback = this.correct ? 'Correct! ✓' : '';
     }
-
-    // Track streak for leaderboard
-    if (this.correct) {
-      this.streak++;
-    } else {
-      // Wrong answer resets streak
-      this.streak = 0;
-    }
   }
 
   nextQuestion() {
@@ -666,7 +655,6 @@ export class Quiz implements OnInit, OnDestroy {
     this.currentQuestionIndex = 0;
     this.questions = [];
     this.currentQuestion = null;
-    this.streak = 0;
     this.questionsAnswered = 0;
     this.correctAnswers = 0;
   }

@@ -1,13 +1,6 @@
 import { Controller, Post, Body, Get, Logger, Param } from '@nestjs/common';
 import { QuizService } from './quiz.service';
-
-export interface RecordAnswerDto {
-  userId: string;
-  questionId: number;
-  selectedChoiceId: number;
-  quizModeId: number;
-  isCorrect: boolean;
-}
+import { RecordAnswerDto } from './stats.controller';
 
 @Controller('quiz')
 export class QuizController {

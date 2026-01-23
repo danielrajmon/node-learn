@@ -28,9 +28,9 @@
       </div>
     </div>
 
-    <!-- Leaderboard Streak Display -->
+    <!-- Correct Answers Display -->
     <div class="leaderboard-streak">
-      Current Streak: {{ streak }}
+      Correct Answers: {{ correctAnswers }} / {{ questionsAnswered }}
     </div>
 
     <!-- Achievement Notification - Below Header -->
@@ -195,7 +195,7 @@
 
     <div *ngIf="isQuizComplete" class="quiz-complete">
       <h2>Quiz Complete! 🎉</h2>
-      <p>Final Streak: {{ streak }}</p>
+      <p>Correct Answers: {{ correctAnswers }} / {{ questionsAnswered }}</p>
       <button class="btn btn-primary" (click)="restartQuiz()">
         Choose Different Mode
       </button>

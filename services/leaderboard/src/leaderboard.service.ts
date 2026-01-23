@@ -9,7 +9,7 @@ export interface LeaderboardEntry {
   user_id: number;
   correct_answers: number;
   total_questions: number;
-  streak: number;
+  correct_answers_count: number;  // Correct answers in session for leaderboard ranking
   achieved_at: Date;
   username?: string;
 }
@@ -28,7 +28,7 @@ export class LeaderboardService {
     userId: number,
     correctAnswers: number,
     totalQuestions: number,
-    streak: number,
+    correctAnswersCount: number,  // Correct answers count for leaderboard ranking
     username: string
   ): Promise<void> {
     const modeIdNum = Number(modeId);
@@ -45,7 +45,7 @@ export class LeaderboardService {
         { 
           correctAnswers, 
           totalQuestions, 
-          streak, 
+          streak: correctAnswersCount, 
           achievedAt: new Date() 
         }
       );
@@ -98,7 +98,7 @@ export class LeaderboardService {
             userId,
             correctAnswers,
             totalQuestions,
-            streak,
+            streak: correctAnswersCount,
             achievedAt: new Date()
           });
         }
@@ -110,7 +110,7 @@ export class LeaderboardService {
   }
 
   private async recalculatePositions(modeId: number): Promise<void> {
-    // Get all entries sorted by correct_answers DESC, streak DESC
+    // Get all entries sorted by correct_answers DESC, correct_answers_count DESC
     const entries = await this.leaderboardRepository.find({
       where: { quizModeId: modeId },
       order: { correctAnswers: 'DESC', streak: 'DESC' },
@@ -150,7 +150,7 @@ export class LeaderboardService {
       user_id: entry.userId,
       correct_answers: entry.correctAnswers,
       total_questions: entry.totalQuestions,
-      streak: entry.streak,
+      correct_answers_count: entry.streak,
       achieved_at: entry.achievedAt,
       username: entry.user?.name
     }));
@@ -188,7 +188,7 @@ export class LeaderboardService {
           user_id: 0,
           correct_answers: 0,
           total_questions: 0,
-          streak: 0,
+          correct_answers_count: 0,
           achieved_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
           username: getRandomName()
         };
@@ -212,7 +212,7 @@ export class LeaderboardService {
       user_id: entry.userId,
       correct_answers: entry.correctAnswers,
       total_questions: entry.totalQuestions,
-      streak: entry.streak,
+      correct_answers_count: entry.streak,
       achieved_at: entry.achievedAt,
       username: entry.user?.name
     }));

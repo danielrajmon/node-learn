@@ -19,7 +19,7 @@ export class LeaderboardController {
       userId: number; 
       correctAnswers: number; 
       totalQuestions: number; 
-      streak: number; 
+      correctAnswersCount: number;  // Correct answers count for leaderboard ranking
       username: string 
     }
   ): Promise<{ success: boolean }> {
@@ -29,7 +29,7 @@ export class LeaderboardController {
       body.userId,
       body.correctAnswers,
       body.totalQuestions,
-      body.streak,
+      body.correctAnswersCount,
       body.username
     );
     return { success: true };

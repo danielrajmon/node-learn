@@ -6,7 +6,7 @@ import { QuestionEntity } from './entities/question.entity';
 import { ChoiceEntity } from './entities/choice.entity';
 import { UserQuestionStatsEntity } from './entities/user-question-stats.entity';
 import { QuizModeEntity } from './entities/quiz-mode.entity';
-import { RecordAnswerDto } from './quiz.controller';
+import { RecordAnswerDto } from './stats.controller';
 
 @Injectable()
 export class QuizService {
