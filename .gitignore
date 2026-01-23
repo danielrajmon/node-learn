@@ -1,26 +1,5 @@
-backend/dist
-backend/node_modules
-
-services/achievements/dist
-services/achievements/node_modules
-
-services/admin/dist
-services/admin/node_modules
-
-services/api-gateway/dist
-services/api-gateway/node_modules
-
-services/auth/dist
-services/auth/node_modules
-
-services/leaderboard/dist
-services/leaderboard/node_modules
-
-services/questions/dist
-services/questions/node_modules
-
-services/quiz/dist
-services/quiz/node_modules
+dist
+node_modules
 
 k8s/postgres-secret.yaml
 

@@ -258,6 +258,43 @@ services:
       retries: 3
       start_period: 40s
 
+  # ====== Maintenance Microservice ======
+  # Handles scheduled maintenance tasks (guest user cleanup, etc.)
+  # Status: Microservice - Extracted from monolith
+  maintenance:
+    container_name: node-learn-maintenance
+    build:
+      context: ./services/maintenance
+      dockerfile: Dockerfile
+    ports:
+      - "3010:3010"
+    environment:
+      - NODE_ENV=production
+      - PORT=3010
+      - SERVICE_ID=maintenance
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - ./.env.docker
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3010/health').catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   # ====== Admin Microservice ======
   # Handles admin operations (question CRUD, user management)
   # Status: Phase 7 - Extracted from monolith
@@ -333,6 +370,7 @@ services:
       - achievements
       - leaderboard
       - admin
+      - maintenance
       - nats
     restart: unless-stopped
     healthcheck:
