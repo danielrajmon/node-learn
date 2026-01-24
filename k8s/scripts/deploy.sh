@@ -15,7 +15,6 @@ ACHIEVEMENTS_IMAGE="${REGISTRY}/node-learn-achievements:latest"
 LEADERBOARD_IMAGE="${REGISTRY}/node-learn-leaderboard:latest"
 ADMIN_IMAGE="${REGISTRY}/node-learn-admin:latest"
 FRONTEND_IMAGE="${REGISTRY}/node-learn-frontend:latest"
-IMPORT_QUESTIONS=true  # Set to false to skip import
 
 # Check if KUBECONFIG is set
 if [ -z "$KUBECONFIG" ]; then
@@ -286,18 +285,6 @@ echo -e "${YELLOW}Step 15: Deploying ingress...${NC}"
 kubectl apply -f k8s/manifests/ingress.yaml
 echo -e "${GREEN}✓ Ingress deployed${NC}"
 echo ""
-
-# Step 16: Import questions into the database
-if [ "$IMPORT_QUESTIONS" = true ]; then
-    echo -e "${YELLOW}Step 16: Importing questions into the database...${NC}"
-    # Delete existing job to force re-import
-    kubectl delete job import-questions -n node-learn --ignore-not-found=true
-    kubectl apply -f k8s/import-questions.yaml
-    kubectl wait --for=condition=complete job/import-questions -n node-learn --timeout=60s
-    echo -e "${GREEN}✓ Questions imported${NC}"
-else
-    echo -e "${YELLOW}Step 16: Skipping questions import.${NC}"
-fi
 
 # Show deployment status
 echo -e "${GREEN}Deployment Summary:${NC}"

@@ -1,0 +1,50 @@
+#!/bin/bash
+set -e
+
+POSTGRES_POD=$(kubectl -n node-learn get pods -l app=postgres -o jsonpath='{.items[0].metadata.name}')
+
+# Create databases
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -tc "SELECT 1 FROM pg_database WHERE datname = 'auth'" | grep -q 1 || kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -c "CREATE DATABASE auth OWNER postgres"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -tc "SELECT 1 FROM pg_database WHERE datname = 'questions'" | grep -q 1 || kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -c "CREATE DATABASE questions OWNER postgres"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -tc "SELECT 1 FROM pg_database WHERE datname = 'quiz'" | grep -q 1 || kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -c "CREATE DATABASE quiz OWNER postgres"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -tc "SELECT 1 FROM pg_database WHERE datname = 'achievements'" | grep -q 1 || kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -c "CREATE DATABASE achievements OWNER postgres"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -tc "SELECT 1 FROM pg_database WHERE datname = 'leaderboard'" | grep -q 1 || kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -c "CREATE DATABASE leaderboard OWNER postgres"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -tc "SELECT 1 FROM pg_database WHERE datname = 'admin'" | grep -q 1 || kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -c "CREATE DATABASE admin OWNER postgres"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -tc "SELECT 1 FROM pg_database WHERE datname = 'maintenance'" | grep -q 1 || kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d template1 -c "CREATE DATABASE maintenance OWNER postgres"
+
+# Apply DDL scripts
+echo "Applying DDL: questions-ddl.sql -> questions DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d questions < "$(dirname "$0")/../../scripts/sql/questions-ddl.sql"
+echo "Applying DDL: choices-ddl.sql -> questions DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d questions < "$(dirname "$0")/../../scripts/sql/choices-ddl.sql"
+echo "Applying DDL: quiz_modes-ddl.sql -> quiz DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d quiz < "$(dirname "$0")/../../scripts/sql/quiz_modes-ddl.sql"
+echo "Applying DDL: user_question_stats-ddl.sql -> quiz DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d quiz < "$(dirname "$0")/../../scripts/sql/user_question_stats-ddl.sql"
+echo "Applying DDL: achievements-ddl.sql -> achievements DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d achievements < "$(dirname "$0")/../../scripts/sql/achievements-ddl.sql"
+echo "Applying DDL: user_achievements-ddl.sql -> achievements DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d achievements < "$(dirname "$0")/../../scripts/sql/user_achievements-ddl.sql"
+echo "Applying DDL: leaderboards-ddl.sql -> leaderboard DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d leaderboard < "$(dirname "$0")/../../scripts/sql/leaderboards-ddl.sql"
+echo "Applying DDL: users-ddl.sql -> admin DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d admin < "$(dirname "$0")/../../scripts/sql/users-ddl.sql"
+echo "Applying DDL: users-ddl.sql -> auth DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d auth < "$(dirname "$0")/../../scripts/sql/users-ddl.sql"
+echo "Applying DDL: users-ddl.sql -> leaderboard DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d leaderboard < "$(dirname "$0")/../../scripts/sql/users-ddl.sql"
+
+# Apply DML scripts
+echo "Applying DML: users-dml.sql -> admin DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d admin < "$(dirname "$0")/../../scripts/sql/users-dml.sql"
+echo "Applying DML: users-dml.sql -> auth DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d auth < "$(dirname "$0")/../../scripts/sql/users-dml.sql"
+echo "Applying DML: users-dml.sql -> leaderboard DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d leaderboard < "$(dirname "$0")/../../scripts/sql/users-dml.sql"
+echo "Applying DML: quiz_modes-dml.sql -> quiz DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d quiz < "$(dirname "$0")/../../scripts/sql/quiz_modes-dml.sql"
+echo "Applying DML: achievements-dml.sql -> achievements DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d achievements < "$(dirname "$0")/../../scripts/sql/achievements-dml.sql"
+echo "Applying DML: questions_and_choices-dml.sql -> questions DB"
+kubectl -n node-learn exec -i $POSTGRES_POD -- psql -U postgres -d questions < "$(dirname "$0")/../../scripts/sql/questions_and_choices-dml.sql"
+echo "Done!"
