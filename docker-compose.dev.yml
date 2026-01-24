@@ -1,0 +1,97 @@
+# Development override - enables hot reload with volume mounts and watch mode
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+services:
+  auth:
+    env_file:
+      - ./.env
+    volumes:
+      - ./services/auth/src:/app/src
+      - ./services/auth/package.json:/app/package.json
+      - ./services/auth/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run dev"
+
+  questions:
+    env_file:
+      - ./.env
+    volumes:
+      - ./services/questions/src:/app/src
+      - ./services/questions/package.json:/app/package.json
+      - ./services/questions/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run dev"
+
+  quiz:
+    env_file:
+      - ./.env
+    volumes:
+      - ./services/quiz/src:/app/src
+      - ./services/quiz/package.json:/app/package.json
+      - ./services/quiz/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run start:dev"
+
+  achievements:
+    env_file:
+      - ./.env
+    volumes:
+      - ./services/achievements/src:/app/src
+      - ./services/achievements/package.json:/app/package.json
+      - ./services/achievements/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run start:dev"
+
+  leaderboard:
+    env_file:
+      - ./.env
+    volumes:
+      - ./services/leaderboard/src:/app/src
+      - ./services/leaderboard/package.json:/app/package.json
+      - ./services/leaderboard/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run start:dev"
+
+  maintenance:
+    env_file:
+      - ./.env
+    volumes:
+      - ./services/maintenance/src:/app/src
+      - ./services/maintenance/package.json:/app/package.json
+      - ./services/maintenance/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run dev"
+
+  admin:
+    env_file:
+      - ./.env
+    volumes:
+      - ./services/admin/src:/app/src
+      - ./services/admin/package.json:/app/package.json
+      - ./services/admin/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run start:watch"
+
+  api-gateway:
+    env_file:
+      - ./.env
+    volumes:
+      - ./services/api-gateway/src:/app/src
+      - ./services/api-gateway/package.json:/app/package.json
+      - ./services/api-gateway/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run dev"
+
+  frontend:
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/angular.json:/app/angular.json
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/node_modules:/app/node_modules

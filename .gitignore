@@ -4,4 +4,3 @@ node_modules
 k8s/postgres-secret.yaml
 
 .env
-.env.docker

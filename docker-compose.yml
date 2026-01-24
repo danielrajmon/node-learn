@@ -66,8 +66,6 @@ services:
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-http://localhost:3000/api/auth/google/callback}
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:4200}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    env_file:
-      - ./.env.docker
     depends_on:
       - nats
       - postgres
@@ -100,8 +98,6 @@ services:
       - PORT=3002
       - SERVICE_ID=questions
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    env_file:
-      - ./.env.docker
     depends_on:
       - postgres
     restart: unless-stopped
@@ -138,8 +134,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    env_file:
-      - ./.env.docker
     depends_on:
       - nats
       - postgres
@@ -173,8 +167,6 @@ services:
       - SERVICE_ID=achievements
       - NATS_URL=nats://nats:4222
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    env_file:
-      - ./.env.docker
     depends_on:
       - postgres
       - nats
@@ -208,8 +200,6 @@ services:
       - SERVICE_ID=leaderboard
       - NATS_URL=nats://nats:4222
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    env_file:
-      - ./.env.docker
     depends_on:
       - postgres
       - nats
@@ -246,8 +236,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    env_file:
-      - ./.env.docker
     depends_on:
       - postgres
     restart: unless-stopped
@@ -280,8 +268,6 @@ services:
       - SERVICE_ID=admin
       - NATS_URL=nats://nats:4222
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    env_file:
-      - ./.env.docker
     depends_on:
       - postgres
       - nats
@@ -327,8 +313,6 @@ services:
       - ACHIEVEMENT_SERVICE_URL=http://achievements:3004
       - LEADERBOARD_SERVICE_URL=http://leaderboard:3005
       - ADMIN_SERVICE_URL=http://admin:3007
-    env_file:
-      - ./.env.docker
     depends_on:
       - auth
       - questions
