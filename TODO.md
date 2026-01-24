@@ -1,12 +1,5 @@
 # TODO
 
-## Service-per-DB Migration
-- Define per-service databases (auth_db, questions_db, quiz_db, achievements_db, leaderboard_db, admin_db)
-- Update env vars for each service (DATABASE_URL pointing to its own DB)
-- Move migrations into each service under `services/<service>/migrations/`
-- Add per-service migration runner scripts (Docker/K8s job or startup hook)
-- Backfill data from shared DB into per-service DBs (one-time migration plan)
-- Update backups: ensure PostgreSQL volume snapshot covers all DBs
 
 ## Replace Internal API Calls with NATS
 - Inventory current cross-service API calls and mark which can be async

@@ -1,6 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { ChoiceEntity } from './choice.entity';
-import { UserQuestionStatsEntity } from './user-question-stats.entity';
 
 @Entity('questions')
 export class QuestionEntity {
@@ -36,9 +35,6 @@ export class QuestionEntity {
 
   @OneToMany(() => ChoiceEntity, choice => choice.question)
   choices: ChoiceEntity[];
-
-  @OneToMany(() => UserQuestionStatsEntity, stats => stats.question)
-  stats: UserQuestionStatsEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

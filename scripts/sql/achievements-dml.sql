@@ -1,13 +1,5 @@
-DROP TABLE IF EXISTS achievements;
-
-CREATE TABLE achievements (
-  id INTEGER PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  description TEXT NOT NULL,
-  sprite_col INTEGER NOT NULL,
-  sprite_row INTEGER NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- DML: Seed achievements data
+DELETE FROM achievements;
 
 INSERT INTO achievements (id, title, description, sprite_col, sprite_row) VALUES
 (1, 'First Steps', 'Answered your first single choice question.', 0, 0),

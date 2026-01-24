@@ -1,4 +1,5 @@
-DROP TABLE IF EXISTS users;
+-- DDL: Create users table
+DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -22,18 +23,6 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DELETE FROM users;
-ALTER SEQUENCE users_id_seq RESTART WITH 1;
-
-INSERT INTO users (id, google_id, email, name, picture, is_admin)
-VALUES (
-    1,
-    'guest-user',
-    'guest@node-learn.local',
-    'Guest User',
-    NULL,
-    FALSE
-);

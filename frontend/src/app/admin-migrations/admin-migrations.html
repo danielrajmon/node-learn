@@ -1,43 +1,6 @@
 <div class="migrations-page">
   <h1>Migrations</h1>
 
-  <!-- Initialize Tables Section -->
-  <section class="card">
-    <h2>Initialize Database Tables</h2>
-    <p class="description">Create database tables individually.</p>
-    
-    <div class="success-message" *ngIf="initMessage">{{ initMessage }}</div>
-    <div class="error-message" *ngIf="initError">{{ initError }}</div>
-    
-    <div class="tables-grid">
-      <div *ngFor="let table of tables" [hidden]="table.hasDmlData" class="table-item">
-        <button 
-          class="table-button" 
-          [class.no-dml-data]="!table.hasDmlData"
-          (click)="initializeTable(table)" 
-          [disabled]="table.loading"
-        >
-          {{ getTableLabel(table) }}
-          <span class="table-loading" *ngIf="table.loading">...</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="tables-grid" style="margin-top: 1rem;">
-      <div *ngFor="let table of tables" [hidden]="!table.hasDmlData" class="table-item">
-        <button 
-          class="table-button" 
-          [class.no-dml-data]="!table.hasDmlData"
-          (click)="initializeTable(table)" 
-          [disabled]="table.loading"
-        >
-          {{ getTableLabel(table) }}
-          <span class="table-loading" *ngIf="table.loading">...</span>
-        </button>
-      </div>
-    </div>
-  </section>
-
   <!-- Questions Import/Export Section -->
   <section class="card">
     <h2>Questions Import/Export</h2>

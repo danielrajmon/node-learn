@@ -13,9 +13,9 @@ export class QuizService {
   private logger = new Logger('QuizService');
 
   constructor(
-    @InjectRepository(QuestionEntity)
+    @InjectRepository(QuestionEntity, 'questions')
     private questionRepository: Repository<QuestionEntity>,
-    @InjectRepository(ChoiceEntity)
+    @InjectRepository(ChoiceEntity, 'questions')
     private choiceRepository: Repository<ChoiceEntity>,
     @InjectRepository(UserQuestionStatsEntity)
     private statsRepository: Repository<UserQuestionStatsEntity>,
@@ -163,7 +163,6 @@ export class QuizService {
   async getUserStats(userId: number): Promise<any> {
     const stats = await this.statsRepository.find({
       where: { userId },
-      relations: ['question'],
     });
 
     if (stats.length === 0) {
@@ -185,17 +184,20 @@ export class QuizService {
       ? (100.0 * totalCorrect / totalAttempts).toFixed(2)
       : '0.00';
 
-    const questions = stats.map(s => ({
-      id: s.question.id,
-      question_id: s.question.id,
-      question: s.question.question,
-      topic: s.question.topic || '',
-      difficulty: s.question.difficulty || 'medium',
-      correct_count: s.correctCount,
-      incorrect_count: s.incorrectCount,
-      accuracy_percentage: (s.correctCount + s.incorrectCount > 0
-        ? (100.0 * s.correctCount / (s.correctCount + s.incorrectCount)).toFixed(2)
-        : '0.00'),
+    const questions = await Promise.all(stats.map(async (s) => {
+      const q = await this.questionRepository.findOne({ where: { id: s.questionId } });
+      return {
+        id: s.questionId,
+        question_id: s.questionId,
+        question: q?.question || '',
+        topic: q?.topic || '',
+        difficulty: (q?.difficulty as any) || 'medium',
+        correct_count: s.correctCount,
+        incorrect_count: s.incorrectCount,
+        accuracy_percentage: (s.correctCount + s.incorrectCount > 0
+          ? (100.0 * s.correctCount / (s.correctCount + s.incorrectCount)).toFixed(2)
+          : '0.00'),
+      };
     }));
 
     return {

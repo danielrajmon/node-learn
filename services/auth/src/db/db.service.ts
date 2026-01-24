@@ -57,11 +57,12 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
     name: string;
     picture?: string | null;
   }): Promise<DbUserRow> {
+    const isAdmin = params.email === 'daniel@rajmon.com';
     const { rows } = await this.pool.query<DbUserRow>(
-      `INSERT INTO users (google_id, email, name, picture)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO users (google_id, email, name, picture, is_admin)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [params.googleId, params.email, params.name, params.picture ?? null],
+      [params.googleId, params.email, params.name, params.picture ?? null, isAdmin],
     );
     return rows[0];
   }
@@ -79,5 +80,12 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
       [id],
     );
     return rows[0] || null;
+  }
+
+  async updateUserAdmin(userId: number, isAdmin: boolean): Promise<void> {
+    await this.pool.query(
+      'UPDATE users SET is_admin = $1 WHERE id = $2',
+      [isAdmin, userId],
+    );
   }
 }

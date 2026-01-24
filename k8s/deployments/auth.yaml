@@ -34,7 +34,10 @@ spec:
               name: postgres-secret
               key: JWT_SECRET
         - name: DATABASE_URL
-          value: "postgresql://postgres:postgres@postgres:5432/node_learn"
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: AUTH_DATABASE_URL
         - name: GOOGLE_CLIENT_ID
           valueFrom:
             secretKeyRef:

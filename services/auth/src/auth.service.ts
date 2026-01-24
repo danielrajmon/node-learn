@@ -71,6 +71,10 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
       });
     }
 
+    if (!row) {
+      throw new Error('Failed to create or fetch user');
+    }
+
     const user: User = {
       id: row.id,
       googleId: row.google_id,
@@ -84,8 +88,10 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     // Publish user.login event to NATS
     await this.natsService.publish('user.login', {
       userId: user.id,
+      googleId: user.googleId,
       email: user.email,
       name: user.name,
+      isAdmin: user.isAdmin,
       provider: 'google',
     });
 
@@ -105,8 +111,11 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     // Publish user.login event
     await this.natsService.publish('user.login', {
       userId: user.id,
+      googleId: user.googleId,
       email: user.email,
-      timestamp: new Date(),
+      name: user.name,
+      isAdmin: user.isAdmin,
+      provider: 'google',
     });
 
     return {

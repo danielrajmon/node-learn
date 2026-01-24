@@ -7,6 +7,8 @@ interface TableStatus {
   displayName: string;
   hasDmlData: boolean;
   loading: boolean;
+  exists?: boolean;
+  database?: string;
 }
 
 @Component({
@@ -17,20 +19,6 @@ interface TableStatus {
   styleUrl: './admin-migrations.css'
 })
 export class AdminMigrationsComponent implements OnInit {
-  tables: TableStatus[] = [
-    { name: 'choices', displayName: 'Choices', hasDmlData: false, loading: false },
-    { name: 'leaderboards', displayName: 'Leaderboards', hasDmlData: false, loading: false },
-    { name: 'questions', displayName: 'Questions', hasDmlData: false, loading: false },
-    { name: 'userAchievements', displayName: 'User Achievements', hasDmlData: false, loading: false },
-    { name: 'userQuestionStats', displayName: 'User Question Stats', hasDmlData: false, loading: false },
-    { name: 'achievements', displayName: 'Achievements', hasDmlData: true, loading: false },
-    { name: 'quizModes', displayName: 'Quiz Modes', hasDmlData: true, loading: false },
-    { name: 'users', displayName: 'Users', hasDmlData: true, loading: false }
-  ];
-
-  initMessage = '';
-  initError = '';
-
   exportLoading = false;
   importLoading = false;
   importMessage = '';
@@ -41,35 +29,8 @@ export class AdminMigrationsComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {}
-
-  getTableLabel(table: TableStatus): string {
-    return table.name + (table.hasDmlData ? ' + data' : '');
-  }
-
-  initializeTable(table: TableStatus): void {
-    if (!confirm(`Initialize ${table.displayName} table? This will create the table if it doesn't exist.`)) {
-      return;
-    }
-
-    table.loading = true;
-    this.initMessage = '';
-    this.initError = '';
-
-    this.adminService.initializeTable(table.name).subscribe({
-      next: (response) => {
-        this.initMessage = response.message;
-        table.loading = false;
-        this.cdr.markForCheck();
-        setTimeout(() => this.initMessage = '', 3000);
-      },
-      error: (error) => {
-        this.initError = error?.error?.message || `Failed to initialize ${table.displayName}`;
-        table.loading = false;
-        this.cdr.markForCheck();
-        setTimeout(() => this.initError = '', 5000);
-      }
-    });
+  ngOnInit(): void {
+    // Component initialized
   }
 
   exportQuestions(): void {

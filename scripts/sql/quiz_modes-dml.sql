@@ -1,12 +1,5 @@
-DROP TABLE IF EXISTS quiz_modes;
-
-CREATE TABLE quiz_modes (
-  id INTEGER PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  description VARCHAR(255),
-  filters JSONB,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- DML: Seed quiz modes data
+DELETE FROM quiz_modes;
 
 INSERT INTO quiz_modes (id, name, description, filters) VALUES
 (1, 'Single Choice', 'Single choice questions', '{"questionType": "single_choice"}'),

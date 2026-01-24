@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { QuestionEntity } from './question.entity';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity('user_question_stats')
 export class UserQuestionStatsEntity {
@@ -15,7 +14,6 @@ export class UserQuestionStatsEntity {
   @Column({ name: 'incorrect_count', type: 'integer', default: 0 })
   incorrectCount: number;
 
-  @ManyToOne(() => QuestionEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'question_id' })
-  question: QuestionEntity;
+  // Note: No relation to QuestionEntity to avoid cross-database constraints.
+  // Question details are fetched via a separate connection to the questions DB.
 }

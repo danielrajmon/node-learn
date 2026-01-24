@@ -39,6 +39,10 @@ export class AdminService {
     return this.http.post<any>(`${this.apiUrl}/migrations/init-table/${tableName}`, {});
   }
 
+  getTableStatus(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/migrations/table-status`);
+  }
+
   exportQuestions(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/questions/export`);
   }

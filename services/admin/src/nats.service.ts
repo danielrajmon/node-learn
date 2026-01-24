@@ -10,9 +10,9 @@ const requireEnv = (name: string): string => {
 };
 
 @Injectable()
-export class NatsService implements OnModuleInit {
+export class NatsSubscriberService implements OnModuleInit {
   private nc: NatsConnection;
-  private logger = new Logger('NatsService');
+  private logger = new Logger('NatsSubscriberService');
 
   async onModuleInit() {
     try {
@@ -20,33 +20,11 @@ export class NatsService implements OnModuleInit {
       this.nc = await connect({ servers: natsUrl });
       this.logger.log(`Connected to NATS at ${natsUrl}`);
 
-      // Subscribe to quiz events to update leaderboard
-      this.subscribeToQuizEvents();
-      
       // Subscribe to user.login events to sync users
       this.subscribeToUserEvents();
     } catch (error) {
       this.logger.error('Failed to connect to NATS:', error);
     }
-  }
-
-  private subscribeToQuizEvents() {
-    // Subscribe to answer.submitted events from quiz service
-    const sub = this.nc.subscribe('answer.submitted');
-    this.logger.log('Subscribed to answer.submitted events');
-
-    (async () => {
-      for await (const msg of sub) {
-        try {
-          const event = JSON.parse(new TextDecoder().decode(msg.data));
-          this.logger.debug(`Received quiz event: ${msg.subject}`, event);
-          // Event is consumed by leaderboard update logic
-          // Actual updates handled via POST /leaderboard/update endpoint
-        } catch (error) {
-          this.logger.error('Error processing NATS message:', error);
-        }
-      }
-    })();
   }
 
   private subscribeToUserEvents() {
@@ -59,7 +37,7 @@ export class NatsService implements OnModuleInit {
           const event = JSON.parse(new TextDecoder().decode(msg.data));
           this.logger.debug(`Received user.login event`, event);
           
-          // Sync user to leaderboard database
+          // Sync user to admin database
           await this.syncUser(event);
         } catch (error) {
           this.logger.error('Error processing user.login message:', error);
@@ -69,7 +47,6 @@ export class NatsService implements OnModuleInit {
   }
 
   private async syncUser(event: any) {
-    // Import Pool directly to avoid circular dependency
     const { Pool } = await import('pg');
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
@@ -91,30 +68,11 @@ export class NatsService implements OnModuleInit {
              updated_at = CURRENT_TIMESTAMP`,
         [userId, googleId, email, name, isAdmin ?? false]
       );
-      this.logger.log(`Synced user ${userId} to leaderboard DB`);
+      this.logger.log(`Synced user ${userId} to admin DB`);
     } catch (error) {
-      this.logger.error('Error syncing user to leaderboard DB:', error);
+      this.logger.error('Error syncing user to admin DB:', error);
     } finally {
       await pool.end();
-    }
-  }
-
-  async publishEvent(eventType: string, payload: any) {
-    if (!this.nc) {
-      this.logger.warn('NATS not connected, skipping event publish');
-      return;
-    }
-    try {
-      const event = {
-        ...payload,
-        eventType,
-        timestamp: new Date().toISOString(),
-        serviceId: 'leaderboard',
-      };
-      this.nc.publish(eventType, new TextEncoder().encode(JSON.stringify(event)));
-      this.logger.debug(`Published event: ${eventType}`, event);
-    } catch (error) {
-      this.logger.error('Error publishing event:', error);
     }
   }
 }

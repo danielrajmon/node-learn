@@ -17,6 +17,7 @@ import { QuizModeEntity } from './entities/quiz-mode.entity';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
+    // Primary connection: quiz database
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -27,13 +28,34 @@ import { QuizModeEntity } from './entities/quiz-mode.entity';
         return {
           type: 'postgres',
           url: databaseUrl,
-          entities: [QuestionEntity, ChoiceEntity, UserQuestionStatsEntity, QuizModeEntity],
+          entities: [UserQuestionStatsEntity, QuizModeEntity],
           synchronize: false,
           logging: false,
         };
       },
     }),
-    TypeOrmModule.forFeature([QuestionEntity, ChoiceEntity, UserQuestionStatsEntity, QuizModeEntity]),
+    // Secondary connection: questions database for read-only question access
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      name: 'questions',
+      useFactory: (configService: ConfigService) => {
+        const user = configService.get('POSTGRES_USER');
+        const password = configService.get('POSTGRES_PASSWORD');
+        const host = configService.get('POSTGRES_HOST') || 'postgres';
+        const port = configService.get('POSTGRES_PORT') || '5432';
+        const url = `postgresql://${user}:${password}@${host}:${port}/questions`;
+        return {
+          type: 'postgres',
+          url,
+          entities: [QuestionEntity, ChoiceEntity],
+          synchronize: false,
+          logging: false,
+        };
+      },
+    }),
+    TypeOrmModule.forFeature([UserQuestionStatsEntity, QuizModeEntity]),
+    TypeOrmModule.forFeature([QuestionEntity, ChoiceEntity], 'questions'),
   ],
   controllers: [QuizController, StatsController, AnswersController],
   providers: [QuizService, NatsService],

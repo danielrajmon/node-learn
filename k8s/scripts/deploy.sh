@@ -164,7 +164,7 @@ echo ""
 
 # Step 3: Create namespace
 echo -e "${YELLOW}Step 3: Creating namespace...${NC}"
-kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/manifests/namespace.yaml
 echo -e "${GREEN}✓ Namespace created${NC}"
 echo ""
 
@@ -178,15 +178,16 @@ echo ""
 
 # Step 5: Configure Traefik for HTTPS-only with static port
 echo -e "${YELLOW}Step 4: Configuring Traefik service...${NC}"
-kubectl apply -f k8s/traefik-service-patch.yaml
+kubectl apply -f k8s/manifests/traefik-service-patch.yaml
 echo -e "${GREEN}✓ Traefik configured for HTTPS on port 61510${NC}"
 echo ""
 
 # Step 5: Deploy PostgreSQL
 echo -e "${YELLOW}Step 5: Deploying PostgreSQL...${NC}"
-kubectl apply -f k8s/postgres-secret.yaml
-kubectl apply -f k8s/postgres-pvc.yaml
-kubectl apply -f k8s/postgres-deployment.yaml
+kubectl apply -f k8s/manifests/postgres-secret.yaml
+kubectl apply -f k8s/manifests/postgres-init-configmap.yaml
+kubectl apply -f k8s/manifests/postgres-pvc.yaml
+kubectl apply -f k8s/deployments/postgres.yaml
 echo "Waiting for PostgreSQL to be ready..."
 kubectl wait --for=condition=ready pod -l app=postgres -n node-learn --timeout=120s
 echo -e "${GREEN}✓ PostgreSQL deployed${NC}"
@@ -194,7 +195,7 @@ echo ""
 
 # Step 6: Deploy NATS
 echo -e "${YELLOW}Step 6: Deploying NATS...${NC}"
-kubectl apply -f k8s/nats-deployment.yaml
+kubectl apply -f k8s/deployments/nats.yaml
 echo "Waiting for NATS to be ready..."
 kubectl wait --for=condition=ready pod -l app=nats -n node-learn --timeout=120s
 echo -e "${GREEN}✓ NATS deployed${NC}"
@@ -202,7 +203,7 @@ echo ""
 
 # Step 7: Deploy auth
 echo -e "${YELLOW}Step 7: Deploying auth...${NC}"
-kubectl apply -f k8s/auth-deployment.yaml
+kubectl apply -f k8s/deployments/auth.yaml
 echo "Forcing auth to restart and pull latest image..."
 kubectl rollout restart deployment/auth -n node-learn
 echo "Waiting for auth to be ready..."
@@ -212,7 +213,7 @@ echo ""
 
 # Step 8: Deploy questions
 echo -e "${YELLOW}Step 8: Deploying questions...${NC}"
-kubectl apply -f k8s/question-deployment.yaml
+kubectl apply -f k8s/deployments/question.yaml
 echo "Forcing questions to restart and pull latest image..."
 kubectl rollout restart deployment/questions -n node-learn
 echo "Waiting for questions to be ready..."
@@ -222,7 +223,7 @@ echo ""
 
 # Step 9: Deploy quiz
 echo -e "${YELLOW}Step 9: Deploying quiz...${NC}"
-kubectl apply -f k8s/quiz-deployment.yaml
+kubectl apply -f k8s/deployments/quiz.yaml
 echo "Forcing quiz to restart and pull latest image..."
 kubectl rollout restart deployment/quiz -n node-learn
 echo "Waiting for quiz to be ready..."
@@ -232,7 +233,7 @@ echo ""
 
 # Step 10: Deploy achievements
 echo -e "${YELLOW}Step 10: Deploying achievements...${NC}"
-kubectl apply -f k8s/achievements-deployment.yaml
+kubectl apply -f k8s/deployments/achievements.yaml
 echo "Forcing achievements to restart and pull latest image..."
 kubectl rollout restart deployment/achievements -n node-learn
 echo "Waiting for achievements to be ready..."
@@ -242,7 +243,7 @@ echo ""
 
 # Step 11: Deploy leaderboard
 echo -e "${YELLOW}Step 11: Deploying leaderboard...${NC}"
-kubectl apply -f k8s/leaderboard-deployment.yaml
+kubectl apply -f k8s/deployments/leaderboard.yaml
 echo "Forcing leaderboard to restart and pull latest image..."
 kubectl rollout restart deployment/leaderboard -n node-learn
 echo "Waiting for leaderboard to be ready..."
@@ -252,7 +253,7 @@ echo ""
 
 # Step 12: Deploy admin
 echo -e "${YELLOW}Step 12: Deploying admin...${NC}"
-kubectl apply -f k8s/admin-deployment.yaml
+kubectl apply -f k8s/deployments/admin.yaml
 echo "Forcing admin to restart and pull latest image..."
 kubectl rollout restart deployment/admin -n node-learn
 echo "Waiting for admin to be ready..."
@@ -262,7 +263,7 @@ echo ""
 
 # Step 13: Deploy api-gateway
 echo -e "${YELLOW}Step 13: Deploying api-gateway...${NC}"
-kubectl apply -f k8s/api-gateway-deployment.yaml
+kubectl apply -f k8s/deployments/api-gateway.yaml
 echo "Forcing api-gateway to restart and pull latest image..."
 kubectl rollout restart deployment/api-gateway -n node-learn
 echo "Waiting for api-gateway to be ready..."
@@ -272,7 +273,7 @@ echo ""
 
 # Step 14: Deploy frontend
 echo -e "${YELLOW}Step 14: Deploying frontend...${NC}"
-kubectl apply -f k8s/frontend-deployment.yaml
+kubectl apply -f k8s/deployments/frontend.yaml
 echo "Forcing frontend to restart and pull latest image..."
 kubectl rollout restart deployment/frontend -n node-learn
 echo "Waiting for frontend to be ready..."
@@ -282,7 +283,7 @@ echo ""
 
 # Step 15: Deploy ingress
 echo -e "${YELLOW}Step 15: Deploying ingress...${NC}"
-kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/manifests/ingress.yaml
 echo -e "${GREEN}✓ Ingress deployed${NC}"
 echo ""
 

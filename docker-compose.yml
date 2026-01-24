@@ -21,7 +21,8 @@ services:
       retries: 5
 
   # ====== PostgreSQL Database ======
-  # Stores application data + event_store table for all services
+  # Multi-database setup: each service has its own database
+  # Databases: auth_db, questions_db, quiz_db, achievements_db, leaderboard_db, admin_db, maintenance_db
   # Status: Healthy and responsive
   postgres:
     container_name: node-learn-postgresql
@@ -38,6 +39,7 @@ services:
       - LC_ALL=en_US.utf8
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-databases.sh:/docker-entrypoint-initdb.d/01-init-databases.sh:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -65,7 +67,7 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
       - FRONTEND_URL=${FRONTEND_URL}
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/auth
     depends_on:
       - nats
       - postgres
@@ -97,7 +99,7 @@ services:
       - NODE_ENV=production
       - PORT=3002
       - SERVICE_ID=questions
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/questions
     depends_on:
       - postgres
     restart: unless-stopped
@@ -131,7 +133,7 @@ services:
       - NATS_URL=nats://nats:4222
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB=quiz
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
@@ -168,10 +170,10 @@ services:
       - NATS_URL=nats://nats:4222
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB=achievements
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/achievements
     depends_on:
       - postgres
       - nats
@@ -203,8 +205,9 @@ services:
       - NODE_ENV=production
       - PORT=3005
       - SERVICE_ID=leaderboard
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
       - NATS_URL=nats://nats:4222
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/leaderboard
     depends_on:
       - postgres
       - nats
@@ -238,7 +241,7 @@ services:
       - SERVICE_ID=maintenance
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB=maintenance
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
@@ -271,13 +274,14 @@ services:
       - NODE_ENV=production
       - PORT=3007
       - SERVICE_ID=admin
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-key}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB=admin
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - NATS_URL=nats://nats:4222
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/admin
     depends_on:
       - postgres
       - nats

@@ -35,7 +35,14 @@
   color: #6c757d;
   font-size: 0.95rem;
 }
-
+.status-note {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
 .success-message {
   padding: 0.75rem 1rem;
   background: #d4edda;
@@ -138,6 +145,22 @@
   background: #95a5a6;
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.table-button.table-exists {
+  background: #27ae60;
+}
+
+.table-button.table-exists:hover:not(:disabled) {
+  background: #229954;
+}
+
+.table-button.table-missing {
+  background: #e74c3c;
+}
+
+.table-button.table-missing:hover:not(:disabled) {
+  background: #c0392b;
 }
 
 .table-button.initialized {

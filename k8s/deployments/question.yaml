@@ -54,7 +54,10 @@ spec:
               name: postgres-secret
               key: POSTGRES_DB
         - name: DATABASE_URL
-          value: "postgresql://postgres:postgres@postgres:5432/node_learn"
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: QUESTIONS_DATABASE_URL
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:

@@ -89,4 +89,18 @@ export class AdminController {
     this.logger.debug(`Initializing table: ${tableName}`);
     return this.adminService.initializeTable(tableName);
   }
+
+  @Get('migrations/table-status')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async getTableStatus() {
+    this.logger.debug('Fetching table status across all databases');
+    return this.adminService.getTableStatus();
+  }
+
+  @Post('questions/import')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async importQuestions(@Body() body: { questions: any[] }) {
+    this.logger.debug(`Importing ${body.questions.length} questions`);
+    return this.adminService.importQuestions(body.questions);
+  }
 }

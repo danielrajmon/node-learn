@@ -1,8 +1,7 @@
-DROP TRIGGER IF EXISTS trg_questions_set_updated_at ON questions;
-DROP FUNCTION IF EXISTS set_questions_updated_at;
-DROP TYPE IF EXISTS difficulty_enum;
-DROP TYPE IF EXISTS question_type_enum;
-DROP TABLE IF EXISTS questions;
+-- DDL: Create questions table and supporting types
+DROP TABLE IF EXISTS questions CASCADE;
+DROP TYPE IF EXISTS question_type_enum CASCADE;
+DROP TYPE IF EXISTS difficulty_enum CASCADE;
 
 CREATE TYPE question_type_enum AS ENUM (
     'single_choice',
@@ -21,7 +20,7 @@ CREATE TABLE questions (
     question_type   question_type_enum NOT NULL,
     practical       BOOLEAN NOT NULL,
     difficulty      difficulty_enum NOT NULL,
-	topic           TEXT NOT NULL,
+    topic           TEXT NOT NULL,
     question        TEXT NOT NULL,
     answer          TEXT,
     quiz            TEXT,
@@ -39,6 +38,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_questions_set_updated_at ON questions;
 CREATE TRIGGER trg_questions_set_updated_at
 BEFORE UPDATE ON questions
 FOR EACH ROW
