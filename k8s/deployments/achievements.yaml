@@ -38,10 +38,7 @@ spec:
         - name: POSTGRES_PORT
           value: "5432"
         - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_DB
+          value: "achievements"
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
