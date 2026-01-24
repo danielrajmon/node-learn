@@ -31,10 +31,10 @@ data:
             echo -e "${YELLOW}⚠ Database '$db_name' already exists, skipping...${NC}"
         else
             echo -e "${GREEN}✓ Creating database '$db_name'...${NC}"
-            psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+            psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-'EOSQL'
                 CREATE DATABASE $db_name OWNER $POSTGRES_USER;
                 GRANT ALL PRIVILEGES ON DATABASE $db_name TO $POSTGRES_USER;
-EOSQL
+            EOSQL
             echo -e "${GREEN}✓ Database '$db_name' created successfully${NC}"
         fi
     }
