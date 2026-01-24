@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { connect, NatsConnection } from 'nats';
+import { AchievementsService } from '../achievements/achievements.service';
 
 const requireEnv = (name: string): string => {
   const value = process.env[name];
@@ -13,6 +14,8 @@ const requireEnv = (name: string): string => {
 export class NatsService implements OnModuleInit {
   private nc: NatsConnection;
   private readonly logger = new Logger('NatsService');
+
+  constructor(private readonly achievementsService: AchievementsService) {}
 
   async onModuleInit() {
     try {
@@ -39,10 +42,40 @@ export class NatsService implements OnModuleInit {
           this.logger.debug(`Received event: ${msg.subject}`, event);
 
           // Check for achievements based on the answer
-          if (event.userId && event.isCorrect) {
-            // TODO: Implement achievement logic based on quiz performance
-            // For now, just log the event
-            this.logger.log(`User ${event.userId} answered correctly: ${event.questionId}`);
+          if (event.userId && typeof event.questionId === 'number') {
+            const isCorrect = event.isCorrect === true;
+            this.logger.log(`User ${event.userId} answered ${isCorrect ? 'correctly' : 'incorrectly'}: ${event.questionId}`);
+
+            // Update local projection so we do not query other DBs
+            await this.achievementsService.recordAnswerProjection({
+              userId: event.userId,
+              questionId: event.questionId,
+              isCorrect,
+              questionType: event.questionType,
+              practical: event.practical,
+              difficulty: event.difficulty,
+            });
+            
+            // Check and award achievements using the projection
+            const awarded = await this.achievementsService.checkAndAwardAchievements(
+              event.userId,
+              event.questionId,
+              isCorrect,
+            );
+            
+            if (awarded.length > 0) {
+              this.logger.log(`Awarded ${awarded.length} achievement(s) to user ${event.userId}:`, 
+                awarded.map(a => a.title).join(', '));
+              
+              // Publish achievement.unlocked events
+              for (const achievement of awarded) {
+                await this.publishEvent('achievement.unlocked', {
+                  userId: event.userId,
+                  achievementId: achievement.id,
+                  achievementTitle: achievement.title,
+                });
+              }
+            }
           }
         } catch (error) {
           this.logger.error('Error processing NATS message', error);

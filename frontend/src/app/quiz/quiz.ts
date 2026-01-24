@@ -443,15 +443,29 @@ export class Quiz implements OnInit, OnDestroy {
         
         // Record answer if user is logged in
         if (this.currentUser && this.currentQuestion) {
+          const userId = this.currentUser.id;
+          const questionId = this.currentQuestion.id;
+
+          // 1) Record stats (existing behavior)
           this.http.post<any>('/api/stats/record', {
-            userId: this.currentUser.id,
-            questionId: this.currentQuestion.id,
+            userId,
+            questionId,
             isCorrect: this.correct,
+          }).subscribe({ next: () => {}, error: () => {} });
+
+          // 2) Request achievement check (synchronous unlocks for UI toast)
+          this.http.post<any>('/api/achievements/check', {
+            userId,
+            questionId,
+            isCorrect: this.correct,
+            questionType: this.currentQuestion.questionType,
+            practical: this.currentQuestion.practical,
+            difficulty: this.currentQuestion.difficulty,
           }).subscribe({
-            next: (response) => {
-              // Display achievement notifications if any were earned
-              if (response.awardedAchievements && response.awardedAchievements.length > 0) {
-                this.awardedAchievements = response.awardedAchievements;
+            next: (resp) => {
+              const awarded = resp?.awardedAchievements || [];
+              if (awarded.length > 0) {
+                this.awardedAchievements = awarded;
                 this.currentAchievementIndex = 0;
                 this.showAchievementNotification = true;
                 this.cdr.detectChanges();
@@ -488,8 +502,8 @@ export class Quiz implements OnInit, OnDestroy {
                 setTimeout(showNextAchievement, 4000);
               }
             },
-            error: (err) => {
-              // Error recording answer
+            error: () => {
+              // ignore toast on failure
             }
           });
         }

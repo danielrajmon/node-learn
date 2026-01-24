@@ -34,6 +34,8 @@ export class QuizService {
     this.logger.debug(`[${correlationId}] Starting answer submission saga`);
 
     try {
+      const question = await this.questionRepository.findOne({ where: { id: dto.questionId } });
+
       // Step 1: Record answer in stats table
       await this.recordStats(dto, correlationId);
 
@@ -46,6 +48,9 @@ export class QuizService {
         isCorrect: dto.isCorrect,
         timestamp: new Date().toISOString(),
         correlationId,
+        questionType: question?.questionType,
+        practical: question?.practical,
+        difficulty: question?.difficulty,
       });
 
       // Step 3: If correct, trigger achievement and leaderboard checks
