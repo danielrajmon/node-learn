@@ -3,7 +3,7 @@
 # Pre-commit hook to generate version.json
 
 echo "Generating version.json..."
-node generate-version.js
+node scripts/generate-version.js
 
 # Add the generated file to the current commit
 git add frontend/src/version.json
