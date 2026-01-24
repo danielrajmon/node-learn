@@ -30,4 +30,8 @@ export class AdminService {
   getAllUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/users`);
   }
+
+  updateUserRole(id: number, isAdmin: boolean): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/users/${id}/role`, { isAdmin });
+  }
 }

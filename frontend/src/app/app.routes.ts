@@ -4,6 +4,9 @@ import { Learn } from './learn/learn';
 import { Questions } from './questions/questions';
 import { Quiz } from './quiz/quiz';
 import { AdminComponent } from './admin/admin';
+import { AdminLayoutComponent } from './admin/admin-layout';
+import { AdminUsersComponent } from './admin-users/admin-users';
+import { AdminMigrationsComponent } from './admin-migrations/admin-migrations';
 import { LoginComponent } from './login/login';
 import { AuthCallbackComponent } from './auth-callback/auth-callback';
 import { AchievementsComponent } from './achievements/achievements';
@@ -21,7 +24,17 @@ export const routes: Routes = [
   { path: 'leaderboards', component: LeaderboardsComponent },
   { path: 'achievements', component: AchievementsComponent },
   { path: 'stats', component: StatsComponent },
-  { path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard] },
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    canActivate: [AuthGuard, AdminGuard],
+    children: [
+      { path: 'questions', component: AdminComponent },
+      { path: 'users', component: AdminUsersComponent },
+      { path: 'migrations', component: AdminMigrationsComponent },
+      { path: '', redirectTo: 'questions', pathMatch: 'full' }
+    ]
+  },
   { path: 'login', component: LoginComponent },
   { path: 'auth/callback', component: AuthCallbackComponent },
   { path: '**', redirectTo: '' }

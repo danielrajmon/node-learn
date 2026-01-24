@@ -1,0 +1,135 @@
+.users-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.users-page h1 {
+  margin: 1rem 0 0 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.loading-message {
+  padding: 1rem;
+  color: #4d5967;
+}
+
+.warning-message {
+  padding: 1rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #856404;
+}
+
+.no-users {
+  padding: 2rem;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+.users-count {
+  margin: 0.25rem 0 0 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.users-header .lede {
+  margin: 0.35rem 0 0;
+  color: #4d5967;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.table {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1.5fr 1fr 1.5fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.table-head {
+  font-weight: 600;
+  color: #1f2933;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.table-row {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f1f3f5;
+  color: #4d5967;
+}
+
+.admin-toggle {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #d0d5dd;
+  border-radius: 4px;
+  background: #f8fafc;
+  color: #4d5967;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  min-width: 55px;
+  text-align: center;
+}
+
+.admin-toggle:hover {
+  background: #eef2f7;
+  border-color: #c2c7cf;
+}
+
+.admin-toggle.is-admin {
+  background: #2c3e50;
+  color: white;
+  border-color: #2c3e50;
+}
+
+.admin-toggle.is-admin:hover {
+  background: #1a252f;
+  border-color: #1a252f;
+}
+
+@media (max-width: 800px) {
+  .table-head,
+  .table-row {
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-areas:
+      "id email admin"
+      "name name created";
+  }
+
+  .table-head span:nth-child(1) { grid-area: id; }
+  .table-head span:nth-child(2) { grid-area: email; }
+  .table-head span:nth-child(3) { grid-area: name; }
+  .table-head span:nth-child(4) { grid-area: admin; }
+  .table-head span:nth-child(5) { grid-area: created; }
+
+  .table-row span:nth-child(1) { grid-area: id; }
+  .table-row span:nth-child(2) { grid-area: email; }
+  .table-row span:nth-child(3) { grid-area: name; }
+  .table-row span:nth-child(4) { grid-area: admin; }
+  .table-row span:nth-child(5) { grid-area: created; }
+}

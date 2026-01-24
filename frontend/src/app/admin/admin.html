@@ -295,31 +295,5 @@
     </div>
   </div>
 
-  <!-- Users list section (only visible for admin users) -->
-  <div class="users-section" *ngIf="showUsersList && users.length > 0">
-    <h1>Users in Database ({{ users.length }})</h1>
-    <div class="table-container">
-      <table class="users-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Name</th>
-            <th>Admin</th>
-            <th>Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of users">
-            <td data-label="ID">{{ user.id }}</td>
-            <td data-label="Email">{{ user.email }}</td>
-            <td data-label="Name">{{ user.name || '-' }}</td>
-            <td data-label="Admin">{{ user.isAdmin ? 'Yes' : 'No' }}</td>
-            <td data-label="Created">{{ user.createdAt | date: 'short' }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
   </div>
 </div>

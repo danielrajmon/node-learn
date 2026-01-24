@@ -18,13 +18,13 @@
   overflow-y: auto;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem 2rem;
   width: 100%;
   box-sizing: border-box;
 }
 
 .admin-content h1 {
-  margin: 0 0 2rem 0;
+  margin: 0 0 1.5rem 0;
   color: #2c3e50;
   font-size: 1.5rem;
   font-weight: 600;
@@ -564,50 +564,6 @@
 
 .remove-choice-btn:hover {
   background: #c82333;
-}
-
-.users-section {
-  margin-top: 0;
-}
-
-.users-section h1 {
-  margin-bottom: 2rem;
-  color: #2c3e50;
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-.users-table-container {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.users-table thead {
-  background: #2c3e50;
-}
-
-.users-table th,
-.users-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.users-table th {
-  font-weight: 600;
-  color: white;
-  border-bottom: 2px solid #1a252f;
-  text-align: left;
-}
-
-.users-table tbody tr:hover {
-  background-color: #f8f9fa;
 }
 
 @media (max-width: 600px) {

@@ -1,0 +1,47 @@
+<div class="users-page">
+  <h1>Users</h1>
+
+  <div class="warning-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="loading-message" *ngIf="loading">
+    <p>Loading users...</p>
+  </div>
+
+  <div class="no-users" *ngIf="!loading && !errorMessage && users.length === 0">
+    <p>No users found.</p>
+  </div>
+
+  <section class="card" *ngIf="!loading && !errorMessage && users.length > 0">
+    <div class="table">
+      <div class="table-head">
+        <span>ID</span>
+        <span>Email</span>
+        <span>Name</span>
+        <span>Admin</span>
+        <span>Created</span>
+      </div>
+      <div class="table-row" *ngFor="let user of users">
+        <span>{{ user.id }}</span>
+        <span>{{ user.email }}</span>
+        <span>{{ user.name || '-' }}</span>
+        <span>
+          <button 
+            class="admin-toggle"
+            [class.is-admin]="user.isAdmin"
+            (click)="toggleAdminRole(user)"
+            type="button"
+          >
+            {{ user.isAdmin ? 'Yes' : 'No' }}
+          </button>
+        </span>
+        <span>{{ user.createdAt ? (user.createdAt | date:'short') : '-' }}</span>
+      </div>
+    </div>
+  </section>
+
+  <p class="users-count" *ngIf="!loading && !errorMessage && users.length > 0">
+    {{ users.length }} user(s) total
+  </p>
+</div>
