@@ -34,4 +34,16 @@ export class AdminService {
   updateUserRole(id: number, isAdmin: boolean): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/users/${id}/role`, { isAdmin });
   }
+
+  initializeTable(tableName: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/migrations/init-table/${tableName}`, {});
+  }
+
+  exportQuestions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/questions/export`);
+  }
+
+  importQuestions(questions: any[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/questions/import`, { questions });
+  }
 }

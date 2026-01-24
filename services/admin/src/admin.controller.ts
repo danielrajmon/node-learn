@@ -33,6 +33,12 @@ export class AdminController {
     return await this.adminService.findAllQuestions(filters);
   }
 
+  @Get('questions/export')
+  async exportQuestions() {
+    this.logger.debug('Exporting questions to JSON');
+    return this.adminService.exportQuestions();
+  }
+
   @Get('questions/:id')
   async getQuestion(@Param('id', ParseIntPipe) id: number) {
     this.logger.debug(`Fetching question ${id} for admin`);
@@ -75,5 +81,12 @@ export class AdminController {
   async updateUserRole(@Param('id', ParseIntPipe) id: number, @Body() roleData: { isAdmin: boolean }) {
     this.logger.debug(`Updating role for user ${id}`);
     return this.adminService.updateUserRole(id, roleData.isAdmin);
+  }
+
+  @Post('migrations/init-table/:tableName')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async initializeTable(@Param('tableName') tableName: string) {
+    this.logger.debug(`Initializing table: ${tableName}`);
+    return this.adminService.initializeTable(tableName);
   }
 }

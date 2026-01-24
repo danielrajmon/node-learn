@@ -1,3 +1,14 @@
+DROP TABLE IF EXISTS achievements;
+
+CREATE TABLE achievements (
+  id INTEGER PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  sprite_col INTEGER NOT NULL,
+  sprite_row INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT INTO achievements (id, title, description, sprite_col, sprite_row) VALUES
 (1, 'First Steps', 'Answered your first single choice question.', 0, 0),
 (2, 'Lucky Guess', 'Answered your first multi-choice question.', 1, 0),

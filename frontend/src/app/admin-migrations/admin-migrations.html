@@ -1,16 +1,70 @@
 <div class="migrations-page">
-  <header class="migrations-header">
-    <p class="eyebrow">Admin</p>
-    <h1>Migrations</h1>
-    <p class="lede">Database schema management and migrations.</p>
-  </header>
+  <h1>Migrations</h1>
 
+  <!-- Initialize Tables Section -->
   <section class="card">
-    <div class="card-header">
-      <div>
-        <h2>Coming Soon</h2>
-        <p class="muted">Migration tools and status will appear here.</p>
+    <h2>Initialize Database Tables</h2>
+    <p class="description">Create database tables individually.</p>
+    
+    <div class="success-message" *ngIf="initMessage">{{ initMessage }}</div>
+    <div class="error-message" *ngIf="initError">{{ initError }}</div>
+    
+    <div class="tables-grid">
+      <div *ngFor="let table of tables" [hidden]="table.hasDmlData" class="table-item">
+        <button 
+          class="table-button" 
+          [class.no-dml-data]="!table.hasDmlData"
+          (click)="initializeTable(table)" 
+          [disabled]="table.loading"
+        >
+          {{ getTableLabel(table) }}
+          <span class="table-loading" *ngIf="table.loading">...</span>
+        </button>
       </div>
+    </div>
+
+    <div class="tables-grid" style="margin-top: 1rem;">
+      <div *ngFor="let table of tables" [hidden]="!table.hasDmlData" class="table-item">
+        <button 
+          class="table-button" 
+          [class.no-dml-data]="!table.hasDmlData"
+          (click)="initializeTable(table)" 
+          [disabled]="table.loading"
+        >
+          {{ getTableLabel(table) }}
+          <span class="table-loading" *ngIf="table.loading">...</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Questions Import/Export Section -->
+  <section class="card">
+    <h2>Questions Import/Export</h2>
+    <p class="description">Save all questions to a JSON file or load questions from a file.</p>
+    
+    <div class="success-message" *ngIf="importMessage">{{ importMessage }}</div>
+    <div class="error-message" *ngIf="importError">{{ importError }}</div>
+    
+    <div class="button-group">
+      <button 
+        class="action-button secondary" 
+        (click)="exportQuestions()" 
+        [disabled]="exportLoading"
+      >
+        {{ exportLoading ? 'Exporting...' : 'Export Questions' }}
+      </button>
+      
+      <label class="file-upload-button">
+        <input 
+          type="file" 
+          accept=".json" 
+          (change)="onFileSelected($event)"
+          [disabled]="importLoading"
+          style="display: none;"
+        />
+        {{ importLoading ? 'Importing...' : 'Import Questions' }}
+      </label>
     </div>
   </section>
 </div>

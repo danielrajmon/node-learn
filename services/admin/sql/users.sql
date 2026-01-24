@@ -11,11 +11,9 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
--- Trigger to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -26,3 +24,16 @@ $$ language 'plpgsql';
 
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DELETE FROM users;
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+
+INSERT INTO users (id, google_id, email, name, picture, is_admin)
+VALUES (
+    1,
+    'guest-user',
+    'guest@node-learn.local',
+    'Guest User',
+    NULL,
+    FALSE
+);

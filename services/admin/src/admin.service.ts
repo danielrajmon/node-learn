@@ -9,6 +9,8 @@ import { User } from './entities/user.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { QuestionDto, QuestionFilters } from './dto/question.dto';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class AdminService {
@@ -36,7 +38,12 @@ export class AdminService {
       difficulty: entity.difficulty,
       topic: entity.topic,
       isActive: entity.isActive,
-      choices: entity.choices,
+      choices: entity.choices?.map(choice => ({
+        id: choice.id,
+        choiceText: choice.choiceText,
+        isGood: choice.isGood,
+        explanation: choice.explanation,
+      })) || [],
     };
   }
 
@@ -205,5 +212,35 @@ export class AdminService {
     this.logger.log(`Published user.role.updated event for user ${id}`);
 
     return updatedUser;
+  }
+
+  async initializeTable(tableName: string): Promise<{ message: string; success: boolean }> {
+    this.logger.log(`Initializing table: ${tableName}`);
+
+    try {
+      const sqlFilePath = path.join(__dirname, '..', 'sql', `${tableName}.sql`);
+      
+      if (!fs.existsSync(sqlFilePath)) {
+        throw new Error(`SQL file not found for table: ${tableName}`);
+      }
+
+      const sqlContent = fs.readFileSync(sqlFilePath, 'utf8');
+      await this.questionRepository.query(sqlContent);
+
+      return {
+        message: `Table ${tableName} initialized successfully`,
+        success: true
+      };
+    } catch (error) {
+      this.logger.error(`Error initializing table ${tableName}:`, error);
+      throw new Error(`Failed to initialize table ${tableName}: ${error.message}`);
+    }
+  }
+
+  async exportQuestions(): Promise<any[]> {
+    const questions = await this.questionRepository.find({
+      relations: ['choices']
+    });
+    return questions.map(q => this.entityToDto(q));
   }
 }

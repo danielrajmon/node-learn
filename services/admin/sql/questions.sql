@@ -43,3 +43,8 @@ CREATE TRIGGER trg_questions_set_updated_at
 BEFORE UPDATE ON questions
 FOR EACH ROW
 EXECUTE FUNCTION set_questions_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_questions_topic ON questions(topic);
+CREATE INDEX IF NOT EXISTS idx_questions_difficulty ON questions(difficulty);
+CREATE INDEX IF NOT EXISTS idx_questions_practical ON questions(practical);
+CREATE INDEX IF NOT EXISTS idx_questions_is_active ON questions(is_active);

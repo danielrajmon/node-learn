@@ -8,7 +8,6 @@ CREATE TABLE user_achievements (
   UNIQUE(user_id, achievement_id)
 );
 
--- Indexes for performance
 CREATE INDEX idx_user_achievements_user_id ON user_achievements(user_id);
 CREATE INDEX idx_user_achievements_achievement_id ON user_achievements(achievement_id);
 CREATE INDEX idx_user_achievements_unlocked_at ON user_achievements(unlocked_at);

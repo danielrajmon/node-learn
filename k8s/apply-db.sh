@@ -1,4 +1,4 @@
-#!/bin/bash
+ı#!/bin/bash
 
 # Script to initialize PostgreSQL database in Kubernetes
 # Usage: ./init-db.sh <filename>
@@ -53,7 +53,7 @@ if [ ! -f "$FILE_PATH" ]; then
     exit 1
 fi
 
-echo "📝 Applying $FILENAME..."
+echo "📝 Applying $FILENAME..."ı
 if kubectl exec -n $NAMESPACE $POD_NAME -i -- psql -U $POSTGRES_USER -d $POSTGRES_DB < "$FILE_PATH"; then
     echo "✅ $FILENAME applied successfully"
 else

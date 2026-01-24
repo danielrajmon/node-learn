@@ -13,3 +13,6 @@ CREATE TABLE leaderboards (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   UNIQUE(quiz_mode_id, user_id)
 );
+
+CREATE INDEX IF NOT EXISTS idx_leaderboards_user_id ON leaderboards(user_id);
+CREATE INDEX IF NOT EXISTS idx_leaderboards_achieved_at ON leaderboards(achieved_at);

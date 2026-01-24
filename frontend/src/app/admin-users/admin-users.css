@@ -86,8 +86,8 @@
   padding: 0.4rem 0.8rem;
   border: 1px solid #d0d5dd;
   border-radius: 4px;
-  background: #f8fafc;
-  color: #4d5967;
+  background: #6c757d;
+  color: white;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
@@ -97,8 +97,8 @@
 }
 
 .admin-toggle:hover {
-  background: #eef2f7;
-  border-color: #c2c7cf;
+  background: #5a6268;
+  border-color: #5a6268;
 }
 
 .admin-toggle.is-admin {
