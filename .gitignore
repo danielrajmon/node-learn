@@ -1,6 +1,6 @@
 dist
 node_modules
 
-k8s/postgres-secret.yaml
+k8s/manifests/postgres-secret.yaml
 
 .env

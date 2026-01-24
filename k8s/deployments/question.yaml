@@ -26,6 +26,8 @@ spec:
           value: "3002"
         - name: SERVICE_ID
           value: "questions"
+        - name: NATS_URL
+          value: "nats://nats:4222"
         - name: POSTGRES_HOST
           valueFrom:
             secretKeyRef:
@@ -51,6 +53,13 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: POSTGRES_DB
+        - name: DATABASE_URL
+          value: "postgresql://postgres:postgres@postgres:5432/node_learn"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: JWT_SECRET
         livenessProbe:
           httpGet:
             path: /questions

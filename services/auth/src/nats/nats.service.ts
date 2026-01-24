@@ -8,18 +8,30 @@ import { connect, NatsConnection, Subscription } from 'nats';
 import { v4 as uuid } from 'uuid';
 import { DomainEvent, EventType, NATS_SUBJECTS } from './types';
 
+const requireEnv = (name: string): string => {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+  return value;
+};
+
 @Injectable()
 export class NatsService {
   private nc: NatsConnection;
   private subscriptions: Map<string, Subscription> = new Map();
   private logger = new Logger('NatsService');
 
-  async connect(natsUrl: string = process.env.NATS_URL || 'nats://localhost:4222') {
+  async connect(natsUrl?: string) {
+    const resolved = natsUrl ?? process.env.NATS_URL;
+    if (!resolved) {
+      throw new Error('NATS_URL is required');
+    }
     try {
       this.nc = await connect({
-        servers: natsUrl,
+        servers: resolved,
       });
-      this.logger.log(`Connected to NATS at ${natsUrl}`);
+      this.logger.log(`Connected to NATS at ${resolved}`);
     } catch (error) {
       this.logger.error(`Failed to connect to NATS: ${error.message}`);
       throw error;

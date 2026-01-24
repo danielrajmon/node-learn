@@ -1,6 +1,14 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { connect, NatsConnection } from 'nats';
 
+const requireEnv = (name: string): string => {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+  return value;
+};
+
 @Injectable()
 export class NatsService implements OnModuleInit {
   private nc: NatsConnection;
@@ -8,7 +16,7 @@ export class NatsService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      const natsUrl = process.env.NATS_URL || 'nats://localhost:4222';
+      const natsUrl = requireEnv('NATS_URL');
       this.nc = await connect({
         servers: natsUrl,
       });

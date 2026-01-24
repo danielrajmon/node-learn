@@ -33,31 +33,8 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: JWT_SECRET
-        - name: POSTGRES_HOST
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_HOST
-        - name: POSTGRES_PORT
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_PORT
-        - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_DB
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_USER
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_PASSWORD
+        - name: DATABASE_URL
+          value: "postgresql://postgres:postgres@postgres:5432/node_learn"
         - name: GOOGLE_CLIENT_ID
           valueFrom:
             secretKeyRef:

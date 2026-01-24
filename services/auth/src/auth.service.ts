@@ -24,7 +24,7 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     // Connect to NATS on service startup
     try {
-      await this.natsService.connect(process.env.NATS_URL || 'nats://localhost:4222');
+      await this.natsService.connect(process.env.NATS_URL);
     } catch (error) {
       console.error('Failed to connect to NATS:', error);
     }

@@ -1,6 +1,14 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Pool } from 'pg';
 
+const requireEnv = (name: string): string => {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+  return value;
+};
+
 @Injectable()
 export class DatabaseService implements OnModuleInit {
   private logger = new Logger('DatabaseService');
@@ -8,11 +16,11 @@ export class DatabaseService implements OnModuleInit {
 
   async onModuleInit() {
     this.pool = new Pool({
-      host: process.env.POSTGRES_HOST || 'localhost',
-      port: parseInt(process.env.POSTGRES_PORT || '5432'),
-      database: process.env.POSTGRES_DB || 'node_learn_db',
-      user: process.env.POSTGRES_USER || 'postgres',
-      password: process.env.POSTGRES_PASSWORD || 'postgres',
+      host: requireEnv('POSTGRES_HOST'),
+      port: parseInt(requireEnv('POSTGRES_PORT'), 10),
+      database: requireEnv('POSTGRES_DB'),
+      user: requireEnv('POSTGRES_USER'),
+      password: requireEnv('POSTGRES_PASSWORD'),
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,

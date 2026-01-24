@@ -17,8 +17,16 @@ import { UserEntity } from './entities/user.entity';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const databaseUrl = configService.get('DATABASE_URL') || 
-          `postgresql://${configService.get('POSTGRES_USER')}:${configService.get('POSTGRES_PASSWORD')}@${configService.get('POSTGRES_HOST')}:${configService.get('POSTGRES_PORT')}/${configService.get('POSTGRES_DB')}`;
+        const requireEnv = (key: string): string => {
+          const value = configService.get<string>(key);
+          if (!value) {
+            throw new Error(`${key} is required`);
+          }
+          return value;
+        };
+
+        const databaseUrl = configService.get<string>('DATABASE_URL') ??
+          `postgresql://${requireEnv('POSTGRES_USER')}:${requireEnv('POSTGRES_PASSWORD')}@${requireEnv('POSTGRES_HOST')}:${requireEnv('POSTGRES_PORT')}/${requireEnv('POSTGRES_DB')}`;
         
         return {
           type: 'postgres',

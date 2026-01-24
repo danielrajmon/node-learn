@@ -1,36 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: leaderboard
+  name: quiz
   namespace: node-learn
   labels:
-    app: leaderboard
+    app: quiz
     version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: leaderboard
+      app: quiz
   template:
     metadata:
       labels:
-        app: leaderboard
+        app: quiz
         version: v1
     spec:
       containers:
-      - name: leaderboard
-        image: danielrajmon/node-learn-leaderboard:latest
+      - name: quiz
+        image: danielrajmon/node-learn-quiz:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 3005
+        - containerPort: 3003
           name: http
         env:
         - name: NODE_ENV
           value: "production"
         - name: PORT
-          value: "3005"
+          value: "3003"
         - name: SERVICE_ID
-          value: "leaderboard"
+          value: "quiz"
         - name: NATS_URL
           value: "nats://nats:4222"
         - name: POSTGRES_HOST
@@ -52,6 +52,13 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: POSTGRES_PASSWORD
+        - name: DATABASE_URL
+          value: "postgresql://postgres:postgres@postgres:5432/node_learn"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: JWT_SECRET
         resources:
           requests:
             memory: "128Mi"
@@ -61,34 +68,34 @@ spec:
             cpu: "500m"
         livenessProbe:
           httpGet:
-            path: /leaderboard/health
-            port: 3005
-          initialDelaySeconds: 45
+            path: /quiz/health
+            port: 3003
+          initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
-          failureThreshold: 5
+          failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /leaderboard/health
-            port: 3005
-          initialDelaySeconds: 20
+            path: /quiz/health
+            port: 3003
+          initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 3
-          failureThreshold: 5
+          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: leaderboard
+  name: quiz
   namespace: node-learn
   labels:
-    app: leaderboard
+    app: quiz
 spec:
   type: ClusterIP
   ports:
-  - port: 3005
-    targetPort: 3005
+  - port: 3003
+    targetPort: 3003
     protocol: TCP
     name: http
   selector:
-    app: leaderboard
+    app: quiz

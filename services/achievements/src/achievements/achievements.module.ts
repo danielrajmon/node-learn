@@ -5,16 +5,24 @@ import { AchievementsController } from './achievements.controller';
 import { AchievementsService } from './achievements.service';
 import { NatsService } from '../nats/nats.service';
 
+const requireEnv = (name: string): string => {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+  return value;
+};
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_HOST || 'postgres',
-      port: parseInt(process.env.POSTGRES_PORT || '5432'),
-      database: process.env.POSTGRES_DB || 'node-learn-questions',
-      username: process.env.POSTGRES_USER || 'postgres',
-      password: process.env.POSTGRES_PASSWORD || 'postgres',
+      host: requireEnv('POSTGRES_HOST'),
+      port: parseInt(requireEnv('POSTGRES_PORT'), 10),
+      database: requireEnv('POSTGRES_DB'),
+      username: requireEnv('POSTGRES_USER'),
+      password: requireEnv('POSTGRES_PASSWORD'),
       entities: [],
       synchronize: false,
       logging: ['error'],

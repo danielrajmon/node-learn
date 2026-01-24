@@ -7,15 +7,23 @@ import { QuestionEntity } from './entities/question.entity';
 import { ChoiceEntity } from './entities/choice.entity';
 import { User } from './entities/user.entity';
 
+const requireEnv = (name: string): string => {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+  return value;
+};
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_HOST || 'localhost',
-      port: parseInt(process.env.POSTGRES_PORT || '5432'),
-      username: process.env.POSTGRES_USER || 'postgres',
-      password: process.env.POSTGRES_PASSWORD || 'postgres',
-      database: process.env.POSTGRES_DB || 'node_learn',
+      host: requireEnv('POSTGRES_HOST'),
+      port: parseInt(requireEnv('POSTGRES_PORT'), 10),
+      username: requireEnv('POSTGRES_USER'),
+      password: requireEnv('POSTGRES_PASSWORD'),
+      database: requireEnv('POSTGRES_DB'),
       entities: [QuestionEntity, ChoiceEntity, User],
       synchronize: false,
     }),
@@ -25,7 +33,7 @@ import { User } from './entities/user.entity';
         name: 'NATS_CLIENT',
         transport: Transport.NATS,
         options: {
-          servers: [process.env.NATS_URL || 'nats://localhost:4222'],
+          servers: [requireEnv('NATS_URL')],
         },
       },
     ]),

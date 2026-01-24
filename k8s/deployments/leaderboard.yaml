@@ -1,43 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: admin
+  name: leaderboard
   namespace: node-learn
   labels:
-    app: admin
+    app: leaderboard
     version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: admin
+      app: leaderboard
   template:
     metadata:
       labels:
-        app: admin
+        app: leaderboard
         version: v1
     spec:
       containers:
-      - name: admin
-        image: danielrajmon/node-learn-admin:latest
+      - name: leaderboard
+        image: danielrajmon/node-learn-leaderboard:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 3007
+        - containerPort: 3005
           name: http
         env:
         - name: NODE_ENV
           value: "production"
         - name: PORT
-          value: "3007"
+          value: "3005"
         - name: SERVICE_ID
-          value: "admin"
+          value: "leaderboard"
         - name: NATS_URL
           value: "nats://nats:4222"
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: JWT_SECRET
         - name: POSTGRES_HOST
           value: "postgres"
         - name: POSTGRES_PORT
@@ -57,6 +52,13 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: POSTGRES_PASSWORD
+        - name: DATABASE_URL
+          value: "postgresql://postgres:postgres@postgres:5432/node_learn"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: JWT_SECRET
         resources:
           requests:
             memory: "128Mi"
@@ -66,16 +68,16 @@ spec:
             cpu: "500m"
         livenessProbe:
           httpGet:
-            path: /admin/health
-            port: 3007
+            path: /leaderboard/health
+            port: 3005
           initialDelaySeconds: 45
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 5
         readinessProbe:
           httpGet:
-            path: /admin/health
-            port: 3007
+            path: /leaderboard/health
+            port: 3005
           initialDelaySeconds: 20
           periodSeconds: 5
           timeoutSeconds: 3
@@ -84,16 +86,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: admin
+  name: leaderboard
   namespace: node-learn
   labels:
-    app: admin
+    app: leaderboard
 spec:
   type: ClusterIP
   ports:
-  - port: 3007
-    targetPort: 3007
+  - port: 3005
+    targetPort: 3005
     protocol: TCP
     name: http
   selector:
-    app: admin
+    app: leaderboard

@@ -3,7 +3,7 @@
 # Create TLS secret for node-learn application
 # 
 # Usage:
-#   Run this script: ./k8s/create-tls-secret.sh
+#   Run this script: ./k8s/scripts/create-tls-secret.sh
 
 # Certificate files location
 CERT_DIR="$HOME/Downloads/SSL_all"
