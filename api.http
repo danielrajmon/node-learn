@@ -1,37 +1,69 @@
-@baseUrl = http://localhost:3000/api
+@gatewayUrl = http://localhost:3000
+@baseUrl = {{gatewayUrl}}/api
 
-### Get all questions
+@userId = 2
+@questionId = 3
+@modeId = 1
+
+### Health - API Gateway (root, not /api)
+GET {{gatewayUrl}}/health
+
+### Health - Auth
+GET {{baseUrl}}/auth/health
+
+### Health - Questions
+GET {{baseUrl}}/questions/health
+
+### Health - Quiz
+GET {{baseUrl}}/quiz/health
+
+### Health - Achievements
+GET {{baseUrl}}/achievements/health
+
+### Health - Leaderboard
+GET {{baseUrl}}/leaderboard/health
+
+### Health - Admin
+GET {{baseUrl}}/admin/health
+
+### Questions - Get all
 GET {{baseUrl}}/questions
 
-### Get all questions with multiple filters
+### Questions - Get with filters
 GET {{baseUrl}}/questions?difficulty=hard&topic=Architecture,Microservices
 
-### Get a specific question by ID
-GET {{baseUrl}}/questions/3
+### Questions - Get by ID
+GET {{baseUrl}}/questions/{{questionId}}
 
-### Get a random question
+### Questions - Get random
 GET {{baseUrl}}/questions/random
 
-### Submit an answer (records stats + emits events)
-POST {{baseUrl}}/quiz/answer
-Content-Type: application/json
+### Questions - Get answer
+GET {{baseUrl}}/questions/{{questionId}}/answer
 
-{
-  "userId": "1",
-  "questionId": 8,
-  "selectedChoiceId": 3,
-  "quizModeId": 1,
-  "isCorrect": true
-}
+### Answers - Get correct answer
+GET {{baseUrl}}/answers/{{questionId}}
 
-### Record stats (legacy alias)
-POST {{baseUrl}}/stats/record
-Content-Type: application/json
+### Quiz - Get modes
+GET {{baseUrl}}/quiz/modes
 
-{
-  "userId": "1",
-  "questionId": 8,
-  "selectedChoiceId": 3,
-  "quizModeId": 1,
-  "isCorrect": true
-}
+### Stats - Get user stats
+GET {{baseUrl}}/stats/user/{{userId}}
+
+### Stats - Get wrong questions
+GET {{baseUrl}}/stats/user/{{userId}}/wrong-questions
+
+### Achievements - List
+GET {{baseUrl}}/achievements
+
+### Achievements - List for user
+GET {{baseUrl}}/achievements/user/{{userId}}
+
+### Achievements - Get by ID
+GET {{baseUrl}}/achievements/1
+
+### Leaderboard - Get by mode
+GET {{baseUrl}}/leaderboard/mode/{{modeId}}
+
+### Leaderboard - Get user position
+GET {{baseUrl}}/leaderboard/user/{{userId}}
