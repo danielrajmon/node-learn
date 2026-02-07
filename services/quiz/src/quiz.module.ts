@@ -5,7 +5,7 @@ import { QuizController } from './quiz.controller';
 import { StatsController } from './stats.controller';
 import { AnswersController } from './answers.controller';
 import { QuizService } from './quiz.service';
-import { NatsService } from './nats.service';
+import { NatsModule } from '@node-learn/messaging';
 import { UserQuestionStatsEntity } from './entities/user-question-stats.entity';
 import { QuizModeEntity } from './entities/quiz-mode.entity';
 
@@ -33,8 +33,9 @@ import { QuizModeEntity } from './entities/quiz-mode.entity';
       },
     }),
     TypeOrmModule.forFeature([UserQuestionStatsEntity, QuizModeEntity]),
+    NatsModule,
   ],
   controllers: [QuizController, StatsController, AnswersController],
-  providers: [QuizService, NatsService],
+  providers: [QuizService],
 })
 export class QuizModule {}

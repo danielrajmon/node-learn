@@ -5,16 +5,15 @@
 
 export type EventType =
   | 'answer.submitted'
-  | 'answer_submission.failed'
-  | 'achievement.earned'
-  | 'achievement.check_failed'
-  | 'leaderboard.entry.updated'
+  | 'answer.submission.failed'
+  | 'achievement.check'
+  | 'achievement.unlocked'
+  | 'leaderboard.update'
   | 'question.created'
   | 'question.updated'
   | 'question.deleted'
-  | 'user.created'
-  | 'user.authenticated'
-  | 'user.stats.reset';
+  | 'user.login'
+  | 'user.role.updated';
 
 /**
  * Base domain event structure
@@ -38,84 +37,75 @@ export interface DomainEvent<T = any> {
  */
 
 export interface AnswerSubmittedPayload {
-  userId: string;
-  questionId: string;
-  userAnswer: string; // User's response
-  isCorrect: boolean;
-  correctAnswersCount: number; // Current session correct answers
+  userId: string | number;
+  questionId: number;
+  selectedChoiceId?: number;
   quizModeId?: string;
-  attemptedAt: Date;
+  isCorrect: boolean;
+  timestamp: string;
+  correlationId: string;
+  questionType?: string;
+  practical?: boolean;
+  difficulty?: string;
 }
 
-export interface AchievementEarnedPayload {
-  userId: string;
-  achievementId: string;
-  title: string;
-  description: string;
-  earnedAt: Date;
+export interface AnswerSubmissionFailedPayload {
+  userId: string | number;
+  questionId: number;
+  error: string;
+  correlationId: string;
 }
 
-export interface AchievementCheckFailedPayload {
-  userId: string;
-  correlationId: string; // Link to original answer submission
-  reason: string;
-  failedAt: Date;
+export interface AchievementCheckPayload {
+  userId: string | number;
+  questionId: number;
+  quizModeId?: string;
+  correlationId: string;
 }
 
-export interface LeaderboardEntryUpdatedPayload {
-  quizModeId: string;
-  userId: string;
-  position: number; // 1-6
-  correctAnswers: number;
-  totalQuestions: number;
-  correctAnswersCount: number;
-  updatedAt: Date;
+export interface AchievementUnlockedPayload {
+  userId: string | number;
+  achievementId: number | string;
+  achievementTitle: string;
+}
+
+export interface LeaderboardUpdatePayload {
+  userId: string | number;
+  quizModeId?: string;
+  correlationId: string;
 }
 
 export interface QuestionCreatedPayload {
-  questionId: string;
-  text: string;
-  topic: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  type: 'single_choice' | 'multiple_choice' | 'text_input';
-  isPractical: boolean;
-  createdAt: Date;
-  createdBy: string; // Admin user ID
+  correlationId: string;
+  timestamp: string;
+  data: Record<string, any>;
 }
 
 export interface QuestionUpdatedPayload {
-  questionId: string;
-  changes: Record<string, any>; // What fields changed
-  updatedAt: Date;
-  updatedBy: string; // Admin user ID
+  correlationId: string;
+  timestamp: string;
+  data: Record<string, any>;
 }
 
 export interface QuestionDeletedPayload {
-  questionId: string;
-  deletedAt: Date;
-  deletedBy: string; // Admin user ID
+  correlationId: string;
+  timestamp: string;
+  data: { id: number };
 }
 
-export interface UserCreatedPayload {
-  userId: string;
+export interface UserLoginPayload {
+  userId: number;
+  googleId: string;
   email: string;
   name: string;
-  googleId?: string;
   isAdmin: boolean;
-  createdAt: Date;
+  provider: string;
 }
 
-export interface UserAuthenticatedPayload {
-  userId: string;
-  email: string;
-  authenticatedAt: Date;
-  tokenExpiresAt: Date;
-}
-
-export interface UserStatsResetPayload {
-  userId: string; // Usually 'guest-user'
-  reason: 'daily_reset' | 'admin_reset';
-  resetAt: Date;
+export interface UserRoleUpdatedPayload {
+  correlationId: string;
+  timestamp: string;
+  data: { userId: number; isAdmin: boolean };
 }
 
 /**
@@ -146,16 +136,15 @@ export interface StoredEvent {
  */
 export const NATS_SUBJECTS = {
   ANSWER_SUBMITTED: 'answer.submitted',
-  ANSWER_SUBMISSION_FAILED: 'answer_submission.failed',
-  ACHIEVEMENT_EARNED: 'achievement.earned',
-  ACHIEVEMENT_CHECK_FAILED: 'achievement.check_failed',
-  LEADERBOARD_ENTRY_UPDATED: 'leaderboard.entry.updated',
+  ANSWER_SUBMISSION_FAILED: 'answer.submission.failed',
+  ACHIEVEMENT_CHECK: 'achievement.check',
+  ACHIEVEMENT_UNLOCKED: 'achievement.unlocked',
+  LEADERBOARD_UPDATE: 'leaderboard.update',
   QUESTION_CREATED: 'question.created',
   QUESTION_UPDATED: 'question.updated',
   QUESTION_DELETED: 'question.deleted',
-  USER_CREATED: 'user.created',
-  USER_AUTHENTICATED: 'user.authenticated',
-  USER_STATS_RESET: 'user.stats.reset',
+  USER_LOGIN: 'user.login',
+  USER_ROLE_UPDATED: 'user.role.updated',
 } as const;
 
 /**

@@ -83,20 +83,6 @@ export class AdminController {
     return this.adminService.updateUserRole(id, roleData.isAdmin);
   }
 
-  @Post('migrations/init-table/:tableName')
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  async initializeTable(@Param('tableName') tableName: string) {
-    this.logger.debug(`Initializing table: ${tableName}`);
-    return this.adminService.initializeTable(tableName);
-  }
-
-  @Get('migrations/table-status')
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  async getTableStatus() {
-    this.logger.debug('Fetching table status across all databases');
-    return this.adminService.getTableStatus();
-  }
-
   @Post('questions/import')
   @UseGuards(JwtAuthGuard, AdminGuard)
   async importQuestions(@Body() body: { questions: any[] }) {

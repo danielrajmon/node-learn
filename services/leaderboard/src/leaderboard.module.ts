@@ -3,7 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LeaderboardController } from './leaderboard.controller';
 import { LeaderboardService } from './leaderboard.service';
-import { NatsService } from './nats.service';
+import { NatsModule } from '@node-learn/messaging';
+import { NatsSubscriberService } from './nats.service';
 import { LeaderboardEntity } from './entities/leaderboard.entity';
 import { UserEntity } from './entities/user.entity';
 
@@ -38,9 +39,10 @@ import { UserEntity } from './entities/user.entity';
       },
     }),
     TypeOrmModule.forFeature([LeaderboardEntity, UserEntity]),
+    NatsModule,
   ],
   controllers: [LeaderboardController],
-  providers: [NatsService, LeaderboardService],
-  exports: [NatsService, LeaderboardService],
+  providers: [NatsSubscriberService, LeaderboardService],
+  exports: [LeaderboardService],
 })
 export class LeaderboardModule {}

@@ -3,7 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AchievementsController } from './achievements.controller';
 import { AchievementsService } from './achievements.service';
-import { NatsService } from '../nats/nats.service';
+import { NatsModule } from '@node-learn/messaging';
+import { NatsSubscriberService } from '../nats/nats.service';
 
 const requireEnv = (name: string): string => {
   const value = process.env[name];
@@ -33,8 +34,9 @@ const requireEnv = (name: string): string => {
         };
       },
     }),
+    NatsModule,
   ],
   controllers: [AchievementsController],
-  providers: [AchievementsService, NatsService],
+  providers: [AchievementsService, NatsSubscriberService],
 })
 export class AchievementsModule {}

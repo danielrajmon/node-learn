@@ -1,8 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ClientProxy } from '@nestjs/microservices';
-import { Inject } from '@nestjs/common';
+import { NatsService } from '@node-learn/messaging';
+import { NATS_SUBJECTS } from '@node-learn/events';
 import { User } from './entities/user.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
@@ -12,12 +12,11 @@ import { QuestionDto, QuestionFilters } from './dto/question.dto';
 export class AdminService {
   private logger = new Logger('AdminService');
   private questionsServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://questions:3002';
-  private maintenanceServiceUrl = process.env.MAINTENANCE_SERVICE_URL || 'http://maintenance:3010';
 
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @Inject('NATS_CLIENT') private natsClient: ClientProxy,
+    private nats: NatsService,
   ) {}
 
   private async requestQuestionsService<T>(
@@ -47,32 +46,6 @@ export class AdminService {
     return (await response.json()) as T;
   }
 
-  private async requestMaintenanceService<T>(
-    path: string,
-    options: { method?: string; headers?: Record<string, string>; body?: string } = {},
-  ): Promise<T> {
-    const url = `${this.maintenanceServiceUrl}${path}`;
-
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'content-type': 'application/json',
-        ...(options.headers || {}),
-      },
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      this.logger.error(`Maintenance service error ${response.status}: ${text}`);
-      throw new Error(`Maintenance service error ${response.status}`);
-    }
-
-    if (response.status === 204) {
-      return undefined as T;
-    }
-
-    return (await response.json()) as T;
-  }
 
   async findAllQuestions(filters?: QuestionFilters): Promise<QuestionDto[]> {
     const params = new URLSearchParams();
@@ -102,7 +75,7 @@ export class AdminService {
 
     // Emit event to NATS (keep emit; not request-reply)
     const correlationId = `admin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    this.natsClient.emit('question.created', {
+    await this.nats.publish(NATS_SUBJECTS.QUESTION_CREATED, {
       correlationId,
       timestamp: new Date().toISOString(),
       data: result,
@@ -127,7 +100,7 @@ export class AdminService {
     }
 
     const correlationId = `admin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    this.natsClient.emit('question.updated', {
+    await this.nats.publish(NATS_SUBJECTS.QUESTION_UPDATED, {
       correlationId,
       timestamp: new Date().toISOString(),
       data: result,
@@ -145,7 +118,7 @@ export class AdminService {
     }
 
     const correlationId = `admin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    this.natsClient.emit('question.deleted', {
+    await this.nats.publish(NATS_SUBJECTS.QUESTION_DELETED, {
       correlationId,
       timestamp: new Date().toISOString(),
       data: { id },
@@ -171,7 +144,7 @@ export class AdminService {
 
     // Emit event to NATS
     const correlationId = `admin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    this.natsClient.emit('user.role.updated', {
+    await this.nats.publish(NATS_SUBJECTS.USER_ROLE_UPDATED, {
       correlationId,
       timestamp: new Date().toISOString(),
       data: { userId: id, isAdmin }
@@ -181,21 +154,6 @@ export class AdminService {
     return updatedUser;
   }
 
-  async initializeTable(tableName: string): Promise<{ message: string; success: boolean }> {
-    this.logger.log(`Initializing table: ${tableName}`);
-
-    return await this.requestMaintenanceService<{ message: string; success: boolean }>(
-      `/maintenance/migrations/init-table/${tableName}`,
-      { method: 'POST' },
-    );
-  }
-
-
-  async getTableStatus(): Promise<any[]> {
-    return await this.requestMaintenanceService<any[]>(
-      '/maintenance/migrations/table-status',
-    );
-  }
 
   async exportQuestions(): Promise<any[]> {
     return await this.requestQuestionsService<any[]>(`/questions/admin/export`);

@@ -1,29 +1,21 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { connect, NatsConnection } from 'nats';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { NatsService } from '@node-learn/messaging';
+import { AnswerSubmittedPayload, DomainEvent, NATS_SUBJECTS } from '@node-learn/events';
 import { AchievementsService } from '../achievements/achievements.service';
 
-const requireEnv = (name: string): string => {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`${name} is required`);
-  }
-  return value;
-};
-
 @Injectable()
-export class NatsService implements OnModuleInit {
-  private nc: NatsConnection;
+export class NatsSubscriberService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger('NatsService');
 
-  constructor(private readonly achievementsService: AchievementsService) {}
+  constructor(
+    private readonly achievementsService: AchievementsService,
+    private readonly nats: NatsService,
+  ) {}
 
   async onModuleInit() {
     try {
-      const natsUrl = requireEnv('NATS_URL');
-      this.nc = await connect({
-        servers: natsUrl,
-      });
-      this.logger.log(`Connected to NATS at ${natsUrl}`);
+      await this.nats.connect();
+      this.logger.log('Connected to NATS');
 
       // Subscribe to quiz events
       this.subscribeToQuizEvents();
@@ -32,45 +24,53 @@ export class NatsService implements OnModuleInit {
     }
   }
 
+  async onModuleDestroy() {
+    await this.nats.disconnect();
+  }
+
   private subscribeToQuizEvents() {
-    // Subscribe to answer.submitted events
-    const sub = this.nc.subscribe('answer.submitted');
-    (async () => {
-      for await (const msg of sub) {
+    this.nats.subscribe(
+      NATS_SUBJECTS.ANSWER_SUBMITTED,
+      async (event: DomainEvent<AnswerSubmittedPayload>) => {
         try {
-          const event = JSON.parse(new TextDecoder().decode(msg.data));
-          this.logger.debug(`Received event: ${msg.subject}`, event);
+          const payload = event.payload;
+          this.logger.debug(`Received event: ${event.type}`, payload);
 
-          // Check for achievements based on the answer
-          if (event.userId && typeof event.questionId === 'number') {
-            const isCorrect = event.isCorrect === true;
-            this.logger.log(`User ${event.userId} answered ${isCorrect ? 'correctly' : 'incorrectly'}: ${event.questionId}`);
+          if (payload.userId && typeof payload.questionId === 'number') {
+            const userId = Number(payload.userId);
+            if (Number.isNaN(userId)) {
+              this.logger.warn(`Skipping achievement check for invalid userId: ${payload.userId}`);
+              return;
+            }
+            const isCorrect = payload.isCorrect === true;
+            this.logger.log(
+              `User ${userId} answered ${isCorrect ? 'correctly' : 'incorrectly'}: ${payload.questionId}`,
+            );
 
-            // Update local projection so we do not query other DBs
             await this.achievementsService.recordAnswerProjection({
-              userId: event.userId,
-              questionId: event.questionId,
+              userId: payload.userId,
+              questionId: payload.questionId,
               isCorrect,
-              questionType: event.questionType,
-              practical: event.practical,
-              difficulty: event.difficulty,
+              questionType: payload.questionType,
+              practical: payload.practical,
+              difficulty: payload.difficulty,
             });
-            
-            // Check and award achievements using the projection
+
             const awarded = await this.achievementsService.checkAndAwardAchievements(
-              event.userId,
-              event.questionId,
+              userId,
+              payload.questionId,
               isCorrect,
             );
-            
+
             if (awarded.length > 0) {
-              this.logger.log(`Awarded ${awarded.length} achievement(s) to user ${event.userId}:`, 
-                awarded.map(a => a.title).join(', '));
-              
-              // Publish achievement.unlocked events
+              this.logger.log(
+                `Awarded ${awarded.length} achievement(s) to user ${userId}:`,
+                awarded.map((achievement) => achievement.title).join(', '),
+              );
+
               for (const achievement of awarded) {
-                await this.publishEvent('achievement.unlocked', {
-                  userId: event.userId,
+                await this.nats.publish(NATS_SUBJECTS.ACHIEVEMENT_UNLOCKED, {
+                  userId,
                   achievementId: achievement.id,
                   achievementTitle: achievement.title,
                 });
@@ -80,26 +80,7 @@ export class NatsService implements OnModuleInit {
         } catch (error) {
           this.logger.error('Error processing NATS message', error);
         }
-      }
-    })();
-  }
-
-  async publishEvent(eventType: string, payload: any) {
-    if (!this.nc) {
-      this.logger.warn('NATS not connected, skipping event publish');
-      return;
-    }
-    try {
-      const event = {
-        ...payload,
-        eventType,
-        timestamp: new Date().toISOString(),
-        serviceId: 'achievements',
-      };
-      this.nc.publish(eventType, new TextEncoder().encode(JSON.stringify(event)));
-      this.logger.debug(`Published event: ${eventType}`, event);
-    } catch (error) {
-      this.logger.error('Error publishing event', error);
-    }
+      },
+    );
   }
 }

@@ -1,0 +1,13 @@
+{
+  "name": "@node-learn/events",
+  "version": "1.0.0",
+  "description": "Event contracts for Node-Learn services",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "typescript": "^5.3.0"
+  }
+}

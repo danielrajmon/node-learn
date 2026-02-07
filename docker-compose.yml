@@ -53,8 +53,8 @@ services:
   auth:
     container_name: node-learn-auth
     build:
-      context: ./services/auth
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/auth/Dockerfile
     ports:
       - "3001:3001"
     environment:
@@ -122,8 +122,8 @@ services:
   quiz:
     container_name: node-learn-quiz
     build:
-      context: ./services/quiz
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/quiz/Dockerfile
     ports:
       - "3003:3003"
     environment:
@@ -159,8 +159,8 @@ services:
   achievements:
     container_name: node-learn-achievements
     build:
-      context: ./services/achievements
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/achievements/Dockerfile
     ports:
       - "3004:3004"
     environment:
@@ -197,8 +197,8 @@ services:
   leaderboard:
     container_name: node-learn-leaderboard
     build:
-      context: ./services/leaderboard
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/leaderboard/Dockerfile
     ports:
       - "3005:3005"
     environment:
@@ -266,8 +266,8 @@ services:
   admin:
     container_name: node-learn-admin
     build:
-      context: ./services/admin
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/admin/Dockerfile
     ports:
       - "3007:3007"
     environment:

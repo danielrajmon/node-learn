@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { NatsService } from './nats/nats.service';
+import { NatsModule } from '@node-learn/messaging';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -18,9 +18,10 @@ import { DbService } from './db/db.service';
       secret: process.env.JWT_SECRET || 'dev-secret-key',
       signOptions: { expiresIn: '24h' },
     }),
+    NatsModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, NatsService, JwtStrategy, GoogleStrategy, JwtAuthGuard, DbService],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, JwtAuthGuard, DbService],
   exports: [AuthService],
 })
 export class AuthModule implements OnModuleInit {

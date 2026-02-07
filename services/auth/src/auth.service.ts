@@ -1,7 +1,8 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { NatsService } from './nats/nats.service';
+import { NatsService } from '@node-learn/messaging';
+import { NATS_SUBJECTS } from '@node-learn/events';
 import { User } from './entities/user.entity';
 import { DbService } from './db/db.service';
 
@@ -86,7 +87,7 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     };
 
     // Publish user.login event to NATS
-    await this.natsService.publish('user.login', {
+    await this.natsService.publish(NATS_SUBJECTS.USER_LOGIN, {
       userId: user.id,
       googleId: user.googleId,
       email: user.email,
@@ -109,7 +110,7 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     const access_token = this.jwtService.sign(payload);
 
     // Publish user.login event
-    await this.natsService.publish('user.login', {
+    await this.natsService.publish(NATS_SUBJECTS.USER_LOGIN, {
       userId: user.id,
       googleId: user.googleId,
       email: user.email,

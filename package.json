@@ -2,6 +2,10 @@
   "name": "node-learn",
   "version": "1.0.0",
   "description": "Full-stack quiz application with NestJS backend and Angular frontend",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "start": "docker-compose up",
     "stop": "docker-compose down",

@@ -5,9 +5,11 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./services/auth/src:/app/src
-      - ./services/auth/package.json:/app/package.json
-      - ./services/auth/node_modules:/app/node_modules
+      - ./services/auth/src:/app/services/auth/src
+      - ./services/auth/package.json:/app/services/auth/package.json
+      - ./services/auth/node_modules:/app/services/auth/node_modules
+      - ./packages/events:/app/packages/events
+      - ./packages/messaging:/app/packages/messaging
     environment:
       - NODE_ENV=development
     command: sh -c "npm install && npm run dev"
@@ -27,9 +29,11 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./services/quiz/src:/app/src
-      - ./services/quiz/package.json:/app/package.json
-      - ./services/quiz/node_modules:/app/node_modules
+      - ./services/quiz/src:/app/services/quiz/src
+      - ./services/quiz/package.json:/app/services/quiz/package.json
+      - ./services/quiz/node_modules:/app/services/quiz/node_modules
+      - ./packages/events:/app/packages/events
+      - ./packages/messaging:/app/packages/messaging
     environment:
       - NODE_ENV=development
     command: sh -c "npm install && npm run start:dev"
@@ -38,9 +42,11 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./services/achievements/src:/app/src
-      - ./services/achievements/package.json:/app/package.json
-      - ./services/achievements/node_modules:/app/node_modules
+      - ./services/achievements/src:/app/services/achievements/src
+      - ./services/achievements/package.json:/app/services/achievements/package.json
+      - ./services/achievements/node_modules:/app/services/achievements/node_modules
+      - ./packages/events:/app/packages/events
+      - ./packages/messaging:/app/packages/messaging
     environment:
       - NODE_ENV=development
     command: sh -c "npm install && npm run start:dev"
@@ -49,9 +55,11 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./services/leaderboard/src:/app/src
-      - ./services/leaderboard/package.json:/app/package.json
-      - ./services/leaderboard/node_modules:/app/node_modules
+      - ./services/leaderboard/src:/app/services/leaderboard/src
+      - ./services/leaderboard/package.json:/app/services/leaderboard/package.json
+      - ./services/leaderboard/node_modules:/app/services/leaderboard/node_modules
+      - ./packages/events:/app/packages/events
+      - ./packages/messaging:/app/packages/messaging
     environment:
       - NODE_ENV=development
     command: sh -c "npm install && npm run start:dev"
@@ -71,9 +79,11 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./services/admin/src:/app/src
-      - ./services/admin/package.json:/app/package.json
-      - ./services/admin/node_modules:/app/node_modules
+      - ./services/admin/src:/app/services/admin/src
+      - ./services/admin/package.json:/app/services/admin/package.json
+      - ./services/admin/node_modules:/app/services/admin/node_modules
+      - ./packages/events:/app/packages/events
+      - ./packages/messaging:/app/packages/messaging
     environment:
       - NODE_ENV=development
     command: sh -c "npm install && npm run start:watch"

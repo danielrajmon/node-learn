@@ -1,13 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NatsService } from './nats.service';
+import { NatsService } from '@node-learn/messaging';
+import { NATS_SUBJECTS } from '@node-learn/events';
 import { UserQuestionStatsEntity } from './entities/user-question-stats.entity';
 import { QuizModeEntity } from './entities/quiz-mode.entity';
 import { RecordAnswerDto } from './stats.controller';
 
 @Injectable()
-export class QuizService {
+export class QuizService implements OnModuleInit, OnModuleDestroy {
   private logger = new Logger('QuizService');
   private questionsServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://questions:3002';
 
@@ -18,6 +19,18 @@ export class QuizService {
     private quizModeRepository: Repository<QuizModeEntity>,
     private nats: NatsService,
   ) {}
+
+  async onModuleInit() {
+    try {
+      await this.nats.connect();
+    } catch (error) {
+      this.logger.warn(`Failed to connect to NATS: ${error.message}`);
+    }
+  }
+
+  async onModuleDestroy() {
+    await this.nats.disconnect();
+  }
 
   private async requestQuestionsService<T>(
     path: string,
@@ -65,7 +78,7 @@ export class QuizService {
       await this.recordStats(dto, correlationId);
 
       // Step 2: Publish answer.submitted event
-      await this.nats.publish('answer.submitted', {
+      await this.nats.publish(NATS_SUBJECTS.ANSWER_SUBMITTED, {
         userId: dto.userId,
         questionId: dto.questionId,
         selectedChoiceId: dto.selectedChoiceId,
@@ -84,7 +97,7 @@ export class QuizService {
 
       if (dto.isCorrect) {
         // Publish achievement check event
-        await this.nats.publish('achievement.check', {
+        await this.nats.publish(NATS_SUBJECTS.ACHIEVEMENT_CHECK, {
           userId: dto.userId,
           questionId: dto.questionId,
           quizModeId: dto.quizModeId,
@@ -92,7 +105,7 @@ export class QuizService {
         });
 
         // Publish leaderboard update event
-        await this.nats.publish('leaderboard.update', {
+        await this.nats.publish(NATS_SUBJECTS.LEADERBOARD_UPDATE, {
           userId: dto.userId,
           quizModeId: dto.quizModeId,
           correlationId,
@@ -114,7 +127,7 @@ export class QuizService {
       this.logger.error(`[${correlationId}] Saga failed: ${error.message}`);
       
       // Publish compensation event
-      await this.nats.publish('answer.submission.failed', {
+      await this.nats.publish(NATS_SUBJECTS.ANSWER_SUBMISSION_FAILED, {
         userId: dto.userId,
         questionId: dto.questionId,
         error: error.message,

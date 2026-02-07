@@ -9,12 +9,13 @@
     "start:prod": "node dist/main"
   },
   "dependencies": {
+    "@node-learn/events": "file:../../packages/events",
+    "@node-learn/messaging": "file:../../packages/messaging",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "@nestjs/typeorm": "^11.0.0",
-    "nats": "^2.28.0",
     "pg": "^8.11.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.0",

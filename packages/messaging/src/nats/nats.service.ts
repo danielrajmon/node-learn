@@ -6,7 +6,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { connect, NatsConnection, Subscription } from 'nats';
 import { v4 as uuid } from 'uuid';
-import { DomainEvent, EventType, NATS_SUBJECTS } from './types';
+import { DomainEvent, EventType, NATS_SUBJECTS } from '@node-learn/events';
 
 const requireEnv = (name: string): string => {
   const value = process.env[name];
@@ -23,6 +23,9 @@ export class NatsService {
   private logger = new Logger('NatsService');
 
   async connect(natsUrl?: string) {
+    if (this.nc) {
+      return;
+    }
     const resolved = natsUrl ?? process.env.NATS_URL;
     if (!resolved) {
       throw new Error('NATS_URL is required');
@@ -48,6 +51,10 @@ export class NatsService {
     correlationId?: string,
     causationId?: string,
   ): Promise<string> {
+    if (!this.nc) {
+      this.logger.warn(`NATS not connected, skipping publish for ${eventType}`);
+      return '';
+    }
     const eventId = uuid();
     const event: DomainEvent<T> = {
       id: eventId,
@@ -63,7 +70,7 @@ export class NatsService {
     };
 
     const subject = NATS_SUBJECTS[eventType.toUpperCase().replace('.', '_')];
-    
+
     if (!subject) {
       throw new Error(`Unknown event type: ${eventType}`);
     }
@@ -87,8 +94,12 @@ export class NatsService {
     handler: (event: DomainEvent) => Promise<void> | void,
     subscriptionId?: string,
   ): Promise<string> {
+    if (!this.nc) {
+      this.logger.warn(`NATS not connected, cannot subscribe to ${eventType}`);
+      return '';
+    }
     const subject = NATS_SUBJECTS[eventType.toUpperCase().replace('.', '_')];
-    
+
     if (!subject) {
       throw new Error(`Unknown event type: ${eventType}`);
     }
@@ -97,12 +108,12 @@ export class NatsService {
 
     try {
       const subscription = this.nc.subscribe(subject);
-      
+
       // Handle incoming messages asynchronously
       (async () => {
         for await (const msg of subscription) {
           try {
-            const event = JSON.parse(msg.data.toString()) as DomainEvent;
+            const event = JSON.parse(new TextDecoder().decode(msg.data)) as DomainEvent;
             await Promise.resolve(handler(event));
           } catch (error) {
             this.logger.error(`Error handling event ${eventType}: ${error.message}`);
@@ -159,6 +170,9 @@ export class NatsService {
    * Clean up resources
    */
   async disconnect(): Promise<void> {
+    if (!this.nc) {
+      return;
+    }
     for (const subscription of this.subscriptions.values()) {
       subscription.unsubscribe();
     }

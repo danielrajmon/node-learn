@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { NatsModule } from '@node-learn/messaging';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { User } from './entities/user.entity';
@@ -28,15 +28,7 @@ const requireEnv = (name: string): string => {
       synchronize: false,
     }),
     TypeOrmModule.forFeature([User]),
-    ClientsModule.register([
-      {
-        name: 'NATS_CLIENT',
-        transport: Transport.NATS,
-        options: {
-          servers: [requireEnv('NATS_URL')],
-        },
-      },
-    ]),
+    NatsModule,
   ],
   controllers: [AdminController],
   providers: [AdminService, NatsSubscriberService],

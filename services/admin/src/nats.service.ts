@@ -1,24 +1,17 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { connect, NatsConnection } from 'nats';
-
-const requireEnv = (name: string): string => {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`${name} is required`);
-  }
-  return value;
-};
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { NatsService } from '@node-learn/messaging';
+import { DomainEvent, NATS_SUBJECTS, UserLoginPayload } from '@node-learn/events';
 
 @Injectable()
-export class NatsSubscriberService implements OnModuleInit {
-  private nc: NatsConnection;
+export class NatsSubscriberService implements OnModuleInit, OnModuleDestroy {
   private logger = new Logger('NatsSubscriberService');
+
+  constructor(private readonly nats: NatsService) {}
 
   async onModuleInit() {
     try {
-      const natsUrl = requireEnv('NATS_URL');
-      this.nc = await connect({ servers: natsUrl });
-      this.logger.log(`Connected to NATS at ${natsUrl}`);
+      await this.nats.connect();
+      this.logger.log('Connected to NATS');
 
       // Subscribe to user.login events to sync users
       this.subscribeToUserEvents();
@@ -27,26 +20,25 @@ export class NatsSubscriberService implements OnModuleInit {
     }
   }
 
-  private subscribeToUserEvents() {
-    const sub = this.nc.subscribe('user.login');
-    this.logger.log('Subscribed to user.login events');
-
-    (async () => {
-      for await (const msg of sub) {
-        try {
-          const event = JSON.parse(new TextDecoder().decode(msg.data));
-          this.logger.debug(`Received user.login event`, event);
-          
-          // Sync user to admin database
-          await this.syncUser(event);
-        } catch (error) {
-          this.logger.error('Error processing user.login message:', error);
-        }
-      }
-    })();
+  async onModuleDestroy() {
+    await this.nats.disconnect();
   }
 
-  private async syncUser(event: any) {
+  private subscribeToUserEvents() {
+    this.nats.subscribe(NATS_SUBJECTS.USER_LOGIN, async (event: DomainEvent<UserLoginPayload>) => {
+      try {
+        this.logger.debug('Received user.login event', event);
+
+        // Sync user to admin database
+        await this.syncUser(event);
+      } catch (error) {
+        this.logger.error('Error processing user.login message:', error);
+      }
+    });
+    this.logger.log('Subscribed to user.login events');
+  }
+
+  private async syncUser(event: DomainEvent<UserLoginPayload>) {
     const { Pool } = await import('pg');
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,

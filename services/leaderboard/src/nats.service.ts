@@ -1,24 +1,17 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { connect, NatsConnection } from 'nats';
-
-const requireEnv = (name: string): string => {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`${name} is required`);
-  }
-  return value;
-};
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { NatsService } from '@node-learn/messaging';
+import { DomainEvent, EventType, NATS_SUBJECTS, UserLoginPayload } from '@node-learn/events';
 
 @Injectable()
-export class NatsService implements OnModuleInit {
-  private nc: NatsConnection;
+export class NatsSubscriberService implements OnModuleInit, OnModuleDestroy {
   private logger = new Logger('NatsService');
+
+  constructor(private readonly nats: NatsService) {}
 
   async onModuleInit() {
     try {
-      const natsUrl = requireEnv('NATS_URL');
-      this.nc = await connect({ servers: natsUrl });
-      this.logger.log(`Connected to NATS at ${natsUrl}`);
+      await this.nats.connect();
+      this.logger.log('Connected to NATS');
 
       // Subscribe to quiz events to update leaderboard
       this.subscribeToQuizEvents();
@@ -30,45 +23,35 @@ export class NatsService implements OnModuleInit {
     }
   }
 
+  async onModuleDestroy() {
+    await this.nats.disconnect();
+  }
+
   private subscribeToQuizEvents() {
     // Subscribe to answer.submitted events from quiz service
-    const sub = this.nc.subscribe('answer.submitted');
-    this.logger.log('Subscribed to answer.submitted events');
-
-    (async () => {
-      for await (const msg of sub) {
-        try {
-          const event = JSON.parse(new TextDecoder().decode(msg.data));
-          this.logger.debug(`Received quiz event: ${msg.subject}`, event);
-          // Event is consumed by leaderboard update logic
-          // Actual updates handled via POST /leaderboard/update endpoint
-        } catch (error) {
-          this.logger.error('Error processing NATS message:', error);
-        }
+    this.nats.subscribe(NATS_SUBJECTS.ANSWER_SUBMITTED, async (event: DomainEvent) => {
+      try {
+        this.logger.debug(`Received quiz event: ${event.type}`, event.payload);
+      } catch (error) {
+        this.logger.error('Error processing NATS message:', error);
       }
-    })();
+    });
+    this.logger.log('Subscribed to answer.submitted events');
   }
 
   private subscribeToUserEvents() {
-    const sub = this.nc.subscribe('user.login');
-    this.logger.log('Subscribed to user.login events');
-
-    (async () => {
-      for await (const msg of sub) {
-        try {
-          const event = JSON.parse(new TextDecoder().decode(msg.data));
-          this.logger.debug(`Received user.login event`, event);
-          
-          // Sync user to leaderboard database
-          await this.syncUser(event);
-        } catch (error) {
-          this.logger.error('Error processing user.login message:', error);
-        }
+    this.nats.subscribe(NATS_SUBJECTS.USER_LOGIN, async (event: DomainEvent<UserLoginPayload>) => {
+      try {
+        this.logger.debug('Received user.login event', event);
+        await this.syncUser(event);
+      } catch (error) {
+        this.logger.error('Error processing user.login message:', error);
       }
-    })();
+    });
+    this.logger.log('Subscribed to user.login events');
   }
 
-  private async syncUser(event: any) {
+  private async syncUser(event: DomainEvent<UserLoginPayload>) {
     // Import Pool directly to avoid circular dependency
     const { Pool } = await import('pg');
     const pool = new Pool({
@@ -99,20 +82,10 @@ export class NatsService implements OnModuleInit {
     }
   }
 
-  async publishEvent(eventType: string, payload: any) {
-    if (!this.nc) {
-      this.logger.warn('NATS not connected, skipping event publish');
-      return;
-    }
+  async publishEvent(eventType: EventType, payload: Record<string, any>) {
     try {
-      const event = {
-        ...payload,
-        eventType,
-        timestamp: new Date().toISOString(),
-        serviceId: 'leaderboard',
-      };
-      this.nc.publish(eventType, new TextEncoder().encode(JSON.stringify(event)));
-      this.logger.debug(`Published event: ${eventType}`, event);
+      await this.nats.publish(eventType, payload);
+      this.logger.debug(`Published event: ${eventType}`, payload);
     } catch (error) {
       this.logger.error('Error publishing event:', error);
     }
