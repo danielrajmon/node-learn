@@ -15,6 +15,8 @@ Node-Learn is a quiz platform where users can:
 
 ## Service Architecture
 
+<div align="center">
+
 ```mermaid
 graph TB
 	Client[Frontend SPA]
@@ -42,7 +44,11 @@ graph TB
 	Leaderboard -->|subscribe| NATS
 ```
 
+</div>
+
 ## Event Flow
+
+<div align="center">
 
 ```mermaid
 sequenceDiagram
@@ -76,7 +82,11 @@ sequenceDiagram
 	L->>L: Update rankings
 ```
 
+</div>
+
 ## Database Schema
+
+<div align="center">
 
 ```mermaid
 erDiagram
@@ -137,7 +147,11 @@ erDiagram
 	}
 ```
 
+</div>
+
 ## Services
+
+<div align="center">
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#C7D2E1', 'primaryTextColor': '#1F2937', 'primaryBorderColor': '#7B8A9D', 'lineColor': '#94A3B8', 'secondaryColor': '#D7E2F2', 'tertiaryColor': '#E8EEF7', 'nodeBorder': '#7B8A9D' }}}%%
@@ -186,9 +200,13 @@ flowchart LR
 	Leaderboard --> Nats
 ```
 
+</div>
+
 ## REST Endpoints
 
 ### api-gateway (proxies to services)
+<div align="center">
+
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#C7D2E1', 'primaryTextColor': '#1F2937', 'primaryBorderColor': '#7B8A9D', 'lineColor': '#94A3B8', 'secondaryColor': '#D7E2F2', 'tertiaryColor': '#E8EEF7', 'nodeBorder': '#7B8A9D' }}}%%
 mindmap
@@ -240,6 +258,8 @@ mindmap
 			DELETE /admin/questions/:id
 			POST /admin/questions/import
 ```
+
+</div>
 
 Note: In K8s, OAuth routes may bypass the gateway via ingress, so the `/api` prefix is not always used for auth endpoints.
 
