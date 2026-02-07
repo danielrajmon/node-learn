@@ -7,6 +7,7 @@ import { AdminComponent } from './admin/admin';
 import { AdminLayoutComponent } from './admin/admin-layout';
 import { AdminUsersComponent } from './admin-users/admin-users';
 import { AdminMigrationsComponent } from './admin-migrations/admin-migrations';
+import { AdminServicesComponent } from './admin-services/admin-services';
 import { LoginComponent } from './login/login';
 import { AuthCallbackComponent } from './auth-callback/auth-callback';
 import { AchievementsComponent } from './achievements/achievements';
@@ -32,6 +33,7 @@ export const routes: Routes = [
       { path: 'questions', component: AdminComponent },
       { path: 'users', component: AdminUsersComponent },
       { path: 'migrations', component: AdminMigrationsComponent },
+      { path: 'services', component: AdminServicesComponent },
       { path: '', redirectTo: 'questions', pathMatch: 'full' }
     ]
   },

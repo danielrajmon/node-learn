@@ -1,0 +1,40 @@
+<div class="services-page">
+  <div class="services-header">
+    <div>
+      <h1>Services</h1>
+    </div>
+  </div>
+
+  <section class="card">
+    <div class="table">
+      <div class="table-head">
+        <span>Service</span>
+        <span>Status</span>
+        <span>Code</span>
+        <span>Latency</span>
+        <span>Last checked</span>
+      </div>
+
+      <div class="table-row" *ngFor="let service of services; trackBy: trackByName">
+        <span class="service-name">{{ service.name }}</span>
+        <span>
+          <span
+            class="status-pill"
+            [class.ok]="service.ok"
+            [class.bad]="service.ok === false"
+            [class.checking]="service.checking"
+          >
+            {{ service.checking ? 'Checking' : (service.ok ? 'Healthy' : 'Unhealthy') }}
+          </span>
+        </span>
+        <span class="status-code">{{ service.status ?? '-' }}</span>
+        <span class="latency">{{ service.latencyMs !== undefined ? (service.latencyMs + ' ms') : '-' }}</span>
+        <span class="last-checked">{{ service.lastChecked ? (service.lastChecked | date:'short') : '-' }}</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="services-actions">
+    <button class="refresh-button" (click)="checkAll()">Check all</button>
+  </div>
+</div>

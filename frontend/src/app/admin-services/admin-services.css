@@ -1,0 +1,142 @@
+.services-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.services-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.services-header h1 {
+  margin: 1rem 0 0 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.services-header .lede {
+  margin: 0.35rem 0 0;
+  color: #4d5967;
+}
+
+.services-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.refresh-button {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  background: #6c757d;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.refresh-button:hover {
+  background: #5a6268;
+  border-color: #5a6268;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.table {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1.5fr 1fr 1.5fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.table-head {
+  font-weight: 600;
+  color: #1f2933;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.table-row {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f1f3f5;
+  color: #4d5967;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.service-name {
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #f0f2f5;
+  color: #475467;
+}
+
+.status-pill.ok {
+  background: #e6f6ed;
+  color: #1d7a46;
+}
+
+.status-pill.bad {
+  background: #fdecea;
+  color: #b42318;
+}
+
+.status-pill.checking {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+@media (max-width: 800px) {
+  .table-head,
+  .table-row {
+    grid-template-columns: 1fr 1.5fr 1fr;
+    grid-template-areas:
+      "service status code"
+      "latency latency checked";
+  }
+
+  .table-head span:nth-child(1) { grid-area: service; }
+  .table-head span:nth-child(2) { grid-area: status; }
+  .table-head span:nth-child(3) { grid-area: code; }
+  .table-head span:nth-child(4) { grid-area: latency; }
+  .table-head span:nth-child(5) { grid-area: checked; }
+
+  .table-row span:nth-child(1) { grid-area: service; }
+  .table-row span:nth-child(2) { grid-area: status; }
+  .table-row span:nth-child(3) { grid-area: code; }
+  .table-row span:nth-child(4) { grid-area: latency; }
+  .table-row span:nth-child(5) { grid-area: checked; }
+}
