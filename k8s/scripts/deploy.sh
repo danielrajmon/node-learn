@@ -64,7 +64,7 @@ echo ""
 echo -e "${YELLOW}Step 1: Building Docker images (multi-platform: amd64 + arm64)...${NC}"
 
 echo "Building auth image..."
-docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-auth:latest ./services/auth
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-auth:latest -f services/auth/Dockerfile .
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build auth image${NC}"
     exit 1
@@ -78,28 +78,28 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Building quiz image..."
-docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-quiz:latest ./services/quiz
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-quiz:latest -f services/quiz/Dockerfile .
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build quiz image${NC}"
     exit 1
 fi
 
 echo "Building achievements image..."
-docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-achievements:latest ./services/achievements
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-achievements:latest -f services/achievements/Dockerfile .
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build achievements image${NC}"
     exit 1
 fi
 
 echo "Building leaderboard image..."
-docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-leaderboard:latest ./services/leaderboard
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-leaderboard:latest -f services/leaderboard/Dockerfile .
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build leaderboard image${NC}"
     exit 1
 fi
 
 echo "Building admin image..."
-docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-admin:latest ./services/admin
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-admin:latest -f services/admin/Dockerfile .
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build admin image${NC}"
     exit 1
