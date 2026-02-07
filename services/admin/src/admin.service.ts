@@ -7,15 +7,12 @@ import { User } from './entities/user.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { QuestionDto, QuestionFilters } from './dto/question.dto';
-import * as fs from 'fs';
-import * as path from 'path';
-import { Client } from 'pg';
-import { execSync } from 'child_process';
 
 @Injectable()
 export class AdminService {
   private logger = new Logger('AdminService');
   private questionsServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://questions:3002';
+  private maintenanceServiceUrl = process.env.MAINTENANCE_SERVICE_URL || 'http://maintenance:3010';
 
   constructor(
     @InjectRepository(User)
@@ -41,6 +38,33 @@ export class AdminService {
       const text = await response.text();
       this.logger.error(`Questions service error ${response.status}: ${text}`);
       throw new Error(`Questions service error ${response.status}`);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return (await response.json()) as T;
+  }
+
+  private async requestMaintenanceService<T>(
+    path: string,
+    options: { method?: string; headers?: Record<string, string>; body?: string } = {},
+  ): Promise<T> {
+    const url = `${this.maintenanceServiceUrl}${path}`;
+
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'content-type': 'application/json',
+        ...(options.headers || {}),
+      },
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      this.logger.error(`Maintenance service error ${response.status}: ${text}`);
+      throw new Error(`Maintenance service error ${response.status}`);
     }
 
     if (response.status === 204) {
@@ -160,111 +184,17 @@ export class AdminService {
   async initializeTable(tableName: string): Promise<{ message: string; success: boolean }> {
     this.logger.log(`Initializing table: ${tableName}`);
 
-    try {
-      const sqlFilePath = path.join(__dirname, '..', '..', '..', 'scripts', 'sql', `${tableName}.sql`);
-      
-      if (!fs.existsSync(sqlFilePath)) {
-        throw new Error(`SQL file not found for table: ${tableName}`);
-      }
-
-      // Map tables to their respective databases
-      const tableDbMap: Record<string, string> = {
-        'users': 'auth',
-        'questions': 'questions',
-        'choices': 'questions',
-        'achievements': 'achievements',
-        'user_achievements': 'achievements',
-        'leaderboards': 'leaderboard',
-        'quiz_modes': 'quiz',
-        'user_question_stats': 'quiz',
-      };
-
-      const targetDb = tableDbMap[tableName] || 'admin';
-      
-      // Use psql command to execute the SQL file
-      const host = process.env.POSTGRES_HOST || 'postgres';
-      const port = process.env.POSTGRES_PORT || '5432';
-      const user = process.env.POSTGRES_USER || 'postgres';
-      const password = process.env.POSTGRES_PASSWORD || 'postgres';
-
-      const psqlCmd = `PGPASSWORD='${password}' psql -h ${host} -p ${port} -U ${user} -d ${targetDb} -f ${sqlFilePath}`;
-      
-      this.logger.debug(`Executing: ${psqlCmd}`);
-      const output = execSync(psqlCmd, { encoding: 'utf8' });
-      
-      this.logger.log(`Table ${tableName} initialized successfully in ${targetDb} database`);
-      this.logger.debug(`psql output: ${output}`);
-      
-      return {
-        message: `Table ${tableName} initialized successfully in ${targetDb} database`,
-        success: true
-      };
-    } catch (error) {
-      this.logger.error(`Error initializing table ${tableName}:`, error);
-      throw new Error(`Failed to initialize table ${tableName}: ${error.message}`);
-    }
+    return await this.requestMaintenanceService<{ message: string; success: boolean }>(
+      `/maintenance/migrations/init-table/${tableName}`,
+      { method: 'POST' },
+    );
   }
 
 
   async getTableStatus(): Promise<any[]> {
-    // Map tables to their respective databases
-    const tableDbMap: Record<string, string> = {
-      'users': 'auth',
-      'questions': 'questions',
-      'choices': 'questions',
-      'achievements': 'achievements',
-      'user_achievements': 'achievements',
-      'leaderboards': 'leaderboard',
-      'quiz_modes': 'quiz',
-      'user_question_stats': 'quiz',
-    };
-
-    const tableNames = Object.keys(tableDbMap);
-    const statuses = await Promise.all(
-      tableNames.map(async (tableName) => {
-        const dbName = tableDbMap[tableName];
-        
-        try {
-          const client = new Client({
-            host: process.env.POSTGRES_HOST || 'postgres',
-            port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
-            user: process.env.POSTGRES_USER || 'postgres',
-            password: process.env.POSTGRES_PASSWORD || 'postgres',
-            database: dbName,
-          });
-
-          try {
-            await client.connect();
-            const result = await client.query(
-              `SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' 
-                AND table_name = $1
-              ) as exists`,
-              [tableName]
-            );
-            
-            return {
-              name: tableName,
-              database: dbName,
-              exists: result.rows[0]?.exists || false
-            };
-          } finally {
-            await client.end();
-          }
-        } catch (error) {
-          this.logger.error(`Error checking table ${tableName} in database ${dbName}:`, error);
-          return {
-            name: tableName,
-            database: dbName,
-            exists: false,
-            error: error.message
-          };
-        }
-      })
+    return await this.requestMaintenanceService<any[]>(
+      '/maintenance/migrations/table-status',
     );
-
-    return statuses;
   }
 
   async exportQuestions(): Promise<any[]> {

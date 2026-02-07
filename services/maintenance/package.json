@@ -19,15 +19,16 @@
     "@nestjs/platform-express": "^10.2.0",
     "@nestjs/schedule": "^4.0.0",
     "@nestjs/typeorm": "^10.0.0",
-    "typeorm": "^0.3.17",
-    "pg": "^8.11.0",
     "dotenv": "^16.3.1",
-    "reflect-metadata": "^0.1.13"
+    "pg": "^8.11.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.17"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.2.0",
     "@nestjs/schematics": "^10.0.0",
     "@types/node": "^20.8.0",
+    "@types/pg": "^8.16.0",
     "typescript": "^5.2.0"
   }
 }

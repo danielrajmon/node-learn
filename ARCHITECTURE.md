@@ -202,8 +202,8 @@ erDiagram
 
 ## Cross-DB Access
 
-**Achievements service**:
-- Primary: achievements DB only (no cross-DB access after projection implementation)
+**Maintenance service**:
+- Runs schema migrations and table checks across all databases
 
 ## Event-Driven Flows
 
@@ -224,4 +224,4 @@ erDiagram
 - Achievements projection (`achievement_user_question_stats`) removes cross-DB dependency by maintaining local stats from events
 - Admin manages questions through questions service endpoints
 - Quiz reads question metadata/answers through questions service endpoints
-- All services use a single DB; cross-DB access removed
+- All runtime services use a single DB; only maintenance performs cross-DB operations
