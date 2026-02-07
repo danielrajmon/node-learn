@@ -156,43 +156,57 @@ erDiagram
 ## REST Endpoints
 
 ### api-gateway (proxies to services)
-- `GET /api/health` → api-gateway
-- `GET /api/auth/health` → auth
-- `GET /api/auth/google` → auth
-- `GET /api/auth/google/callback` → auth
-- `GET /api/auth/profile` → auth
-- `GET /api/questions/health` → questions
-- `GET /api/questions` → questions
-- `GET /api/questions/:id` → questions
-- `GET /api/questions/random` → questions
-- `GET /api/questions/:id/answer` → questions
-- `GET /api/quiz/health` → quiz
-- `GET /api/quiz/modes` → quiz
-- `POST /api/quiz/answer` → quiz
-- `POST /api/quiz/stats/record` → quiz
-- `GET /api/answers/:questionId` → quiz (returns correct answer)
-- `GET /api/stats/user/:userId` → quiz
-- `GET /api/stats/user/:userId/wrong-questions` → quiz
-- `POST /api/stats/record` → quiz
-- `GET /api/achievements/health` → achievements
-- `GET /api/achievements` → achievements
-- `GET /api/achievements/user/:userId` → achievements
-- `GET /api/achievements/:id` → achievements
-- `POST /api/achievements/check` → achievements (sync unlock)
-- `GET /api/leaderboard/health` → leaderboard
-- `POST /api/leaderboard/update` → leaderboard
-- `GET /api/leaderboard/mode/:modeId` → leaderboard
-- `GET /api/leaderboard/user/:userId` → leaderboard
-- `GET /api/admin/health` → admin
-- `GET /api/admin/users` → admin
-- `PUT /api/admin/users/:id/role` → admin
-- `GET /api/admin/questions` → admin
-- `GET /api/admin/questions/:id` → admin
-- `GET /api/admin/questions/export` → admin
-- `POST /api/admin/questions` → admin
-- `PUT /api/admin/questions/:id` → admin
-- `DELETE /api/admin/questions/:id` → admin
-- `POST /api/admin/questions/import` → admin
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#C7D2E1', 'primaryTextColor': '#1F2937', 'primaryBorderColor': '#7B8A9D', 'lineColor': '#94A3B8', 'secondaryColor': '#D7E2F2', 'tertiaryColor': '#E8EEF7', 'nodeBorder': '#7B8A9D' }}}%%
+mindmap
+	root((API Gateway /api))
+		health
+			GET /health
+		auth
+			GET /auth/health
+			GET /auth/google
+			GET /auth/google/callback
+			GET /auth/profile
+		questions
+			GET /questions/health
+			GET /questions
+			GET /questions/:id
+			GET /questions/random
+			GET /questions/:id/answer
+		quiz
+			GET /quiz/health
+			GET /quiz/modes
+			POST /quiz/answer
+			POST /quiz/stats/record
+		answers
+			GET /answers/:questionId
+		stats
+			GET /stats/user/:userId
+			GET /stats/user/:userId/wrong-questions
+			POST /stats/record
+		achievements
+			GET /achievements/health
+			GET /achievements
+			GET /achievements/user/:userId
+			GET /achievements/:id
+			POST /achievements/check
+		leaderboard
+			GET /leaderboard/health
+			POST /leaderboard/update
+			GET /leaderboard/mode/:modeId
+			GET /leaderboard/user/:userId
+		admin
+			GET /admin/health
+			GET /admin/users
+			PUT /admin/users/:id/role
+			GET /admin/questions
+			GET /admin/questions/:id
+			GET /admin/questions/export
+			POST /admin/questions
+			PUT /admin/questions/:id
+			DELETE /admin/questions/:id
+			POST /admin/questions/import
+```
 
 Note: In K8s, OAuth routes may bypass the gateway via ingress, so the `/api` prefix is not always used for auth endpoints.
 
