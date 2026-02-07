@@ -106,7 +106,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Building api-gateway image..."
-docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-api-gateway:latest ./services/api-gateway
+docker buildx build --platform linux/amd64,linux/arm64 -t node-learn-api-gateway:latest -f services/api-gateway/Dockerfile .
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build api-gateway image${NC}"
     exit 1
