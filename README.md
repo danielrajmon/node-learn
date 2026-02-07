@@ -139,19 +139,52 @@ erDiagram
 
 ## Services
 
-| Service | Port | Purpose | DB |
-|---------|------|---------|-----|
-| frontend | 80/4200 | Angular SPA | - |
-| api-gateway | 3000 | Routes /api/* to services | - |
-| auth | 3001 | OAuth, JWT tokens | auth |
-| questions | 3002 | Question/choice CRUD (read-only via API) | questions |
-| quiz | 3003 | Answer submission, stats, quiz modes | quiz |
-| achievements | 3004 | Achievement unlock checks, user progress | achievements |
-| leaderboard | 3005 | Leaderboard rankings | leaderboard |
-| admin | 3007 | Admin panel: question/user CRUD | admin |
-| maintenance | 3010 | Schema migrations | all DBs |
-| nats | 4222 | Event broker | - |
-| postgres | 5432 | PostgreSQL server | multiple DBs |
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#C7D2E1', 'primaryTextColor': '#1F2937', 'primaryBorderColor': '#7B8A9D', 'lineColor': '#94A3B8', 'secondaryColor': '#D7E2F2', 'tertiaryColor': '#E8EEF7', 'nodeBorder': '#7B8A9D' }}}%%
+flowchart LR
+	subgraph ClientGroup["Client"]
+		direction TB
+		Frontend["frontend :80/4200<br/>Angular SPA"]
+		Gateway["api-gateway :3000<br/>Routes /api/*"]
+	end
+
+	subgraph ServicesGroup["Services"]
+		direction TB
+		Auth["auth :3001<br/>OAuth, JWT tokens"]
+		Questions["questions :3002<br/>Question/choice CRUD"]
+		Quiz["quiz :3003<br/>Answer submission, stats"]
+		Achievements["achievements :3004<br/>Achievement checks"]
+		Leaderboard["leaderboard :3005<br/>Rankings"]
+		Admin["admin :3007<br/>Admin CRUD"]
+		Maintenance["maintenance :3010<br/>Schema migrations"]
+	end
+
+	subgraph InfraGroup["Infra"]
+		direction TB
+		Nats["nats :4222<br/>Event broker"]
+		Postgres["postgres :5432<br/>Multiple DBs"]
+	end
+
+	Frontend --> Gateway
+	Gateway --> Auth
+	Gateway --> Questions
+	Gateway --> Quiz
+	Gateway --> Achievements
+	Gateway --> Leaderboard
+	Gateway --> Admin
+
+	Auth -.-> Postgres
+	Questions -.-> Postgres
+	Quiz -.-> Postgres
+	Achievements -.-> Postgres
+	Leaderboard -.-> Postgres
+	Admin -.-> Postgres
+	Maintenance -.-> Postgres
+
+	Quiz --> Nats
+	Achievements <--> Nats
+	Leaderboard --> Nats
+```
 
 ## REST Endpoints
 
