@@ -19,11 +19,9 @@ graph TB
     Auth -.->|auth DB| PG[(PostgreSQL)]
     Questions -.->|questions DB| PG
     Quiz -.->|quiz DB| PG
-    Quiz -.->|read questions DB| PG
     Achievements -.->|achievements DB| PG
     Leaderboard -.->|leaderboard DB| PG
     Admin -.->|admin DB| PG
-    Admin -.->|write questions DB| PG
     
     Quiz -->|publish events| NATS[NATS :4222]
     Achievements -->|subscribe/publish| NATS
@@ -126,10 +124,10 @@ erDiagram
 | api-gateway | 3000 | Routes /api/* to services | - |
 | auth | 3001 | OAuth, JWT tokens | auth |
 | questions | 3002 | Question/choice CRUD (read-only via API) | questions |
-| quiz | 3003 | Answer submission, stats, quiz modes | quiz + questions (read) |
+| quiz | 3003 | Answer submission, stats, quiz modes | quiz |
 | achievements | 3004 | Achievement unlock checks, user progress | achievements |
 | leaderboard | 3005 | Leaderboard rankings | leaderboard |
-| admin | 3007 | Admin panel: question/user CRUD | admin + questions (write) |
+| admin | 3007 | Admin panel: question/user CRUD | admin |
 | maintenance | 3010 | Schema migrations | all DBs |
 | nats | 4222 | Event broker | - |
 | postgres | 5432 | PostgreSQL server | multiple DBs |
@@ -204,14 +202,6 @@ erDiagram
 
 ## Cross-DB Access
 
-**Quiz service**:
-- Primary: quiz DB (user_question_stats, quiz_modes)
-- Read: questions DB (question metadata, choices)
-
-**Admin service**:
-- Primary: admin DB (users)
-- Write: questions DB (full CRUD)
-
 **Achievements service**:
 - Primary: achievements DB only (no cross-DB access after projection implementation)
 
@@ -232,6 +222,6 @@ erDiagram
 ## Notes
 
 - Achievements projection (`achievement_user_question_stats`) removes cross-DB dependency by maintaining local stats from events
-- Admin has write access to questions DB because it's the management interface
-- Quiz reads questions DB to enrich events with metadata and return full question data
-- All services use single DB except quiz (reads questions) and admin (writes questions)
+- Admin manages questions through questions service endpoints
+- Quiz reads question metadata/answers through questions service endpoints
+- All services use a single DB; cross-DB access removed

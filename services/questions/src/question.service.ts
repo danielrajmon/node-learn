@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -7,6 +7,9 @@ import {
   QuestionFilters,
 } from './interfaces/question.interface';
 import { QuestionEntity } from './entities/question.entity';
+import { ChoiceEntity } from './entities/choice.entity';
+import { CreateQuestionDto } from './dto/create-question.dto';
+import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @Injectable()
 export class QuestionService {
@@ -15,6 +18,8 @@ export class QuestionService {
   constructor(
     @InjectRepository(QuestionEntity)
     private questionRepository: Repository<QuestionEntity>,
+    @InjectRepository(ChoiceEntity)
+    private choiceRepository: Repository<ChoiceEntity>,
   ) {}
 
   private removeAnswer(question: Question | QuestionEntity): QuestionWithoutAnswer {
@@ -76,7 +81,7 @@ export class QuestionService {
       const searchLower = `%${filters.search.toLowerCase()}%`;
       const condition = includeInactive ? 'where' : 'andWhere';
       queryBuilder[condition](
-        'LOWER(q.questionText) LIKE :search',
+        'LOWER(q.question) LIKE :search',
         { search: searchLower },
       );
     }
@@ -88,9 +93,15 @@ export class QuestionService {
     }
 
     if (filters?.topic) {
-      queryBuilder.andWhere('q.topic = :topic', {
-        topic: filters.topic,
-      });
+      if (Array.isArray(filters.topic)) {
+        queryBuilder.andWhere('q.topic IN (:...topic)', {
+          topic: filters.topic,
+        });
+      } else {
+        queryBuilder.andWhere('q.topic = :topic', {
+          topic: filters.topic,
+        });
+      }
     }
 
     if (filters?.questionType) {
@@ -110,7 +121,8 @@ export class QuestionService {
   }
 
   async findAllWithAnswers(filters?: QuestionFilters, includeInactive: boolean = false): Promise<QuestionEntity[]> {
-    const queryBuilder = this.questionRepository.createQueryBuilder('q');
+    const queryBuilder = this.questionRepository.createQueryBuilder('q')
+      .leftJoinAndSelect('q.choices', 'choices');
     
     if (!includeInactive) {
       queryBuilder.where('q.isActive = :isActive', { isActive: true });
@@ -120,7 +132,7 @@ export class QuestionService {
       const searchLower = `%${filters.search.toLowerCase()}%`;
       const condition = includeInactive ? 'where' : 'andWhere';
       queryBuilder[condition](
-        'LOWER(q.questionText) LIKE :search',
+        'LOWER(q.question) LIKE :search',
         { search: searchLower },
       );
     }
@@ -132,9 +144,15 @@ export class QuestionService {
     }
 
     if (filters?.topic) {
-      queryBuilder.andWhere('q.topic = :topic', {
-        topic: filters.topic,
-      });
+      if (Array.isArray(filters.topic)) {
+        queryBuilder.andWhere('q.topic IN (:...topic)', {
+          topic: filters.topic,
+        });
+      } else {
+        queryBuilder.andWhere('q.topic = :topic', {
+          topic: filters.topic,
+        });
+      }
     }
 
     if (filters?.questionType) {
@@ -148,6 +166,8 @@ export class QuestionService {
         practical: filters.practical,
       });
     }
+
+    queryBuilder.orderBy('q.id', 'DESC').addOrderBy('choices.id', 'ASC');
 
     return await queryBuilder.getMany();
   }
@@ -181,5 +201,108 @@ export class QuestionService {
       return null;
     }
     return this.removeAnswer(question);
+  }
+
+  async createQuestion(createQuestionDto: CreateQuestionDto): Promise<QuestionEntity> {
+    const { choices, ...questionData } = createQuestionDto;
+
+    const question = this.questionRepository.create(questionData);
+    const savedQuestion = await this.questionRepository.save(question);
+
+    if (choices && choices.length > 0) {
+      const choiceEntities = choices.map((choice) =>
+        this.choiceRepository.create({
+          ...choice,
+          questionId: savedQuestion.id,
+        }),
+      );
+      await this.choiceRepository.save(choiceEntities);
+    }
+
+    const result = await this.questionRepository.findOne({
+      where: { id: savedQuestion.id },
+      relations: ['choices'],
+    });
+
+    if (!result) {
+      throw new Error('Failed to create question');
+    }
+
+    return result;
+  }
+
+  async updateQuestion(id: number, updateQuestionDto: UpdateQuestionDto): Promise<QuestionEntity> {
+    const question = await this.questionRepository.findOne({
+      where: { id },
+      relations: ['choices'],
+    });
+
+    if (!question) {
+      throw new NotFoundException(`Question with ID ${id} not found`);
+    }
+
+    const { choices, ...questionData } = updateQuestionDto;
+
+    const savedQuestion = await this.questionRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        await transactionalEntityManager.delete(ChoiceEntity, { questionId: id });
+
+        Object.assign(question, questionData);
+        question.choices = [] as any;
+        const saved = await transactionalEntityManager.save(QuestionEntity, question);
+
+        if (choices && choices.length > 0) {
+          const choiceEntities = choices.map((choice) =>
+            transactionalEntityManager.create(ChoiceEntity, {
+              ...choice,
+              questionId: saved.id,
+            }),
+          );
+          await transactionalEntityManager.save(ChoiceEntity, choiceEntities);
+        }
+
+        return saved;
+      },
+    );
+
+    const result = await this.questionRepository.findOne({
+      where: { id: savedQuestion.id },
+      relations: ['choices'],
+    });
+
+    if (!result) {
+      throw new Error('Failed to update question');
+    }
+
+    return result;
+  }
+
+  async deleteQuestion(id: number): Promise<void> {
+    const question = await this.questionRepository.findOne({ where: { id } });
+
+    if (!question) {
+      throw new NotFoundException(`Question with ID ${id} not found`);
+    }
+
+    await this.questionRepository.delete(id);
+  }
+
+  async exportQuestions(): Promise<QuestionEntity[]> {
+    return await this.questionRepository.find({
+      relations: ['choices'],
+      order: {
+        id: 'DESC',
+        choices: {
+          id: 'ASC',
+        },
+      },
+    });
+  }
+
+  async importQuestions(questions: CreateQuestionDto[]): Promise<{ message: string }>{
+    for (const questionData of questions) {
+      await this.createQuestion(questionData);
+    }
+    return { message: `Successfully imported ${questions.length} questions` };
   }
 }

@@ -3,8 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
-import { QuestionEntity } from './entities/question.entity';
-import { ChoiceEntity } from './entities/choice.entity';
 import { User } from './entities/user.entity';
 import { NatsSubscriberService } from './nats.service';
 
@@ -29,20 +27,7 @@ const requireEnv = (name: string): string => {
       entities: [User],
       synchronize: false,
     }),
-    // Secondary connection: questions DB for QuestionEntity and ChoiceEntity
-    TypeOrmModule.forRoot({
-      name: 'questions',
-      type: 'postgres',
-      host: requireEnv('POSTGRES_HOST'),
-      port: parseInt(requireEnv('POSTGRES_PORT'), 10),
-      username: requireEnv('POSTGRES_USER'),
-      password: requireEnv('POSTGRES_PASSWORD'),
-      database: 'questions',
-      entities: [QuestionEntity, ChoiceEntity],
-      synchronize: false,
-    }),
     TypeOrmModule.forFeature([User]),
-    TypeOrmModule.forFeature([QuestionEntity, ChoiceEntity], 'questions'),
     ClientsModule.register([
       {
         name: 'NATS_CLIENT',

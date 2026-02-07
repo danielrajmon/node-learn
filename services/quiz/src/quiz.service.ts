@@ -2,8 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NatsService } from './nats.service';
-import { QuestionEntity } from './entities/question.entity';
-import { ChoiceEntity } from './entities/choice.entity';
 import { UserQuestionStatsEntity } from './entities/user-question-stats.entity';
 import { QuizModeEntity } from './entities/quiz-mode.entity';
 import { RecordAnswerDto } from './stats.controller';
@@ -11,18 +9,45 @@ import { RecordAnswerDto } from './stats.controller';
 @Injectable()
 export class QuizService {
   private logger = new Logger('QuizService');
+  private questionsServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://questions:3002';
 
   constructor(
-    @InjectRepository(QuestionEntity, 'questions')
-    private questionRepository: Repository<QuestionEntity>,
-    @InjectRepository(ChoiceEntity, 'questions')
-    private choiceRepository: Repository<ChoiceEntity>,
     @InjectRepository(UserQuestionStatsEntity)
     private statsRepository: Repository<UserQuestionStatsEntity>,
     @InjectRepository(QuizModeEntity)
     private quizModeRepository: Repository<QuizModeEntity>,
     private nats: NatsService,
   ) {}
+
+  private async requestQuestionsService<T>(
+    path: string,
+    options: { method?: string; headers?: Record<string, string>; body?: string } = {},
+  ): Promise<T> {
+    const url = `${this.questionsServiceUrl}${path}`;
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'content-type': 'application/json',
+        ...(options.headers || {}),
+      },
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      this.logger.error(`Questions service error ${response.status}: ${text}`);
+      throw new Error(`Questions service error ${response.status}`);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return (await response.json()) as T;
+  }
+
+  private async fetchQuestion(questionId: number) {
+    return await this.requestQuestionsService<any>(`/questions/${questionId}`);
+  }
 
   /**
    * Record answer submission using Saga pattern
@@ -34,7 +59,7 @@ export class QuizService {
     this.logger.debug(`[${correlationId}] Starting answer submission saga`);
 
     try {
-      const question = await this.questionRepository.findOne({ where: { id: dto.questionId } });
+      const question = await this.fetchQuestion(dto.questionId).catch(() => null);
 
       // Step 1: Record answer in stats table
       await this.recordStats(dto, correlationId);
@@ -145,21 +170,7 @@ export class QuizService {
    * Get correct answer and choices for a question
    */
   async getAnswer(questionId: number): Promise<any> {
-    const question = await this.questionRepository.findOne({
-      where: { id: questionId },
-      relations: ['choices'],
-    });
-
-    if (!question) {
-      return { questionId, answer: null, choices: [], matchKeywords: [] };
-    }
-
-    return {
-      questionId: question.id,
-      answer: question.answer || '',
-      choices: question.choices || [],
-      matchKeywords: question.matchKeywords || [],
-    };
+    return await this.requestQuestionsService<any>(`/questions/${questionId}/answer`);
   }
 
   /**
@@ -190,7 +201,7 @@ export class QuizService {
       : '0.00';
 
     const questions = await Promise.all(stats.map(async (s) => {
-      const q = await this.questionRepository.findOne({ where: { id: s.questionId } });
+      const q = await this.fetchQuestion(s.questionId).catch(() => null);
       return {
         id: s.questionId,
         question_id: s.questionId,
