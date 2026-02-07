@@ -1,6 +1,5 @@
+.angular
+.env
 dist
 node_modules
-
-k8s/manifests/postgres-secret.yaml
-
-.env
+postgres-secret.yaml

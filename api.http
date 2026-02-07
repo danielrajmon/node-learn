@@ -12,13 +12,26 @@ GET {{baseUrl}}/questions/3
 ### Get a random question
 GET {{baseUrl}}/questions/random
 
-### Submit a correct answer
-POST {{baseUrl}}/answers/8
+### Submit an answer (records stats + emits events)
+POST {{baseUrl}}/quiz/answer
 Content-Type: application/json
 
 {
-  "answer": "Ensures token has not been tampered with."
+  "userId": "1",
+  "questionId": 8,
+  "selectedChoiceId": 3,
+  "quizModeId": 1,
+  "isCorrect": true
 }
 
-### Swagger API Documentation
-GET {{baseUrl}}/docs
+### Record stats (legacy alias)
+POST {{baseUrl}}/stats/record
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "questionId": 8,
+  "selectedChoiceId": 3,
+  "quizModeId": 1,
+  "isCorrect": true
+}

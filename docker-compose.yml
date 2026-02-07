@@ -304,7 +304,7 @@ services:
   # /api/auth/* → auth:3001
   # /api/questions GET → questions:3002
   # /api/quiz/* → quiz:3003
-  # /api/answer POST → quiz:3003
+  # /api/stats/* → quiz:3003
   # /api/achievements → achievements:3004
   # /api/leaderboard → leaderboard:3005
   # /api/admin/* → admin:3007
