@@ -2,17 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LeaderboardEntity } from './entities/leaderboard.entity';
-
-export interface LeaderboardEntry {
-  quiz_mode_id: string;
-  position: number;
-  user_id: number;
-  correct_answers: number;
-  total_questions: number;
-  correct_answers_count: number;  // Correct answers in session for leaderboard ranking
-  achieved_at: Date;
-  username?: string;
-}
+import { LeaderboardEntryDto } from './dto/leaderboard.dto';
 
 @Injectable()
 export class LeaderboardService {
@@ -135,7 +125,20 @@ export class LeaderboardService {
     }
   }
 
-  async getLeaderboard(modeId: string): Promise<LeaderboardEntry[]> {
+  private toLeaderboardEntryDto(entry: LeaderboardEntity): LeaderboardEntryDto {
+    return {
+      quiz_mode_id: entry.quizModeId.toString(),
+      position: entry.position,
+      user_id: entry.userId,
+      correct_answers: entry.correctAnswers,
+      total_questions: entry.totalQuestions,
+      correct_answers_count: entry.correctAnswersCount,
+      achieved_at: entry.achievedAt.toISOString(),
+      username: entry.user?.name
+    };
+  }
+
+  async getLeaderboard(modeId: string): Promise<LeaderboardEntryDto[]> {
     const modeIdNum = Number(modeId);
     
     const entries = await this.leaderboardRepository.find({
@@ -144,16 +147,7 @@ export class LeaderboardService {
       order: { position: 'ASC' }
     });
 
-    const result: LeaderboardEntry[] = entries.map(entry => ({
-      quiz_mode_id: entry.quizModeId.toString(),
-      position: entry.position,
-      user_id: entry.userId,
-      correct_answers: entry.correctAnswers,
-      total_questions: entry.totalQuestions,
-      correct_answers_count: entry.correctAnswersCount,
-      achieved_at: entry.achievedAt,
-      username: entry.user?.name
-    }));
+    const result: LeaderboardEntryDto[] = entries.map(entry => this.toLeaderboardEntryDto(entry));
 
     // If fewer than 6 entries, add fake entries to fill the leaderboard
     if (result.length < 6) {
@@ -182,14 +176,14 @@ export class LeaderboardService {
       };
 
       for (let i = result.length; i < 6; i++) {
-        const fakeEntry: LeaderboardEntry = {
+        const fakeEntry: LeaderboardEntryDto = {
           quiz_mode_id: modeId,
           position: i + 1,
           user_id: 0,
           correct_answers: 0,
           total_questions: 0,
           correct_answers_count: 0,
-          achieved_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+          achieved_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
           username: getRandomName()
         };
         result.push(fakeEntry);
@@ -199,22 +193,13 @@ export class LeaderboardService {
     return result;
   }
 
-  async getUserLeaderboardPosition(userId: number) {
+  async getUserLeaderboardPosition(userId: number): Promise<LeaderboardEntryDto[]> {
     const entries = await this.leaderboardRepository.find({
       where: { userId },
       relations: ['user'],
       order: { quizModeId: 'ASC' }
     });
 
-    return entries.map(entry => ({
-      quiz_mode_id: entry.quizModeId.toString(),
-      position: entry.position,
-      user_id: entry.userId,
-      correct_answers: entry.correctAnswers,
-      total_questions: entry.totalQuestions,
-      correct_answers_count: entry.correctAnswersCount,
-      achieved_at: entry.achievedAt,
-      username: entry.user?.name
-    }));
+    return entries.map(entry => this.toLeaderboardEntryDto(entry));
   }
 }
