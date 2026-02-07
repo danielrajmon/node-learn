@@ -11,6 +11,7 @@
     "dev:down": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml down",
     "deploy:k8s": "bash k8s/scripts/deploy.sh",
     "health": "./scripts/health.sh",
+    "openapi:validate": "npx --yes @redocly/cli lint openapi.yaml --config .redocly.yaml",
     "install:all": "npm run install:frontend && npm run install:packages && npm run install:services",
     "install:frontend": "cd frontend && npm install",
     "install:packages": "npm run install:events && npm run install:messaging",

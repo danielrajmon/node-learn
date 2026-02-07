@@ -1,5 +1,11 @@
 import { Body, Controller, Get, Param, Logger, Post, Query } from '@nestjs/common';
 import { AchievementsService } from './achievements.service';
+import {
+  AchievementAwardResponseDto,
+  AchievementCheckDto,
+  AchievementDto,
+  UserAchievementDto,
+} from '../dto/achievement.dto';
 
 @Controller('achievements')
 export class AchievementsController {
@@ -13,7 +19,7 @@ export class AchievementsController {
   }
 
   @Get()
-  async findAll(@Query('userId') userId?: string) {
+  async findAll(@Query('userId') userId?: string): Promise<AchievementDto[] | UserAchievementDto[]> {
     this.logger.debug(`[findAll] Fetching achievements${userId ? ` for user ${userId}` : ''}`);
     if (userId) {
       return await this.achievementsService.findUserAchievements(userId);
@@ -22,18 +28,18 @@ export class AchievementsController {
   }
 
   @Get('user/:userId')
-  async getUserAchievements(@Param('userId') userId: string) {
+  async getUserAchievements(@Param('userId') userId: string): Promise<UserAchievementDto[]> {
     this.logger.debug(`[getUserAchievements] Fetching achievements for user: ${userId}`);
     return await this.achievementsService.findUserAchievements(userId);
   }
 
   @Post('check')
-  async checkAndAward(@Body() body: any) {
+  async checkAndAward(@Body() body: AchievementCheckDto): Promise<AchievementAwardResponseDto> {
     const { userId, questionId, isCorrect, questionType, practical, difficulty } = body || {};
     const qid = Number(questionId);
 
     if (!userId || Number.isNaN(qid)) {
-      return { awarded: [] };
+      return { awardedAchievements: [], awarded: [] };
     }
 
     // Update projection and compute awards synchronously
@@ -56,7 +62,7 @@ export class AchievementsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<AchievementDto | null> {
     this.logger.debug(`[findOne] Fetching achievement with ID: ${id}`);
     return await this.achievementsService.findOne(+id);
   }

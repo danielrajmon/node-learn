@@ -95,6 +95,7 @@ services:
       - ./services/api-gateway/src:/app/src
       - ./services/api-gateway/package.json:/app/package.json
       - ./services/api-gateway/node_modules:/app/node_modules
+      - ./openapi.yaml:/app/openapi.yaml
     environment:
       - NODE_ENV=development
     command: sh -c "npm install && npm run dev"

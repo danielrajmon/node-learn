@@ -1,0 +1,1273 @@
+openapi: 3.0.3
+info:
+  title: Node-Learn API
+  version: 1.0.0
+  description: Consolidated OpenAPI spec for the API Gateway and microservices.
+  license:
+    name: UNLICENSED
+    url: https://example.com/unlicensed
+servers:
+  - url: /api
+    description: API gateway base path
+security: []
+paths:
+  /health:
+    get:
+      tags: [gateway]
+      summary: Gateway health check
+      operationId: getGatewayHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /maintenance/health:
+    get:
+      tags: [maintenance]
+      summary: Maintenance service health check
+      operationId: getMaintenanceHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /auth/health:
+    get:
+      tags: [auth]
+      summary: Auth service health check
+      operationId: getAuthHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /auth/google:
+    get:
+      tags: [auth]
+      summary: Start Google OAuth flow
+      operationId: startGoogleOAuth
+      responses:
+        '200':
+          description: OAuth flow started
+        '302':
+          description: Redirect to Google OAuth
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /auth/google/callback:
+    get:
+      tags: [auth]
+      summary: Google OAuth callback
+      operationId: handleGoogleOAuthCallback
+      responses:
+        '200':
+          description: OAuth callback handled
+        '302':
+          description: Redirect to frontend with token
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /auth/profile:
+    get:
+      tags: [auth]
+      summary: Get current user profile
+      operationId: getAuthProfile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions/health:
+    get:
+      tags: [questions]
+      summary: Questions service health check
+      operationId: getQuestionsHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions:
+    get:
+      tags: [questions]
+      summary: List questions (without answers)
+      operationId: listQuestions
+      parameters:
+        - $ref: '#/components/parameters/SearchParam'
+        - $ref: '#/components/parameters/DifficultyParam'
+        - $ref: '#/components/parameters/TopicParam'
+        - $ref: '#/components/parameters/QuestionTypeParam'
+        - $ref: '#/components/parameters/PracticalParam'
+      responses:
+        '200':
+          description: Questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuestionWithoutAnswer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions/random:
+    get:
+      tags: [questions]
+      summary: Get a random question (without answer)
+      operationId: getRandomQuestion
+      responses:
+        '200':
+          description: Question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionWithoutAnswer'
+        '404':
+          description: No active questions
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions/{id}:
+    get:
+      tags: [questions]
+      summary: Get a question by id (without answer)
+      operationId: getQuestionById
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdPath'
+      responses:
+        '200':
+          description: Question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionWithoutAnswer'
+        '404':
+          description: Not found
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions/{id}/answer:
+    get:
+      tags: [questions]
+      summary: Get answer for a question
+      operationId: getQuestionAnswer
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdPath'
+      responses:
+        '200':
+          description: Answer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionAnswer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions/admin:
+    get:
+      tags: [questions-admin]
+      summary: List questions with answers (admin)
+      operationId: listQuestionsAdmin
+      parameters:
+        - $ref: '#/components/parameters/SearchParam'
+        - $ref: '#/components/parameters/DifficultyParam'
+        - $ref: '#/components/parameters/TopicParam'
+        - $ref: '#/components/parameters/QuestionTypeParam'
+        - $ref: '#/components/parameters/PracticalParam'
+        - $ref: '#/components/parameters/IncludeInactiveParam'
+      responses:
+        '200':
+          description: Questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags: [questions-admin]
+      summary: Create a question
+      operationId: createQuestionAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuestion'
+      responses:
+        '200':
+          description: Created question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions/admin/export:
+    get:
+      tags: [questions-admin]
+      summary: Export questions
+      operationId: exportQuestionsAdmin
+      responses:
+        '200':
+          description: Exported data
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions/admin/import:
+    post:
+      tags: [questions-admin]
+      summary: Import questions
+      operationId: importQuestionsAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [questions]
+              properties:
+                questions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CreateQuestion'
+      responses:
+        '200':
+          description: Import result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /questions/admin/{id}:
+    get:
+      tags: [questions-admin]
+      summary: Get a question by id (admin)
+      operationId: getQuestionAdminById
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdPath'
+      responses:
+        '200':
+          description: Question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '404':
+          description: Not found
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    put:
+      tags: [questions-admin]
+      summary: Update a question
+      operationId: updateQuestionAdmin
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuestion'
+      responses:
+        '200':
+          description: Updated question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    delete:
+      tags: [questions-admin]
+      summary: Delete a question
+      operationId: deleteQuestionAdmin
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdPath'
+      responses:
+        '200':
+          description: Delete result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /quiz/health:
+    get:
+      tags: [quiz]
+      summary: Quiz service health check
+      operationId: getQuizHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /quiz/modes:
+    get:
+      tags: [quiz]
+      summary: Get quiz modes
+      operationId: getQuizModes
+      responses:
+        '200':
+          description: Modes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizMode'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /quiz/answer:
+    post:
+      tags: [quiz]
+      summary: Record an answer
+      operationId: recordQuizAnswer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordAnswer'
+      responses:
+        '200':
+          description: Record result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordAnswerResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /quiz/stats/record:
+    post:
+      tags: [quiz]
+      summary: Record an answer (alias)
+      operationId: recordQuizStats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordAnswer'
+      responses:
+        '200':
+          description: Record result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordAnswerResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /answers/{questionId}:
+    get:
+      tags: [quiz]
+      summary: Get answer for a question
+      operationId: getAnswerByQuestionId
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdParam'
+      responses:
+        '200':
+          description: Answer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionAnswer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /stats/user/{userId}:
+    get:
+      tags: [stats]
+      summary: Get user statistics
+      operationId: getUserStats
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+      responses:
+        '200':
+          description: User stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStats'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /stats/user/{userId}/wrong-questions:
+    get:
+      tags: [stats]
+      summary: Get user wrong questions
+      operationId: getUserWrongQuestions
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+      responses:
+        '200':
+          description: Wrong questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /stats/record:
+    post:
+      tags: [stats]
+      summary: Record answer and achievements
+      operationId: recordStats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordAnswer'
+      responses:
+        '200':
+          description: Record result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordAnswerResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /achievements/health:
+    get:
+      tags: [achievements]
+      summary: Achievements service health check
+      operationId: getAchievementsHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /achievements:
+    get:
+      tags: [achievements]
+      summary: List achievements
+      operationId: listAchievements
+      parameters:
+        - $ref: '#/components/parameters/UserIdQuery'
+      responses:
+        '200':
+          description: Achievements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Achievement'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /achievements/user/{userId}:
+    get:
+      tags: [achievements]
+      summary: Get achievements for a user
+      operationId: getAchievementsForUser
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+      responses:
+        '200':
+          description: Achievements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAchievement'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /achievements/check:
+    post:
+      tags: [achievements]
+      summary: Check and award achievements
+      operationId: checkAchievements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AchievementCheck'
+      responses:
+        '200':
+          description: Awarded achievements
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementAwardResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /achievements/{id}:
+    get:
+      tags: [achievements]
+      summary: Get achievement by id
+      operationId: getAchievementById
+      parameters:
+        - $ref: '#/components/parameters/AchievementIdPath'
+      responses:
+        '200':
+          description: Achievement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Achievement'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /leaderboard/health:
+    get:
+      tags: [leaderboard]
+      summary: Leaderboard service health check
+      operationId: getLeaderboardHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /leaderboard/update:
+    post:
+      tags: [leaderboard]
+      summary: Update leaderboard
+      operationId: updateLeaderboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaderboardUpdate'
+      responses:
+        '200':
+          description: Update result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /leaderboard/mode/{modeId}:
+    get:
+      tags: [leaderboard]
+      summary: Get leaderboard for a mode
+      operationId: getLeaderboardByMode
+      parameters:
+        - $ref: '#/components/parameters/ModeIdPath'
+      responses:
+        '200':
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /leaderboard/user/{userId}:
+    get:
+      tags: [leaderboard]
+      summary: Get leaderboard position for a user
+      operationId: getLeaderboardForUser
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+      responses:
+        '200':
+          description: Leaderboard entry
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /admin/health:
+    get:
+      tags: [admin]
+      summary: Admin service health check
+      operationId: getAdminHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /admin/questions:
+    get:
+      tags: [admin]
+      summary: List questions (admin)
+      operationId: listAdminQuestions
+      parameters:
+        - $ref: '#/components/parameters/SearchParam'
+        - $ref: '#/components/parameters/DifficultyParam'
+        - $ref: '#/components/parameters/TopicParam'
+      responses:
+        '200':
+          description: Questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags: [admin]
+      summary: Create question (admin)
+      operationId: createAdminQuestion
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuestion'
+      responses:
+        '200':
+          description: Created question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /admin/questions/export:
+    get:
+      tags: [admin]
+      summary: Export questions (admin)
+      operationId: exportAdminQuestions
+      responses:
+        '200':
+          description: Exported data
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /admin/questions/{id}:
+    get:
+      tags: [admin]
+      summary: Get question (admin)
+      operationId: getAdminQuestionById
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdPath'
+      responses:
+        '200':
+          description: Question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    put:
+      tags: [admin]
+      summary: Update question (admin)
+      operationId: updateAdminQuestion
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuestion'
+      responses:
+        '200':
+          description: Updated question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    delete:
+      tags: [admin]
+      summary: Delete question (admin)
+      operationId: deleteAdminQuestion
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/QuestionIdPath'
+      responses:
+        '200':
+          description: Deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /admin/questions/import:
+    post:
+      tags: [admin]
+      summary: Import questions (admin)
+      operationId: importAdminQuestions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [questions]
+              properties:
+                questions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CreateQuestion'
+      responses:
+        '200':
+          description: Import result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /admin/users:
+    get:
+      tags: [admin]
+      summary: List users (admin)
+      operationId: listAdminUsers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /admin/users/{id}/role:
+    put:
+      tags: [admin]
+      summary: Update user role (admin)
+      operationId: updateAdminUserRole
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [isAdmin]
+              properties:
+                isAdmin:
+                  type: boolean
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    QuestionIdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[0-9]+$'
+    QuestionIdParam:
+      name: questionId
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[0-9]+$'
+    UserIdPath:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: integer
+    ModeIdPath:
+      name: modeId
+      in: path
+      required: true
+      schema:
+        type: string
+    AchievementIdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    SearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+    DifficultyParam:
+      name: difficulty
+      in: query
+      schema:
+        type: string
+        enum: [easy, medium, hard]
+    TopicParam:
+      name: topic
+      in: query
+      schema:
+        type: string
+      description: Comma-separated list of topics
+    QuestionTypeParam:
+      name: questionType
+      in: query
+      schema:
+        type: string
+        enum: [single_choice, multiple_choice, text_input]
+    PracticalParam:
+      name: practical
+      in: query
+      schema:
+        type: boolean
+    IncludeInactiveParam:
+      name: includeInactive
+      in: query
+      schema:
+        type: boolean
+    UserIdQuery:
+      name: userId
+      in: query
+      schema:
+        type: string
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    Choice:
+      type: object
+      properties:
+        id:
+          type: integer
+        questionId:
+          type: integer
+        choiceText:
+          type: string
+        isGood:
+          type: boolean
+        explanation:
+          type: string
+          nullable: true
+      required: [choiceText, isGood]
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+        questionType:
+          type: string
+          enum: [single_choice, multiple_choice, text_input]
+        practical:
+          type: boolean
+        question:
+          type: string
+        answer:
+          type: string
+          nullable: true
+        quiz:
+          type: string
+          nullable: true
+        matchKeywords:
+          type: array
+          items:
+            type: string
+          nullable: true
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        topic:
+          type: string
+        isActive:
+          type: boolean
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice'
+        keywordCount:
+          type: integer
+        createdAt:
+          type: string
+          nullable: true
+        updatedAt:
+          type: string
+          nullable: true
+    QuestionWithoutAnswer:
+      type: object
+      properties:
+        id:
+          type: integer
+        question:
+          type: string
+        quiz:
+          type: string
+          nullable: true
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        topic:
+          type: string
+        isActive:
+          type: boolean
+    QuestionAnswer:
+      type: object
+      properties:
+        questionId:
+          type: integer
+        answer:
+          type: string
+          nullable: true
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice'
+        matchKeywords:
+          type: array
+          items:
+            type: string
+    CreateQuestion:
+      type: object
+      required: [questionType, question, difficulty, topic, practical]
+      properties:
+        questionType:
+          type: string
+          enum: [single_choice, multiple_choice, text_input]
+        question:
+          type: string
+        answer:
+          type: string
+        quiz:
+          type: string
+        matchKeywords:
+          type: array
+          items:
+            type: string
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        topic:
+          type: string
+        practical:
+          type: boolean
+        isActive:
+          type: boolean
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice'
+    UpdateQuestion:
+      type: object
+      properties:
+        questionType:
+          type: string
+          enum: [single_choice, multiple_choice, text_input]
+        question:
+          type: string
+        answer:
+          type: string
+        quiz:
+          type: string
+        matchKeywords:
+          type: array
+          items:
+            type: string
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        topic:
+          type: string
+        practical:
+          type: boolean
+        isActive:
+          type: boolean
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice'
+    QuizMode:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        filters:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+    RecordAnswer:
+      type: object
+      required: [userId, questionId, selectedChoiceId, quizModeId, isCorrect]
+      properties:
+        userId:
+          type: string
+        questionId:
+          type: integer
+        selectedChoiceId:
+          type: integer
+        quizModeId:
+          type: integer
+        isCorrect:
+          type: boolean
+    RecordAnswerResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        awardedAchievements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Achievement'
+        leaderboardUpdated:
+          type: boolean
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        sprite_col:
+          type: integer
+        sprite_row:
+          type: integer
+        created_at:
+          type: string
+          nullable: true
+    AchievementProgress:
+      type: object
+      properties:
+        current:
+          type: integer
+        total:
+          type: integer
+        label:
+          type: string
+    UserAchievement:
+      allOf:
+        - $ref: '#/components/schemas/Achievement'
+        - type: object
+          properties:
+            unlocked:
+              type: boolean
+            unlocked_at:
+              type: string
+              nullable: true
+            progress:
+              $ref: '#/components/schemas/AchievementProgress'
+    AchievementCheck:
+      type: object
+      properties:
+        userId:
+          oneOf:
+            - type: string
+            - type: integer
+        questionId:
+          type: integer
+        isCorrect:
+          type: boolean
+        questionType:
+          type: string
+        practical:
+          type: boolean
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+    AchievementAwardResponse:
+      type: object
+      properties:
+        awardedAchievements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Achievement'
+        awarded:
+          type: array
+          items:
+            $ref: '#/components/schemas/Achievement'
+    UserStatsOverview:
+      type: object
+      properties:
+        totalCorrect:
+          type: integer
+        totalIncorrect:
+          type: integer
+        totalAttempts:
+          type: integer
+        overallAccuracy:
+          type: string
+    UserStatsQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        question_id:
+          type: integer
+        question:
+          type: string
+        topic:
+          type: string
+        difficulty:
+          type: string
+        correct_count:
+          type: integer
+        incorrect_count:
+          type: integer
+        accuracy_percentage:
+          type: string
+    UserStats:
+      type: object
+      properties:
+        overall:
+          $ref: '#/components/schemas/UserStatsOverview'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserStatsQuestion'
+    LeaderboardUpdate:
+      type: object
+      required: [modeId, userId, correctAnswers, totalQuestions, correctAnswersCount, username]
+      properties:
+        modeId:
+          type: string
+        userId:
+          type: integer
+        correctAnswers:
+          type: integer
+        totalQuestions:
+          type: integer
+        correctAnswersCount:
+          type: integer
+        username:
+          type: string
+    LeaderboardEntry:
+      type: object
+      properties:
+        quiz_mode_id:
+          type: string
+        position:
+          type: integer
+        user_id:
+          type: integer
+        correct_answers:
+          type: integer
+        total_questions:
+          type: integer
+        correct_answers_count:
+          type: integer
+        achieved_at:
+          type: string
+          format: date-time
+        username:
+          type: string
+          nullable: true
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        googleId:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        picture:
+          type: string
+          nullable: true
+        isAdmin:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

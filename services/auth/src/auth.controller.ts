@@ -4,6 +4,7 @@ import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AuthProfileDto } from './dto/auth-profile.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -36,7 +37,7 @@ export class AuthController {
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  getProfile(@Req() req) {
-    return req.user;
+  getProfile(@Req() req): AuthProfileDto {
+    return req.user as AuthProfileDto;
   }
 }

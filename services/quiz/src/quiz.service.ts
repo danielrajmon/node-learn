@@ -5,7 +5,8 @@ import { NatsService } from '@node-learn/messaging';
 import { NATS_SUBJECTS } from '@node-learn/events';
 import { UserQuestionStatsEntity } from './entities/user-question-stats.entity';
 import { QuizModeEntity } from './entities/quiz-mode.entity';
-import { RecordAnswerDto } from './stats.controller';
+import { RecordAnswerDto } from './dto/record-answer.dto';
+import { UserStatsDto } from './dto/user-stats.dto';
 
 @Injectable()
 export class QuizService implements OnModuleInit, OnModuleDestroy {
@@ -189,7 +190,7 @@ export class QuizService implements OnModuleInit, OnModuleDestroy {
   /**
    * Get user statistics
    */
-  async getUserStats(userId: number): Promise<any> {
+  async getUserStats(userId: number): Promise<UserStatsDto> {
     const stats = await this.statsRepository.find({
       where: { userId },
     });

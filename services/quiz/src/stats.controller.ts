@@ -1,13 +1,8 @@
 import { Controller, Get, Post, Logger, Param, Body } from '@nestjs/common';
 import { QuizService } from './quiz.service';
-
-export interface RecordAnswerDto {
-  userId: string;
-  questionId: number;
-  selectedChoiceId: number;
-  quizModeId: number;
-  isCorrect: boolean;
-}
+import { RecordAnswerDto } from './dto/record-answer.dto';
+import { RecordAnswerResultDto } from './dto/record-answer-result.dto';
+import { UserStatsDto } from './dto/user-stats.dto';
 
 @Controller('stats')
 export class StatsController {
@@ -20,7 +15,7 @@ export class StatsController {
    * GET /stats/user/:userId
    */
   @Get('user/:userId')
-  async getUserStats(@Param('userId') userId: string) {
+  async getUserStats(@Param('userId') userId: string): Promise<UserStatsDto> {
     this.logger.debug(`Fetching stats for user ${userId}`);
     return this.quizService.getUserStats(+userId);
   }
@@ -40,7 +35,7 @@ export class StatsController {
    * POST /stats/record
    */
   @Post('record')
-  async recordAnswer(@Body() dto: RecordAnswerDto) {
+  async recordAnswer(@Body() dto: RecordAnswerDto): Promise<RecordAnswerResultDto> {
     this.logger.debug(`Recording answer for user ${dto.userId}, question ${dto.questionId}`);
     const result = await this.quizService.recordAnswer(dto);
     

@@ -311,8 +311,8 @@ services:
   api-gateway:
     container_name: node-learn-api-gateway
     build:
-      context: ./services/api-gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
     ports:
       - "3000:3000"  # Public API endpoint
     environment:

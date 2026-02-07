@@ -1,5 +1,10 @@
 import { Controller, Get, Post, Body, Param, Logger } from '@nestjs/common';
 import { LeaderboardService } from './leaderboard.service';
+import {
+  LeaderboardEntryDto,
+  LeaderboardUpdateDto,
+  LeaderboardUpdateResponseDto,
+} from './dto/leaderboard.dto';
 
 @Controller('leaderboard')
 export class LeaderboardController {
@@ -14,15 +19,8 @@ export class LeaderboardController {
 
   @Post('update')
   async updateLeaderboard(
-    @Body() body: { 
-      modeId: string; 
-      userId: number; 
-      correctAnswers: number; 
-      totalQuestions: number; 
-      correctAnswersCount: number;  // Correct answers count for leaderboard ranking
-      username: string 
-    }
-  ): Promise<{ success: boolean }> {
+    @Body() body: LeaderboardUpdateDto
+  ): Promise<LeaderboardUpdateResponseDto> {
     this.logger.debug(`Updating leaderboard: mode=${body.modeId}, user=${body.userId}, correct=${body.correctAnswers}`);
     await this.leaderboardService.updateLeaderboard(
       body.modeId,
@@ -36,13 +34,13 @@ export class LeaderboardController {
   }
 
   @Get('mode/:modeId')
-  async getLeaderboard(@Param('modeId') modeId: string) {
+  async getLeaderboard(@Param('modeId') modeId: string): Promise<LeaderboardEntryDto[]> {
     this.logger.debug(`Fetching leaderboard for mode: ${modeId}`);
     return this.leaderboardService.getLeaderboard(modeId);
   }
 
   @Get('user/:userId')
-  async getUserLeaderboardPosition(@Param('userId') userId: string) {
+  async getUserLeaderboardPosition(@Param('userId') userId: string): Promise<LeaderboardEntryDto[]> {
     this.logger.debug(`Fetching leaderboard position for user: ${userId}`);
     return this.leaderboardService.getUserLeaderboardPosition(Number(userId));
   }

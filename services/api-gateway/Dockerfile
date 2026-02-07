@@ -3,14 +3,15 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY services/api-gateway/package*.json ./
 
 # Install dependencies
 RUN npm ci
 
 # Copy source
-COPY src ./src
-COPY tsconfig.json ./
+COPY services/api-gateway/src ./src
+COPY services/api-gateway/tsconfig.json ./
+COPY openapi.yaml ./
 
 # Build
 RUN npm run build

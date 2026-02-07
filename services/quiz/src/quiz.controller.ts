@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Get, Logger, Param } from '@nestjs/common';
 import { QuizService } from './quiz.service';
-import { RecordAnswerDto } from './stats.controller';
+import { RecordAnswerDto } from './dto/record-answer.dto';
+import { RecordAnswerResultDto } from './dto/record-answer-result.dto';
 
 @Controller('quiz')
 export class QuizController {
@@ -28,7 +29,7 @@ export class QuizController {
    * POST /answer
    */
   @Post('answer')
-  async recordAnswer(@Body() dto: RecordAnswerDto) {
+  async recordAnswer(@Body() dto: RecordAnswerDto): Promise<RecordAnswerResultDto> {
     this.logger.debug(`Recording answer: user=${dto.userId}, question=${dto.questionId}, correct=${dto.isCorrect}`);
     
     const result = await this.quizService.recordAnswer(dto);
@@ -45,7 +46,7 @@ export class QuizController {
    * POST /stats/record
    */
   @Post('stats/record')
-  async recordStats(@Body() dto: RecordAnswerDto) {
+  async recordStats(@Body() dto: RecordAnswerDto): Promise<RecordAnswerResultDto> {
     return this.recordAnswer(dto);
   }
 }
