@@ -35,6 +35,7 @@ graph TB
 	Achievements -.->|achievements DB| PG
 	Leaderboard -.->|leaderboard DB| PG
 	Admin -.->|admin DB| PG
+	Maintenance -.->|migrations| PG
     
 	Quiz -->|publish events| NATS[NATS :4222]
 	Achievements -->|subscribe/publish| NATS
@@ -70,8 +71,8 @@ sequenceDiagram
 	A->>A: Upsert projection table
 	A->>A: Check unlock conditions
 	A->>N: Publish achievement.unlocked
-    
-	N->>L: Consume leaderboard.update
+
+	N->>L: Consume answer.submitted
 	L->>L: Update rankings
 ```
 
@@ -86,14 +87,20 @@ erDiagram
 		boolean practical
 		text question
 		text answer
+		text quiz
+		text[] match_keywords
 		varchar difficulty
 		varchar topic
+		boolean is_active
+		timestamp created_at
+		timestamp updated_at
 	}
 	CHOICES {
 		int id PK
 		int question_id FK
 		text choice_text
 		boolean is_good
+		text explanation
 	}
     
 	USER_QUESTION_STATS {
@@ -111,6 +118,7 @@ erDiagram
 		varchar difficulty
 		int correct_count
 		int incorrect_count
+		timestamp last_answered_at
 	}
     
 	ACHIEVEMENTS ||--o{ USER_ACHIEVEMENTS : unlocked
@@ -145,56 +153,48 @@ erDiagram
 | nats | 4222 | Event broker | - |
 | postgres | 5432 | PostgreSQL server | multiple DBs |
 
-## Databases
-
-### auth
-- `users` (id, name, email, google_id, created_at, updated_at)
-
-### questions
-- `questions` (id, question_type, practical, question, answer, quiz, match_keywords[], difficulty, topic, is_active, created_at, updated_at)
-- `choices` (id, question_id, choice_text, is_good, explanation)
-
-### quiz
-- `user_question_stats` (user_id, question_id, correct_count, incorrect_count) PK: (user_id, question_id)
-- `quiz_modes` (id, name, description, filters)
-
-### achievements
-- `achievements` (id, title, description, sprite_col, sprite_row, created_at)
-- `user_achievements` (id, user_id, achievement_id, unlocked_at)
-- `achievement_user_question_stats` (user_id, question_id, question_type, practical, difficulty, correct_count, incorrect_count, last_answered_at) PK: (user_id, question_id) — **local projection from events**
-
-### leaderboard
-- `leaderboards` (id, user_id, username, quiz_mode_id, correct_answers, total_answers, score, last_updated)
-- `users` (id, name, email, google_id, created_at, updated_at)
-
-### admin
-- `users` (id, name, email, google_id, created_at, updated_at)
-
 ## REST Endpoints
 
 ### api-gateway (proxies to services)
+- `GET /api/health` → api-gateway
+- `GET /api/auth/health` → auth
 - `GET /api/auth/google` → auth
 - `GET /api/auth/google/callback` → auth
-- `GET /api/auth/user` → auth
+- `GET /api/auth/profile` → auth
+- `GET /api/questions/health` → questions
 - `GET /api/questions` → questions
 - `GET /api/questions/:id` → questions
 - `GET /api/questions/random` → questions
+- `GET /api/questions/:id/answer` → questions
+- `GET /api/quiz/health` → quiz
 - `GET /api/quiz/modes` → quiz
 - `POST /api/quiz/answer` → quiz
+- `POST /api/quiz/stats/record` → quiz
 - `GET /api/answers/:questionId` → quiz (returns correct answer)
-- `POST /api/stats/record` → quiz
 - `GET /api/stats/user/:userId` → quiz
 - `GET /api/stats/user/:userId/wrong-questions` → quiz
+- `POST /api/stats/record` → quiz
+- `GET /api/achievements/health` → achievements
 - `GET /api/achievements` → achievements
 - `GET /api/achievements/user/:userId` → achievements
+- `GET /api/achievements/:id` → achievements
 - `POST /api/achievements/check` → achievements (sync unlock)
-- `GET /api/leaderboard/:modeId` → leaderboard
-- `POST /api/leaderboard` → leaderboard
+- `GET /api/leaderboard/health` → leaderboard
+- `POST /api/leaderboard/update` → leaderboard
+- `GET /api/leaderboard/mode/:modeId` → leaderboard
+- `GET /api/leaderboard/user/:userId` → leaderboard
+- `GET /api/admin/health` → admin
 - `GET /api/admin/users` → admin
+- `PUT /api/admin/users/:id/role` → admin
 - `GET /api/admin/questions` → admin
+- `GET /api/admin/questions/:id` → admin
+- `GET /api/admin/questions/export` → admin
 - `POST /api/admin/questions` → admin
 - `PUT /api/admin/questions/:id` → admin
 - `DELETE /api/admin/questions/:id` → admin
+- `POST /api/admin/questions/import` → admin
+
+Note: In K8s, OAuth routes may bypass the gateway via ingress, so the `/api` prefix is not always used for auth endpoints.
 
 ## NATS Events
 
@@ -205,13 +205,23 @@ erDiagram
 - `answer.submission.failed` — payload: `{ userId, questionId, error, correlationId }`
 
 ### Published by achievements service
-- `achievement.unlocked` — payload: `{ userId, achievementId, achievementTitle, eventType, timestamp, serviceId }`
+- `achievement.unlocked` — payload: `{ userId, achievementId, achievementTitle }`
+
+### Published by auth service
+- `user.login` — payload: `{ userId, googleId, email, name, isAdmin, provider }`
+
+### Published by admin service
+- `question.created` — payload: `{ correlationId, timestamp, data }`
+- `question.updated` — payload: `{ correlationId, timestamp, data }`
+- `question.deleted` — payload: `{ correlationId, timestamp, data }`
+- `user.role.updated` — payload: `{ correlationId, timestamp, data }`
 
 ### Consumed by achievements service
 - `answer.submitted` → updates `achievement_user_question_stats` projection, runs unlock checks, publishes `achievement.unlocked` events
 
 ### Consumed by leaderboard service
-- `leaderboard.update` → recalculates rankings for quiz mode
+- `answer.submitted` → updates rankings
+- `user.login` → syncs user profile
 
 ## Cross-DB Access
 
